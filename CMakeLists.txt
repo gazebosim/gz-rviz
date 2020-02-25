@@ -11,6 +11,7 @@ find_package(catkin REQUIRED COMPONENTS
 )
 
 find_package(ignition-rendering3 REQUIRED)
+
 find_package(GLUT REQUIRED)
 include_directories(SYSTEM ${GLUT_INCLUDE_DIRS})
 link_directories(${GLUT_LIBRARY_DIRS})
@@ -37,7 +38,7 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
 )
 
-add_executable(${PROJECT_NAME} src/ign_rviz.cpp)
+add_executable(${PROJECT_NAME} src/ign_rviz.cpp src/GlutWindow.cc)
 
 target_link_libraries(${PROJECT_NAME}
   ${catkin_LIBRARIES}
