@@ -103,7 +103,6 @@ GeometryPtr SceneManager::get_geometry(const int &geometry) {
       return scene->CreateSphere();
     } default: return nullptr;
   }
-
 }
 
 ScenePtr SceneManager::get_scene() {

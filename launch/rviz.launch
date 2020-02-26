@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<launch>
+    <node type="ign_rviz" name="ign_rviz" pkg="ign-rviz" output="screen">
+        <!-- ROS Topics -->
+        <param name="point_topic" value="/point"/>
+        <param name="pose_topic" value="/pose"/>
+    </node>
+</launch>

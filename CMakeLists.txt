@@ -38,9 +38,9 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
 )
 
-add_executable(${PROJECT_NAME} src/GlutWindow.cc src/SceneManager.cpp src/VisualizationManager.cpp src/rviz.cpp)
+add_executable(ign_rviz src/GlutWindow.cc src/SceneManager.cpp src/VisualizationManager.cpp src/rviz.cpp)
 
-target_link_libraries(${PROJECT_NAME}
+target_link_libraries(ign_rviz
   ${catkin_LIBRARIES}
   ${GLUT_LIBRARIES}
   ${OPENGL_LIBRARIES}
