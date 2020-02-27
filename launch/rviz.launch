@@ -4,5 +4,6 @@
         <!-- ROS Topics -->
         <param name="point_topic" value="/point"/>
         <param name="pose_topic" value="/pose"/>
+        <param name="imu_topic" value="/imu"/>
     </node>
 </launch>

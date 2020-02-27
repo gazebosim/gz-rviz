@@ -42,7 +42,7 @@ CameraPtr SceneManager::create_camera(const std::string &engine_name) {
 
 void SceneManager::build_scene(ScenePtr scene) {
   // Initialize scene
-  scene->SetAmbientLight(0.3, 0.3, 0.3);
+  scene->SetAmbientLight(0.4, 0.4, 0.4);
   VisualPtr root = scene->RootVisual();
 
   // Create directional light
@@ -89,7 +89,7 @@ void SceneManager::build_scene(ScenePtr scene) {
 }
 
 GeometryPtr SceneManager::get_geometry(const int &geometry) {
-  ScenePtr scene = cameras[0]->Scene();
+  ScenePtr scene = get_scene();
   switch(geometry) {
     case (int) IGN_GEOMETRY::PLANE: {
       return scene->CreatePlane();

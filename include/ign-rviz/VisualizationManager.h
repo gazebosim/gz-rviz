@@ -30,6 +30,7 @@ class VisualizationManager : public SceneManager {
   ros::Subscriber orientation_subscriber;
   ros::NodeHandle nh;
   AxisVisualPtr axis;
+
  public:
   VisualizationManager(int &argc, char** argv);
   void point_callback(const geometry_msgs::PointStampedConstPtr&);

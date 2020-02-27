@@ -16,7 +16,7 @@ VisualizationManager::VisualizationManager(int &argc, char **argv) {
 
   private_nh.getParam("/ign_rviz/point_topic", point_topic);
   private_nh.getParam("/ign_rviz/pose_topic", pose_topic);
-  private_nh.getParam("/ign_rviz/imu", imu_topic);
+  private_nh.getParam("/ign_rviz/imu_topic", imu_topic);
 
   point_subscriber = nh.subscribe(point_topic, 1, &VisualizationManager::point_callback, this);
   pose_subscriber = nh.subscribe(pose_topic, 1, &VisualizationManager::pose_callback, this);
@@ -47,11 +47,12 @@ void VisualizationManager::point_callback(const geometry_msgs::PointStampedConst
   color->SetShininess(50);
   color->SetReflectivity(0);
 
-  // Create box visual
+  // Create visual
   VisualPtr box = scene->CreateVisual();
   box->AddGeometry(get_geometry((int) IGN_GEOMETRY::CYLINDER));
   box->SetWorldScale(0.5);
   box->SetLocalPosition(x, y, z);
+
   box->SetMaterial(color);
 
   VisualPtr root = scene->RootVisual();
@@ -87,6 +88,7 @@ void VisualizationManager::pose_callback(const geometry_msgs::PoseStampedConstPt
 void VisualizationManager::orientation_callback(const sensor_msgs::ImuConstPtr &msg) {
   axis->SetWorldScale(2);
   axis->SetLocalRotation(msg->orientation.w, msg->orientation.x, msg->orientation.y, msg->orientation.z);
+  ROS_DEBUG("[Orientation Received]");
 }
 
 void VisualizationManager::run() {
