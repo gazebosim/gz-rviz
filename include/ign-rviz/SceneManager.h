@@ -20,10 +20,13 @@ enum class IGN_GEOMETRY {
 };
 
 class SceneManager {
+ private:
+  GeometryPtr _sphere_geometry, _plane_geometry, _box_geometry;
  protected:
   std::vector<CameraPtr> cameras;
   std::vector<std::string> engine_names;
   std::vector<NodePtr> nodes;
+  RenderEngine *engine;
  public:
   SceneManager();
   void build_scene(ScenePtr);

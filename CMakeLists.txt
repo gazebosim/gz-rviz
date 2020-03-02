@@ -10,7 +10,7 @@ find_package(catkin REQUIRED COMPONENTS
   pcl_conversions
 )
 
-find_package(ignition-rendering3 REQUIRED)
+find_package(ignition-rendering4 REQUIRED)
 
 find_package(GLUT REQUIRED)
 include_directories(SYSTEM ${GLUT_INCLUDE_DIRS})

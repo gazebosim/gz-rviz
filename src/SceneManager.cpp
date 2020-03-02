@@ -25,7 +25,7 @@ SceneManager::SceneManager() {
 
 CameraPtr SceneManager::create_camera(const std::string &engine_name) {
   // Create and populate scene
-  RenderEngine *engine = rendering::engine(engine_name);
+  engine = rendering::engine(engine_name);
   if (!engine) {
     std::cout << "Engine '" << engine_name << "' is not supported" << std::endl;
     return CameraPtr();
@@ -43,7 +43,12 @@ CameraPtr SceneManager::create_camera(const std::string &engine_name) {
 void SceneManager::build_scene(ScenePtr scene) {
   // Initialize scene
   scene->SetAmbientLight(0.4, 0.4, 0.4);
+  scene->SetBackgroundColor(0.07,0.07,0.07 );
   VisualPtr root = scene->RootVisual();
+
+  _sphere_geometry = scene->CreateSphere();
+  _plane_geometry = scene->CreatePlane();
+  _box_geometry = scene->CreateBox();
 
   // Create directional light
   DirectionalLightPtr light0 = scene->CreateDirectionalLight();
@@ -106,5 +111,5 @@ GeometryPtr SceneManager::get_geometry(const int &geometry) {
 }
 
 ScenePtr SceneManager::get_scene() {
-  return cameras[0]->Scene();
+  return this->engine->SceneByName("scene");
 }

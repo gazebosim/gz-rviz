@@ -22,7 +22,6 @@ VisualizationManager::VisualizationManager(int &argc, char **argv) {
   pose_subscriber = nh.subscribe(pose_topic, 1, &VisualizationManager::pose_callback, this);
   orientation_subscriber = nh.subscribe(imu_topic, 100, &VisualizationManager::orientation_callback, this);
 
-
   ScenePtr scene = get_scene();
   VisualPtr root = scene->RootVisual();
   axis = scene->CreateAxisVisual("axis");
@@ -48,15 +47,14 @@ void VisualizationManager::point_callback(const geometry_msgs::PointStampedConst
   color->SetReflectivity(0);
 
   // Create visual
-  VisualPtr box = scene->CreateVisual();
-  box->AddGeometry(get_geometry((int) IGN_GEOMETRY::CYLINDER));
-  box->SetWorldScale(0.5);
-  box->SetLocalPosition(x, y, z);
-
-  box->SetMaterial(color);
+  VisualPtr marker = scene->CreateVisual();
+  marker->AddGeometry(get_geometry((int)IGN_GEOMETRY::BOX));
+  marker->SetMaterial(color);
+  marker->SetLocalPosition(x, y, z);
+  marker->SetWorldScale(0.1);
 
   VisualPtr root = scene->RootVisual();
-  root->AddChild(box);
+  root->AddChild(marker);
 }
 
 void VisualizationManager::pose_callback(const geometry_msgs::PoseStampedConstPtr &msg) {
