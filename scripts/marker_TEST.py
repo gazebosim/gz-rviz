@@ -45,12 +45,21 @@ def create_marker(marker_id, ns, marker_type):
         marker.type = Marker.CYLINDER
     elif marker_type == "cube":
         marker.type = Marker.CUBE
-    else:
+    elif marker_type == "sphere":
         marker.type = Marker.SPHERE
+    else:
+        marker.type = Marker.ARROW
+
+    marker.action = Marker.ADD
 
     marker.pose.position.x = 4
     marker.pose.position.y = 4
-    marker.pose.position.z = 4
+    marker.pose.position.z = 5
+
+    marker.pose.orientation.x = 0
+    marker.pose.orientation.y = 0
+    marker.pose.orientation.z = 0
+    marker.pose.orientation.w = 1
 
     marker.scale.x = 1
     marker.scale.y = 1
@@ -70,7 +79,7 @@ if __name__ == "__main__":
     rate = rospy.Rate(1)
     count = 0
     while not rospy.is_shutdown():
-        marker = create_marker(0, "marker_viz", "sphere")
+        marker = create_marker(0, "marker_viz", "cube")
         marker_line = create_line(0, "line_viz", "list")
         rate.sleep()
         marker_pub.publish(marker)

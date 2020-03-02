@@ -100,14 +100,28 @@ void VisualizationManager::marker_callback(const visualization_msgs::MarkerConst
   std::string unique_name = msg->ns + std::to_string(msg->id);
   VisualPtr vis = scene->VisualByName(unique_name);
 
-  if(vis == nullptr) {
-    vis = scene->CreateVisual(unique_name);
+  // TODO: Implement DELETEALL markers action and fix delete arrow bug
+
+  // Delete marker
+  if (msg->action == visualization_msgs::Marker::DELETE) {
+    if(vis != nullptr)
+      vis->RemoveGeometries();
+    return;
+  }
+
+  // Add marker
+  if (vis == nullptr) {
+    if (msg->type == visualization_msgs::Marker::ARROW) {
+      vis = scene->CreateArrowVisual(unique_name);
+    }
+    else
+      vis = scene->CreateVisual(unique_name);
     add_marker = true;
   }
   else
     vis->RemoveGeometries();
 
-  // TODO: Implement visualization for Triangle, Cube & Sphere List, Text Message and Mesh Resource marker types
+  // TODO: Implement visualization for Triangle, Cube & Sphere List, Text Message and Mesh Resource marker type
 
   if (msg->type == visualization_msgs::Marker::LINE_LIST || msg->type == visualization_msgs::Marker::LINE_STRIP
       || msg->type == visualization_msgs::Marker::POINTS || msg->type == visualization_msgs::Marker::CUBE_LIST
@@ -132,16 +146,25 @@ void VisualizationManager::marker_callback(const visualization_msgs::MarkerConst
   } else if (msg->type == visualization_msgs::Marker::CYLINDER) {
     marker->AddPoint(0, 0, 0, math::Color::White);
     marker->SetType(MarkerType::MT_CYLINDER);
-  } else {
-    marker->AddPoint(0, 0, 0, math::Color::White);
-    marker->SetType(MarkerType::MT_NONE);
   }
 
   MaterialPtr color = scene->CreateMaterial();
-  color->SetAmbient(msg->color.r, msg->color.g, msg->color.b, msg->color.a);
-  color->SetDiffuse(msg->color.r, msg->color.g, msg->color.b, msg->color.a);
+  if (msg->type == visualization_msgs::Marker::ARROW) {
+    color->SetAmbient(1,0,0,1);
+    color->SetDiffuse(1,0,0,1);
+    tf2::Quaternion quat_orig, quat_new;
+    tf2::convert(msg->pose.orientation, quat_orig);
+    quat_new.setRPY(0, M_PI / 2, 0);
+    quat_new = quat_orig * quat_new;
+    quat_new.normalize();
+    vis->SetLocalRotation(quat_new.w(), quat_new.x(), quat_new.y(), quat_new.z());
+  } else {
+    color->SetAmbient(msg->color.r, msg->color.g, msg->color.b, msg->color.a);
+    color->SetDiffuse(msg->color.r, msg->color.g, msg->color.b, msg->color.a);
+    vis->AddGeometry(marker);
+    vis->SetLocalRotation(1, 0, 0, 0);
+  }
 
-  vis->AddGeometry(marker);
   vis->SetLocalPosition(msg->pose.position.x, msg->pose.position.y, msg->pose.position.z);
   vis->SetMaterial(color);
 
