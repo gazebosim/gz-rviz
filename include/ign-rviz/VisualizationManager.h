@@ -22,12 +22,14 @@
 #include <geometry_msgs/PoseStamped.h>
 #include <sensor_msgs/Imu.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
+#include <visualization_msgs/Marker.h>
 
 class VisualizationManager : public SceneManager {
  private:
   ros::Subscriber point_subscriber;
   ros::Subscriber pose_subscriber;
   ros::Subscriber orientation_subscriber;
+  ros::Subscriber marker_subscriber;
   ros::NodeHandle nh;
   AxisVisualPtr axis;
 
@@ -36,6 +38,7 @@ class VisualizationManager : public SceneManager {
   void point_callback(const geometry_msgs::PointStampedConstPtr&);
   void pose_callback(const geometry_msgs::PoseStampedConstPtr&);
   void orientation_callback(const sensor_msgs::ImuConstPtr&);
+  void marker_callback(const visualization_msgs::MarkerConstPtr&);
   void run();
 };
 

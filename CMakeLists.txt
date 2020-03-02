@@ -5,6 +5,7 @@ add_compile_options(-std=c++11 -O2)
 
 find_package(catkin REQUIRED COMPONENTS
   roscpp
+  rospy
   std_msgs
   pcl_ros
   pcl_conversions

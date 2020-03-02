@@ -13,14 +13,17 @@ VisualizationManager::VisualizationManager(int &argc, char **argv) {
   std::string point_topic = "/point";
   std::string pose_topic = "/pose";
   std::string imu_topic = "/imu";
+  std::string marker_topic = "/visualization_marker";
 
   private_nh.getParam("/ign_rviz/point_topic", point_topic);
   private_nh.getParam("/ign_rviz/pose_topic", pose_topic);
   private_nh.getParam("/ign_rviz/imu_topic", imu_topic);
+  private_nh.getParam("/ign_rviz/marker_topic", marker_topic);
 
   point_subscriber = nh.subscribe(point_topic, 1, &VisualizationManager::point_callback, this);
   pose_subscriber = nh.subscribe(pose_topic, 1, &VisualizationManager::pose_callback, this);
   orientation_subscriber = nh.subscribe(imu_topic, 100, &VisualizationManager::orientation_callback, this);
+  marker_subscriber = nh.subscribe(marker_topic, 100, &VisualizationManager::marker_callback, this);
 
   ScenePtr scene = get_scene();
   VisualPtr root = scene->RootVisual();
@@ -87,6 +90,65 @@ void VisualizationManager::orientation_callback(const sensor_msgs::ImuConstPtr &
   axis->SetWorldScale(2);
   axis->SetLocalRotation(msg->orientation.w, msg->orientation.x, msg->orientation.y, msg->orientation.z);
   ROS_DEBUG("[Orientation Received]");
+}
+
+void VisualizationManager::marker_callback(const visualization_msgs::MarkerConstPtr &msg) {
+  ScenePtr scene = get_scene();
+  MarkerPtr marker = scene->CreateMarker();
+
+  bool add_marker = false;
+  std::string unique_name = msg->ns + std::to_string(msg->id);
+  VisualPtr vis = scene->VisualByName(unique_name);
+
+  if(vis == nullptr) {
+    vis = scene->CreateVisual(unique_name);
+    add_marker = true;
+  }
+  else
+    vis->RemoveGeometries();
+
+  // TODO: Implement visualization for Triangle, Cube & Sphere List, Text Message and Mesh Resource marker types
+
+  if (msg->type == visualization_msgs::Marker::LINE_LIST || msg->type == visualization_msgs::Marker::LINE_STRIP
+      || msg->type == visualization_msgs::Marker::POINTS || msg->type == visualization_msgs::Marker::CUBE_LIST
+      || msg->type == visualization_msgs::Marker::SPHERE_LIST) {
+
+    for (const auto &point : msg->points)
+      marker->AddPoint(point.x, point.y, point.z, math::Color::White);
+
+    if (msg->type == visualization_msgs::Marker::LINE_STRIP)
+      marker->SetType(MarkerType::MT_LINE_STRIP);
+    else if (msg->type == visualization_msgs::Marker::LINE_LIST)
+      marker->SetType(MarkerType::MT_LINE_LIST);
+    else
+      marker->SetType(MarkerType::MT_POINTS);
+
+  } else if (msg->type == visualization_msgs::Marker::SPHERE) {
+    marker->AddPoint(0, 0, 0, math::Color::White);
+    marker->SetType(MarkerType::MT_SPHERE);
+  } else if (msg->type == visualization_msgs::Marker::CUBE) {
+    marker->AddPoint(0, 0, 0, math::Color::White);
+    marker->SetType(MarkerType::MT_BOX);
+  } else if (msg->type == visualization_msgs::Marker::CYLINDER) {
+    marker->AddPoint(0, 0, 0, math::Color::White);
+    marker->SetType(MarkerType::MT_CYLINDER);
+  } else {
+    marker->AddPoint(0, 0, 0, math::Color::White);
+    marker->SetType(MarkerType::MT_NONE);
+  }
+
+  MaterialPtr color = scene->CreateMaterial();
+  color->SetAmbient(msg->color.r, msg->color.g, msg->color.b, msg->color.a);
+  color->SetDiffuse(msg->color.r, msg->color.g, msg->color.b, msg->color.a);
+
+  vis->AddGeometry(marker);
+  vis->SetLocalPosition(msg->pose.position.x, msg->pose.position.y, msg->pose.position.z);
+  vis->SetMaterial(color);
+
+  VisualPtr root = scene->RootVisual();
+
+  if(add_marker)
+    root->AddChild(vis);
 }
 
 void VisualizationManager::run() {
