@@ -22,6 +22,7 @@
 #include <geometry_msgs/PoseStamped.h>
 #include <sensor_msgs/Imu.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
+#include <tf2_msgs/TFMessage.h>
 #include <visualization_msgs/Marker.h>
 
 class VisualizationManager : public SceneManager {
@@ -30,6 +31,7 @@ class VisualizationManager : public SceneManager {
   ros::Subscriber pose_subscriber;
   ros::Subscriber orientation_subscriber;
   ros::Subscriber marker_subscriber;
+  ros::Subscriber tf_subscriber;
   ros::NodeHandle nh;
   AxisVisualPtr axis;
 
@@ -39,6 +41,9 @@ class VisualizationManager : public SceneManager {
   void pose_callback(const geometry_msgs::PoseStampedConstPtr&);
   void orientation_callback(const sensor_msgs::ImuConstPtr&);
   void marker_callback(const visualization_msgs::MarkerConstPtr&);
+  void create_tf_visual(std::unordered_map<std::string, std::vector<geometry_msgs::TransformStamped>> &,
+                        std::string &, MarkerPtr &, math::Vector3f);
+  void tf_callback(const tf2_msgs::TFMessageConstPtr &);
   void run();
 };
 

@@ -14,16 +14,19 @@ VisualizationManager::VisualizationManager(int &argc, char **argv) {
   std::string pose_topic = "/pose";
   std::string imu_topic = "/imu";
   std::string marker_topic = "/visualization_marker";
+  std::string tf_topic = "/tf_static";
 
   private_nh.getParam("/ign_rviz/point_topic", point_topic);
   private_nh.getParam("/ign_rviz/pose_topic", pose_topic);
   private_nh.getParam("/ign_rviz/imu_topic", imu_topic);
   private_nh.getParam("/ign_rviz/marker_topic", marker_topic);
+  private_nh.getParam("/ign_rviz/tf_topic", tf_topic);
 
   point_subscriber = nh.subscribe(point_topic, 1, &VisualizationManager::point_callback, this);
   pose_subscriber = nh.subscribe(pose_topic, 1, &VisualizationManager::pose_callback, this);
   orientation_subscriber = nh.subscribe(imu_topic, 100, &VisualizationManager::orientation_callback, this);
   marker_subscriber = nh.subscribe(marker_topic, 100, &VisualizationManager::marker_callback, this);
+  tf_subscriber = nh.subscribe(tf_topic, 100, &VisualizationManager::tf_callback, this);
 
   ScenePtr scene = get_scene();
   VisualPtr root = scene->RootVisual();
@@ -172,6 +175,85 @@ void VisualizationManager::marker_callback(const visualization_msgs::MarkerConst
 
   if(add_marker)
     root->AddChild(vis);
+}
+
+void VisualizationManager::create_tf_visual(std::unordered_map<std::string,
+                                                               std::vector<geometry_msgs::TransformStamped>> &tf_tree,
+                                            std::string &base_frame_id,
+                                            MarkerPtr &marker,
+                                            math::Vector3f pose) {
+
+  ScenePtr scene = get_scene();
+  VisualPtr tf_visual = scene->VisualByName("tf_visual");
+  auto parent = tf_tree[base_frame_id];
+  for (auto child : parent) {
+    marker->AddPoint(pose.X(), pose.Y(), pose.Z(), math::Color(1,0,0,1));
+    float x = pose.X() + child.transform.translation.x;
+    float y = pose.Y() + child.transform.translation.y;
+    float z = pose.Z() + child.transform.translation.z;
+    marker->AddPoint(x, y, z, math::Color::White);
+
+    AxisVisualPtr frame_axis = scene->CreateAxisVisual();
+    frame_axis->SetLocalPosition(x, y, z);
+    frame_axis->SetLocalScale(0.3);
+    frame_axis->SetLocalRotation(child.transform.rotation.w,
+                           child.transform.rotation.x,
+                           child.transform.rotation.y,
+                           child.transform.rotation.z);
+
+    VisualPtr cone = scene->CreateVisual();
+    cone->AddGeometry(scene->CreateCone());
+    cone->SetLocalScale(0.02, 0.02, 0.04);
+
+    cone->SetLocalPosition(pose.X(), pose.Y(), pose.Z());
+
+    MaterialPtr material = scene->CreateMaterial();
+    material->SetAmbient(1,0,1);
+    material->SetDiffuse(1,0,1);
+
+    cone->SetMaterial(material);
+
+    tf_visual->AddChild(frame_axis);
+    tf_visual->AddChild(cone);
+
+    create_tf_visual(tf_tree, child.child_frame_id, marker, math::Vector3f(x, y, z));
+  }
+}
+
+void VisualizationManager::tf_callback(const tf2_msgs::TFMessageConstPtr &msg) {
+  ScenePtr scene = get_scene();
+  MarkerPtr marker = scene->CreateMarker();
+  marker->SetType(MarkerType::MT_LINE_LIST);
+
+  std::string base_frame_id = "base_link";
+
+  std::unordered_map<std::string, std::vector<geometry_msgs::TransformStamped>> tf_tree;
+
+  for(const auto& transform : msg->transforms) {
+    ROS_INFO("Parent: %s, Child: %s", transform.header.frame_id.c_str(), transform.child_frame_id.c_str());
+    std::string parent = transform.header.frame_id;
+    tf_tree[parent].push_back(transform);
+  }
+
+  VisualPtr tf_visual = scene->VisualByName("tf_visual");
+  bool add_marker = false;
+  if(tf_visual == nullptr) {
+    tf_visual = scene->CreateVisual("tf_visual");
+    add_marker = true;
+  }
+
+  create_tf_visual(tf_tree, base_frame_id, marker, math::Vector3f(0, 0, 0));
+
+  MaterialPtr color = scene->CreateMaterial();
+  color->SetAmbient(1,1,0, 0.8);
+
+  tf_visual->AddGeometry(marker);
+  tf_visual->SetGeometryMaterial(color, false);
+
+  if(add_marker) {
+    VisualPtr root = scene->RootVisual();
+    root->AddChild(tf_visual);
+  }
 }
 
 void VisualizationManager::run() {

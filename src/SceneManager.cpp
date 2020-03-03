@@ -79,6 +79,7 @@ void SceneManager::build_scene(ScenePtr scene) {
   // Create axis visual
   AxisVisualPtr axis = scene->CreateAxisVisual();
   axis->SetLocalPosition(0, 0, 0);
+  axis->SetLocalScale(0.5);
   root->AddChild(axis);
 
   // Create camera
