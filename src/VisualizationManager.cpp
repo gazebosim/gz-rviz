@@ -177,6 +177,52 @@ void VisualizationManager::marker_callback(const visualization_msgs::MarkerConst
     root->AddChild(vis);
 }
 
+tf2::Quaternion get_rotation_to(const math::Vector3d &source, const math::Vector3d &destination) {
+  const math::Vector3d& fallbackAxis = math::Vector3d::Zero;
+  tf2::Quaternion q;
+
+  math::Vector3d v0 = source;
+  math::Vector3d v1 = destination;
+  v0.Normalize();
+  v1.Normalize();
+
+  double d = v0.Dot(v1);
+
+  if(d >= 1.0f) {
+    return q;
+  }
+
+  if(d < (1e-6f - 1.0f)) {
+    if(fallbackAxis != math::Vector3d::Zero) {
+      tf2::Vector3 temp(fallbackAxis.X(), fallbackAxis.Y(), fallbackAxis.Z());
+      q.setRotation(temp, M_PI);
+    }
+    else {
+      math::Vector3d axis = math::Vector3d::UnitX.Cross(source);
+      if(axis.Length() == 0) {
+        axis = math::Vector3d::UnitY.Cross(source);
+      }
+      axis.Normalize();
+      tf2::Vector3 temp(axis.X(), axis.Y(), axis.Z());
+      q.setRotation(temp, M_PI);
+    }
+  } else {
+    double s = sqrt((1 + d) * 2);
+    double inverse = 1 / s;
+
+    math::Vector3d c = v0.Cross(v1);
+
+    q.setX(c.X() * inverse);
+    q.setY(c.Y() * inverse);
+    q.setZ(c.Z() * inverse);
+    q.setW(s * 0.5f);
+    q.normalize();
+  }
+  return q;
+}
+
+
+
 void VisualizationManager::create_tf_visual(std::unordered_map<std::string,
                                                                std::vector<geometry_msgs::TransformStamped>> &tf_tree,
                                             std::string &base_frame_id,
@@ -201,20 +247,37 @@ void VisualizationManager::create_tf_visual(std::unordered_map<std::string,
                            child.transform.rotation.y,
                            child.transform.rotation.z);
 
-    VisualPtr cone = scene->CreateVisual();
-    cone->AddGeometry(scene->CreateCone());
-    cone->SetLocalScale(0.02, 0.02, 0.04);
+    float d1 = -x + pose.X();
+    float d2 = -y + pose.Y();
+    float d3 = -z + pose.Z();
 
-    cone->SetLocalPosition(pose.X(), pose.Y(), pose.Z());
+    math::Vector3d dir_vec(d1, d2, d3);
+    dir_vec = dir_vec.Normalize();
 
-    MaterialPtr material = scene->CreateMaterial();
-    material->SetAmbient(1,0,1);
-    material->SetDiffuse(1,0,1);
+    float dist = sqrt(pow(d1, 2) + pow(d2, 2) + pow(d3, 2));
 
-    cone->SetMaterial(material);
+    if(dist != 0) {
+      VisualPtr cone = scene->CreateVisual();
+      cone->AddGeometry(scene->CreateCone());
+
+      tf2::Quaternion ori = get_rotation_to(-math::Vector3d::UnitZ, dir_vec);
+      tf2::Quaternion quat;
+      quat.setRPY(M_PI,0, 0);
+      ori = ori * quat;
+
+      cone->SetLocalScale(0.02, 0.02, 0.04);
+      cone->SetLocalPosition(pose.X() - (0.02 * (d1/dist)), pose.Y() - (0.02 * (d2/dist)), pose.Z() - (0.02 * (d3/dist)));
+      cone->SetLocalRotation(ori.w(), ori.x(), ori.y(), ori.z());
+
+      MaterialPtr material = scene->CreateMaterial();
+      material->SetAmbient(1,0,1, 0.85);
+      material->SetDiffuse(1,0,1, 0.85);
+
+      cone->SetMaterial(material);
+      tf_visual->AddChild(cone);
+    }
 
     tf_visual->AddChild(frame_axis);
-    tf_visual->AddChild(cone);
 
     create_tf_visual(tf_tree, child.child_frame_id, marker, math::Vector3f(x, y, z));
   }
@@ -230,7 +293,6 @@ void VisualizationManager::tf_callback(const tf2_msgs::TFMessageConstPtr &msg) {
   std::unordered_map<std::string, std::vector<geometry_msgs::TransformStamped>> tf_tree;
 
   for(const auto& transform : msg->transforms) {
-    ROS_INFO("Parent: %s, Child: %s", transform.header.frame_id.c_str(), transform.child_frame_id.c_str());
     std::string parent = transform.header.frame_id;
     tf_tree[parent].push_back(transform);
   }
