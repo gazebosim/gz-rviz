@@ -277,6 +277,23 @@ void VisualizationManager::create_tf_visual(std::unordered_map<std::string,
       tf_visual->AddChild(cone);
     }
 
+    TextPtr link_name = scene->CreateText();
+    link_name->SetTextString(child.child_frame_id.c_str());
+    link_name->SetShowOnTop(true);
+    link_name->SetTextAlignment(TextHorizontalAlign::CENTER, TextVerticalAlign::CENTER);
+    link_name->SetCharHeight(0.15);
+
+    MaterialPtr text_color = scene->CreateMaterial();
+    text_color->SetDiffuse(1, 1, 1);
+
+    VisualPtr text_visual = scene->CreateVisual();
+
+    text_visual->AddGeometry(link_name);
+    text_visual->SetLocalPosition(x, y, z);
+
+    text_visual->SetMaterial(text_color);
+    tf_visual->AddChild(text_visual);
+
     tf_visual->AddChild(frame_axis);
 
     create_tf_visual(tf_tree, child.child_frame_id, marker, math::Vector3f(x, y, z));
@@ -305,6 +322,23 @@ void VisualizationManager::tf_callback(const tf2_msgs::TFMessageConstPtr &msg) {
   }
 
   create_tf_visual(tf_tree, base_frame_id, marker, math::Vector3f(0, 0, 0));
+
+  TextPtr link_name = scene->CreateText();
+  link_name->SetTextString(base_frame_id);
+  link_name->SetShowOnTop(true);
+  link_name->SetTextAlignment(TextHorizontalAlign::CENTER, TextVerticalAlign::CENTER);
+  link_name->SetCharHeight(0.15);
+
+  MaterialPtr text_color = scene->CreateMaterial();
+  text_color->SetDiffuse(1, 1, 1);
+
+  VisualPtr text_visual = scene->CreateVisual();
+
+  text_visual->AddGeometry(link_name);
+  text_visual->SetLocalPosition(0, 0, 0);
+
+  text_visual->SetMaterial(text_color);
+  tf_visual->AddChild(text_visual);
 
   MaterialPtr color = scene->CreateMaterial();
   color->SetAmbient(1,1,0, 0.8);
