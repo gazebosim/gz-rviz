@@ -4,7 +4,7 @@
 
 #include "ign-rviz/VisualizationManager.h"
 
-VisualizationManager::VisualizationManager(int &argc, char **argv) {
+VisualizationManager::VisualizationManager(int &argc, char **argv) : tfListener(tfBuffer) {
   glutInit(&argc, argv);
   common::Console::SetVerbosity(4);
 
@@ -48,7 +48,6 @@ VisualizationManager::VisualizationManager(int &argc, char **argv) {
   VisualPtr pcl_visual = scene->CreateVisual("pcl");
   pcl_visual->AddGeometry(pcl_marker);
   root->AddChild(pcl_visual);
-
 }
 
 void VisualizationManager::point_callback(const geometry_msgs::PointStampedConstPtr& msg) {
@@ -384,6 +383,22 @@ void VisualizationManager::cloud_callback(const sensor_msgs::PointCloud2ConstPtr
   ScenePtr scene = get_scene();
   VisualPtr pcl_visual = scene->VisualByName("pcl");
   pcl_visual->SetGeometryMaterial(scene->Material("red"));
+
+  try {
+    geometry_msgs::TransformStamped transformStamped = tfBuffer.lookupTransform(
+        "base_link", msg->header.frame_id.c_str(), msg->header.stamp);
+
+    pcl_visual->SetLocalPosition(transformStamped.transform.translation.x,
+                                 transformStamped.transform.translation.y,
+                                 transformStamped.transform.translation.z);
+
+    pcl_visual->SetLocalRotation(transformStamped.transform.rotation.w,
+                                 transformStamped.transform.rotation.x,
+                                 transformStamped.transform.rotation.y,
+                                 transformStamped.transform.rotation.z);
+  } catch(tf2::TransformException &ex) {
+    ROS_ERROR("%s",ex.what());
+  }
 }
 
 void VisualizationManager::run() {

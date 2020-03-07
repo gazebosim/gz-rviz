@@ -29,6 +29,7 @@
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl/filters/filter.h>
+#include <tf2_ros/transform_listener.h>
 
 class VisualizationManager : public SceneManager {
  private:
@@ -41,6 +42,9 @@ class VisualizationManager : public SceneManager {
   ros::NodeHandle nh;
   AxisVisualPtr axis;
   MarkerPtr pcl_marker;
+
+  tf2_ros::Buffer tfBuffer;
+  tf2_ros::TransformListener tfListener;
 
  public:
   VisualizationManager(int &argc, char** argv);
