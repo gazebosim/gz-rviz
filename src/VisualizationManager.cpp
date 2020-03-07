@@ -15,24 +15,40 @@ VisualizationManager::VisualizationManager(int &argc, char **argv) {
   std::string imu_topic = "/imu";
   std::string marker_topic = "/visualization_marker";
   std::string tf_topic = "/tf_static";
+  std::string pointcloud_topic = "/cloud_in";
 
   private_nh.getParam("/ign_rviz/point_topic", point_topic);
   private_nh.getParam("/ign_rviz/pose_topic", pose_topic);
   private_nh.getParam("/ign_rviz/imu_topic", imu_topic);
   private_nh.getParam("/ign_rviz/marker_topic", marker_topic);
   private_nh.getParam("/ign_rviz/tf_topic", tf_topic);
+  private_nh.getParam("/ign_rviz/pointcloud_topic", pointcloud_topic);
+
 
   point_subscriber = nh.subscribe(point_topic, 1, &VisualizationManager::point_callback, this);
   pose_subscriber = nh.subscribe(pose_topic, 1, &VisualizationManager::pose_callback, this);
   orientation_subscriber = nh.subscribe(imu_topic, 100, &VisualizationManager::orientation_callback, this);
   marker_subscriber = nh.subscribe(marker_topic, 100, &VisualizationManager::marker_callback, this);
   tf_subscriber = nh.subscribe(tf_topic, 100, &VisualizationManager::tf_callback, this);
+  pointcloud_subscriber = nh.subscribe(pointcloud_topic, 1, &VisualizationManager::cloud_callback, this);
 
   ScenePtr scene = get_scene();
   VisualPtr root = scene->RootVisual();
   axis = scene->CreateAxisVisual("axis");
   axis->SetLocalPosition(0, 0, 0);
   root->AddChild(axis);
+
+  MaterialPtr color = scene->CreateMaterial("red");
+  color->SetAmbient(1, 0, 0);
+  color->SetDiffuse(1, 0, 0);
+
+  pcl_marker = scene->CreateMarker();
+  pcl_marker->SetType(MarkerType::MT_POINTS);
+
+  VisualPtr pcl_visual = scene->CreateVisual("pcl");
+  pcl_visual->AddGeometry(pcl_marker);
+  root->AddChild(pcl_visual);
+
 }
 
 void VisualizationManager::point_callback(const geometry_msgs::PointStampedConstPtr& msg) {
@@ -350,6 +366,24 @@ void VisualizationManager::tf_callback(const tf2_msgs::TFMessageConstPtr &msg) {
     VisualPtr root = scene->RootVisual();
     root->AddChild(tf_visual);
   }
+}
+
+void VisualizationManager::cloud_callback(const sensor_msgs::PointCloud2ConstPtr& msg) {
+  pcl::PointCloud<pcl::PointXYZ> laser_cloud_in, laser_cloud_out;
+  pcl::fromROSMsg(*msg, laser_cloud_in);
+
+  std::vector<int> index;
+  pcl::removeNaNFromPointCloud(laser_cloud_in, laser_cloud_out, index);
+
+  pcl_marker->ClearPoints();
+
+  for(int i = 0; i < static_cast<int>(laser_cloud_out.size()); ++i) {
+    pcl_marker->AddPoint(laser_cloud_out.points[i].x, laser_cloud_out.points[i].y, laser_cloud_out.points[i].z, math::Color::Red);
+  }
+
+  ScenePtr scene = get_scene();
+  VisualPtr pcl_visual = scene->VisualByName("pcl");
+  pcl_visual->SetGeometryMaterial(scene->Material("red"));
 }
 
 void VisualizationManager::run() {

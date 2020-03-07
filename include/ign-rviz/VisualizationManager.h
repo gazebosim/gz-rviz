@@ -24,6 +24,11 @@
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 #include <tf2_msgs/TFMessage.h>
 #include <visualization_msgs/Marker.h>
+#include <sensor_msgs/PointCloud2.h>
+#include <pcl_conversions/pcl_conversions.h>
+#include <pcl/point_cloud.h>
+#include <pcl/point_types.h>
+#include <pcl/filters/filter.h>
 
 class VisualizationManager : public SceneManager {
  private:
@@ -32,8 +37,10 @@ class VisualizationManager : public SceneManager {
   ros::Subscriber orientation_subscriber;
   ros::Subscriber marker_subscriber;
   ros::Subscriber tf_subscriber;
+  ros::Subscriber pointcloud_subscriber;
   ros::NodeHandle nh;
   AxisVisualPtr axis;
+  MarkerPtr pcl_marker;
 
  public:
   VisualizationManager(int &argc, char** argv);
@@ -44,6 +51,7 @@ class VisualizationManager : public SceneManager {
   void create_tf_visual(std::unordered_map<std::string, std::vector<geometry_msgs::TransformStamped>> &,
                         std::string &, MarkerPtr &, math::Vector3f);
   void tf_callback(const tf2_msgs::TFMessageConstPtr &);
+  void cloud_callback(const sensor_msgs::PointCloud2ConstPtr &);
   void run();
 };
 
