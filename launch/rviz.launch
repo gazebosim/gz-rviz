@@ -6,5 +6,7 @@
         <param name="pose_topic" value="/pose"/>
         <param name="imu_topic" value="/imu"/>
         <param name="marker_topic" value="/visualization_marker"/>
+        <param name="tf_topic" value="/tf_static"/>
+        <param name="pointcloud_topic" value="cloud_in"/>
     </node>
 </launch>
