@@ -19,7 +19,6 @@
 
 #include <vector>
 #include <ignition/rendering/RenderTypes.hh>
-#include <ros/ros.h>
 
 namespace ir = ignition::rendering;
 

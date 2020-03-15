@@ -1,17 +1,19 @@
-cmake_minimum_required(VERSION 2.8.3)
+cmake_minimum_required(VERSION 3.5)
 project(ign-rviz)
+add_compile_options(-std=c++14 -O2)
+set(PYTHON_EXECUTABLE "/usr/bin/python3")
 
-add_compile_options(-std=c++11 -O2)
-
-find_package(catkin REQUIRED COMPONENTS
-  roscpp
-  rospy
-  std_msgs
-  pcl_ros
-  pcl_conversions
-)
-
+find_package(ament_cmake REQUIRED)
+find_package(rclcpp REQUIRED)
+find_package(rclpy REQUIRED)
+find_package(std_msgs REQUIRED)
+find_package(geometry_msgs REQUIRED)
+find_package(visualization_msgs REQUIRED)
+find_package(sensor_msgs REQUIRED)
 find_package(ignition-rendering4 REQUIRED)
+
+
+include_directories(include)
 
 find_package(GLUT REQUIRED)
 include_directories(SYSTEM ${GLUT_INCLUDE_DIRS})
@@ -22,29 +24,21 @@ include_directories(SYSTEM ${OpenGL_INCLUDE_DIRS})
 link_directories(${OpenGL_LIBRARY_DIRS})
 
 if (NOT APPLE)
-    find_package(GLEW REQUIRED)
-    include_directories(SYSTEM ${GLEW_INCLUDE_DIRS})
-    link_directories(${GLEW_LIBRARY_DIRS})
+  find_package(GLEW REQUIRED)
+  include_directories(SYSTEM ${GLEW_INCLUDE_DIRS})
+  link_directories(${GLEW_LIBRARY_DIRS})
 endif()
 
-catkin_package(
-  INCLUDE_DIRS include
-#  LIBRARIES ign-rviz
-#  CATKIN_DEPENDS roscpp std_msgs
-#  DEPENDS system_lib
+add_executable(ign-rviz src/GlutWindow.cc src/SceneManager.cpp src/VisualizationManager.cpp src/rviz.cpp)
+
+ament_target_dependencies(ign-rviz
+  rclcpp
+  std_msgs geometry_msgs sensor_msgs visualization_msgs
+  GLUT OPENGL GLEW
+  ignition-rendering4
 )
 
-include_directories(
-  include
-  ${catkin_INCLUDE_DIRS}
-)
+install(TARGETS ign-rviz
+        DESTINATION lib/${PROJECT_NAME})
 
-add_executable(ign_rviz src/GlutWindow.cc src/SceneManager.cpp src/VisualizationManager.cpp src/rviz.cpp)
-
-target_link_libraries(ign_rviz
-  ${catkin_LIBRARIES}
-  ${GLUT_LIBRARIES}
-  ${OPENGL_LIBRARIES}
-  ${GLEW_LIBRARIES}
-  ${IGNITION-RENDERING_LIBRARIES}
-)
+ament_package()
