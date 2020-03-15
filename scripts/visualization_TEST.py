@@ -29,7 +29,7 @@ class PointPublisher(Node):
         print(msg)
 
         self.publisher_.publish(msg)
-        self.get_logger().info('Publishing pose')
+        self.get_logger().info('Publishing point')
         self.i += 1
 
 
@@ -113,7 +113,7 @@ class MarkerPublisher(Node):
 def main(args=None):
     rclpy.init(args=args)
 
-    viz_publisher = MarkerPublisher()
+    viz_publisher = PointPublisher()
 
     rclpy.spin(viz_publisher)
 

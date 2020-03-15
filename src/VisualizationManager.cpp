@@ -13,34 +13,32 @@ VisualizationManager::VisualizationManager(int &argc, char **argv, rclcpp::Node:
   tfBuffer = std::make_shared<tf2_ros::Buffer>(nh->get_clock());
   tfListener = std::make_shared<tf2_ros::TransformListener>(*tfBuffer);
 
-  point_subscriber = nh->create_subscription<geometry_msgs::msg::PointStamped>("/point", 10,
-      std::bind(&VisualizationManager::point_callback, this, std::placeholders::_1));
-  pose_subscriber = nh->create_subscription<geometry_msgs::msg::PoseStamped>("/pose", 10,
-      std::bind(&VisualizationManager::pose_callback, this, std::placeholders::_1));
-  orientation_subscriber = nh->create_subscription<sensor_msgs::msg::Imu>("/imu", 10,
-      std::bind(&VisualizationManager::orientation_callback, this, std::placeholders::_1));
-  marker_subscriber = nh->create_subscription<visualization_msgs::msg::Marker>("/visualization_marker", 10,
-      std::bind(&VisualizationManager::marker_callback, this, std::placeholders::_1));
-  tf_subscriber = nh->create_subscription<tf2_msgs::msg::TFMessage>("/tf_static", 10,
-      std::bind(&VisualizationManager::tf_callback, this, std::placeholders::_1));
-  pointcloud_subscriber = nh->create_subscription<sensor_msgs::msg::PointCloud2>("/cloud_in", 10,
-      std::bind(&VisualizationManager::cloud_callback, this, std::placeholders::_1));
+  nh->declare_parameter("point_topic", "/point");
+  nh->declare_parameter("pose_topic", "/pose");
+  nh->declare_parameter("imu_topic", "/imu");
+  nh->declare_parameter("marker_topic", "/visualization_marker");
+  nh->declare_parameter("tf_topic", "/tf_static");
+  nh->declare_parameter("pointcloud_topic", "/cloud_in");
 
-//  ros::NodeHandle private_nh("~");
-//
-//  std::string point_topic = "/point";
-//  std::string pose_topic = "/pose";
-//  std::string imu_topic = "/imu";
-//  std::string marker_topic = "/visualization_marker";
-//  std::string tf_topic = "/tf_static";
-//  std::string pointcloud_topic = "/cloud_in";
-//
-//  private_nh.getParam("/ign_rviz/point_topic", point_topic);
-//  private_nh.getParam("/ign_rviz/pose_topic", pose_topic);
-//  private_nh.getParam("/ign_rviz/imu_topic", imu_topic);
-//  private_nh.getParam("/ign_rviz/marker_topic", marker_topic);
-//  private_nh.getParam("/ign_rviz/tf_topic", tf_topic);
-//  private_nh.getParam("/ign_rviz/pointcloud_topic", pointcloud_topic);
+  std::string point_topic = nh->get_parameter("point_topic").as_string();
+  std::string pose_topic = nh->get_parameter("pose_topic").as_string();
+  std::string imu_topic = nh->get_parameter("imu_topic").as_string();
+  std::string marker_topic = nh->get_parameter("marker_topic").as_string();
+  std::string tf_topic = nh->get_parameter("tf_topic").as_string();
+  std::string pointcloud_topic = nh->get_parameter("pointcloud_topic").as_string();
+
+  point_subscriber = nh->create_subscription<geometry_msgs::msg::PointStamped>(point_topic, 10,
+      std::bind(&VisualizationManager::point_callback, this, std::placeholders::_1));
+  pose_subscriber = nh->create_subscription<geometry_msgs::msg::PoseStamped>(pose_topic, 10,
+      std::bind(&VisualizationManager::pose_callback, this, std::placeholders::_1));
+  orientation_subscriber = nh->create_subscription<sensor_msgs::msg::Imu>(imu_topic, 10,
+      std::bind(&VisualizationManager::orientation_callback, this, std::placeholders::_1));
+  marker_subscriber = nh->create_subscription<visualization_msgs::msg::Marker>(marker_topic, 10,
+      std::bind(&VisualizationManager::marker_callback, this, std::placeholders::_1));
+  tf_subscriber = nh->create_subscription<tf2_msgs::msg::TFMessage>(tf_topic, 10,
+      std::bind(&VisualizationManager::tf_callback, this, std::placeholders::_1));
+  pointcloud_subscriber = nh->create_subscription<sensor_msgs::msg::PointCloud2>(pointcloud_topic, 10,
+      std::bind(&VisualizationManager::cloud_callback, this, std::placeholders::_1));
 
   ScenePtr scene = get_scene();
   VisualPtr root = scene->RootVisual();
