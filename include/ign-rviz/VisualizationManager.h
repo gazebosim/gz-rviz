@@ -22,15 +22,15 @@
 #include <geometry_msgs/msg/pose_stamped.hpp>
 #include <sensor_msgs/msg/imu.hpp>
 #include <std_msgs/msg/string.hpp>
-//#include <tf2_geometry_msgs/tf2_geometry_msgs.h>
-//#include <tf2_msgs/TFMessage.h>
+#include <tf2_geometry_msgs/tf2_geometry_msgs.h>
+#include <tf2_msgs/msg/tf_message.hpp>
 #include <visualization_msgs/msg/marker.hpp>
 #include <sensor_msgs/msg/point_cloud2.hpp>
-//#include <pcl_conversions/pcl_conversions.h>
-//#include <pcl/point_cloud.h>
-//#include <pcl/point_types.h>
-//#include <pcl/filters/filter.h>
-//#include <tf2_ros/transform_listener.h>
+#include <pcl_conversions/pcl_conversions.h>
+#include <pcl/point_cloud.h>
+#include <pcl/point_types.h>
+#include <pcl/filters/filter.h>
+#include <tf2_ros/transform_listener.h>
 
 class VisualizationManager : public SceneManager {
  private:
@@ -38,14 +38,14 @@ class VisualizationManager : public SceneManager {
   rclcpp::Subscription<geometry_msgs::msg::PoseStamped>::SharedPtr pose_subscriber;
   rclcpp::Subscription<sensor_msgs::msg::Imu>::SharedPtr orientation_subscriber;
   rclcpp::Subscription<visualization_msgs::msg::Marker>::SharedPtr marker_subscriber;
-//  rclcpp::Subscriber tf_subscriber;
-//  rclcpp::Subscriber pointcloud_subscriber;
+  rclcpp::Subscription<tf2_msgs::msg::TFMessage>::SharedPtr tf_subscriber;
+  rclcpp::Subscription<sensor_msgs::msg::PointCloud2>::SharedPtr pointcloud_subscriber;
   rclcpp::Node::SharedPtr nh;
   AxisVisualPtr axis;
   MarkerPtr pcl_marker;
 
-//  tf2_ros::Buffer tfBuffer;
-//  tf2_ros::TransformListener tfListener;
+  std::shared_ptr<tf2_ros::Buffer> tfBuffer;
+  std::shared_ptr<tf2_ros::TransformListener> tfListener;
 
  public:
   VisualizationManager(int &argc, char** argv, rclcpp::Node::SharedPtr);
@@ -53,10 +53,10 @@ class VisualizationManager : public SceneManager {
   void pose_callback(const geometry_msgs::msg::PoseStamped::SharedPtr);
   void orientation_callback(const sensor_msgs::msg::Imu::SharedPtr);
   void marker_callback(const visualization_msgs::msg::Marker::SharedPtr);
-//  void create_tf_visual(std::unordered_map<std::string, std::vector<geometry_msgs::TransformStamped>> &,
-//                        std::string &, MarkerPtr &, math::Vector3f);
-//  void tf_callback(const tf2_msgs::TFMessageConstPtr &);
-//  void cloud_callback(const sensor_msgs::PointCloud2ConstPtr &);
+  void create_tf_visual(std::unordered_map<std::string, std::vector<geometry_msgs::msg::TransformStamped>> &,
+                        std::string &, MarkerPtr &, math::Vector3f);
+  void tf_callback(const tf2_msgs::msg::TFMessage::SharedPtr);
+  void cloud_callback(const sensor_msgs::msg::PointCloud2::SharedPtr);
   void run();
 };
 
