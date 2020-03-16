@@ -11,12 +11,15 @@ find_package(geometry_msgs REQUIRED)
 find_package(visualization_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(pcl_conversions REQUIRED)
-find_package(pcl_ros REQUIRED)
 find_package(tf2_geometry_msgs REQUIRED)
 find_package(tf2_msgs REQUIRED)
 find_package(tf2_ros REQUIRED)
 find_package(ignition-rendering4 REQUIRED)
 
+find_package(PCL REQUIRED)
+include_directories(${PCL_INCLUDE_DIRS})
+link_directories(${PCL_LIBRARY_DIRS})
+add_definitions(${PCL_DEFINITIONS})
 
 include_directories(include)
 
@@ -40,10 +43,12 @@ ament_target_dependencies(ign-rviz
   rclcpp
   std_msgs geometry_msgs sensor_msgs visualization_msgs
   tf2_geometry_msgs tf2_msgs tf2_ros
-  pcl_ros pcl_conversions
+  pcl_conversions
   GLUT OPENGL GLEW
   ignition-rendering4
 )
+
+target_link_libraries(ign-rviz ${PCL_LIBRARIES})
 
 install(TARGETS ign-rviz
         DESTINATION lib/${PROJECT_NAME})
