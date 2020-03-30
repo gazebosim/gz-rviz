@@ -16,7 +16,7 @@
  */
 
 #if __APPLE__
-#include <OpenGL/gl.h>
+  #include <OpenGL/gl.h>
   #include <OpenGL/OpenGL.h>
   #include <GLUT/glut.h>
 #else
