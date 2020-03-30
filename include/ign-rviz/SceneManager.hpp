@@ -11,7 +11,8 @@
 using namespace ignition;
 using namespace rendering;
 
-enum class IGN_GEOMETRY {
+enum class IGN_GEOMETRY
+{
   PLANE,
   BOX,
   CONE,
@@ -19,20 +20,23 @@ enum class IGN_GEOMETRY {
   SPHERE
 };
 
-class SceneManager {
- private:
+class SceneManager
+{
+private:
   GeometryPtr _sphere_geometry, _plane_geometry, _box_geometry;
- protected:
+
+protected:
   std::vector<CameraPtr> cameras;
   std::vector<std::string> engine_names;
   std::vector<NodePtr> nodes;
-  RenderEngine *engine;
- public:
+  RenderEngine * engine;
+
+public:
   SceneManager();
   void build_scene(ScenePtr);
   CameraPtr create_camera(const std::string &);
   ScenePtr get_scene();
-  GeometryPtr get_geometry(const int &geometry);
+  GeometryPtr get_geometry(const int & geometry);
 };
 
 #endif //IGN_RVIZ_SCENEMANAGER_H

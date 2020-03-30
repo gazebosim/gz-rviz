@@ -60,14 +60,14 @@ bool g_initContext = false;
 
 #if __APPLE__
 CGLContextObj g_context;
-  CGLContextObj g_glutContext;
+CGLContextObj g_glutContext;
 #elif _WIN32
 #else
 GLXContext g_context;
-Display *g_display;
+Display * g_display;
 GLXDrawable g_drawable;
 GLXContext g_glutContext;
-Display *g_glutDisplay;
+Display * g_glutDisplay;
 GLXDrawable g_glutDrawable;
 #endif
 
@@ -99,8 +99,9 @@ ignition::math::Vector3d g_followOffset(-3, 0, 3);
 void mouseCB(int _button, int _state, int _x, int _y)
 {
   // ignore unknown mouse button numbers
-  if (_button >= 5)
+  if (_button >= 5) {
     return;
+  }
 
   std::lock_guard<std::mutex> lock(g_mouseMutex);
   g_mouse.button = _button;
@@ -121,13 +122,10 @@ void motionCB(int _x, int _y)
   g_mouse.motionX = _x;
   g_mouse.motionY = _y;
 
-  if (g_mouse.motionDirty)
-  {
+  if (g_mouse.motionDirty) {
     g_mouse.dragX += deltaX;
     g_mouse.dragY += deltaY;
-  }
-  else
-  {
+  } else {
     g_mouse.dragX = deltaX;
     g_mouse.dragY = deltaY;
   }
@@ -141,26 +139,22 @@ void handleMouse()
   // only ogre supports ray query for now so use
   // ogre camera located at camera index = 0.
   ir::CameraPtr rayCamera = g_cameras[0];
-  if (!g_rayQuery)
-  {
+  if (!g_rayQuery) {
     g_rayQuery = rayCamera->Scene()->CreateRayQuery();
-    if (!g_rayQuery)
-    {
+    if (!g_rayQuery) {
       ignerr << "Failed to create Ray Query" << std::endl;
       return;
     }
   }
-  if (g_mouse.buttonDirty)
-  {
+  if (g_mouse.buttonDirty) {
     g_mouse.buttonDirty = false;
     double nx =
-        2.0 * g_mouse.x / static_cast<double>(rayCamera->ImageWidth()) - 1.0;
+      2.0 * g_mouse.x / static_cast<double>(rayCamera->ImageWidth()) - 1.0;
     double ny = 1.0 -
-        2.0 * g_mouse.y / static_cast<double>(rayCamera->ImageHeight());
+      2.0 * g_mouse.y / static_cast<double>(rayCamera->ImageHeight());
     g_rayQuery->SetFromCamera(rayCamera, ignition::math::Vector2d(nx, ny));
-    g_target  = g_rayQuery->ClosestPoint();
-    if (!g_target)
-    {
+    g_target = g_rayQuery->ClosestPoint();
+    if (!g_target) {
       // set point to be 10m away if no intersection found
       g_target.point = g_rayQuery->Origin() + g_rayQuery->Direction() * 10;
       return;
@@ -168,15 +162,14 @@ void handleMouse()
 
     // mouse wheel scroll zoom
     if ((g_mouse.button == 3 || g_mouse.button == 4) &&
-        g_mouse.state == GLUT_UP)
+      g_mouse.state == GLUT_UP)
     {
       double scroll = (g_mouse.button == 3) ? -1.0 : 1.0;
       double distance = rayCamera->WorldPosition().Distance(
-          g_target.point);
+        g_target.point);
       int factor = 1;
       double amount = -(scroll * factor) * (distance / 5.0);
-      for (ir::CameraPtr camera : g_cameras)
-      {
+      for (ir::CameraPtr camera : g_cameras) {
         g_viewControl.SetCamera(camera);
         g_viewControl.SetTarget(g_target.point);
         g_viewControl.Zoom(amount);
@@ -184,43 +177,35 @@ void handleMouse()
     }
   }
 
-  if (g_mouse.motionDirty)
-  {
+  if (g_mouse.motionDirty) {
     g_mouse.motionDirty = false;
     auto drag = ignition::math::Vector2d(g_mouse.dragX, g_mouse.dragY);
 
     // left mouse button pan
-    if (g_mouse.button == GLUT_LEFT_BUTTON && g_mouse.state == GLUT_DOWN)
-    {
-      for (ir::CameraPtr camera : g_cameras)
-      {
+    if (g_mouse.button == GLUT_LEFT_BUTTON && g_mouse.state == GLUT_DOWN) {
+      for (ir::CameraPtr camera : g_cameras) {
         g_viewControl.SetCamera(camera);
         g_viewControl.SetTarget(g_target.point);
         g_viewControl.Pan(drag);
       }
-    }
-    else if (g_mouse.button == GLUT_MIDDLE_BUTTON && g_mouse.state == GLUT_DOWN)
-    {
-      for (ir::CameraPtr camera : g_cameras)
-      {
+    } else if (g_mouse.button == GLUT_MIDDLE_BUTTON && g_mouse.state == GLUT_DOWN) {
+      for (ir::CameraPtr camera : g_cameras) {
         g_viewControl.SetCamera(camera);
         g_viewControl.SetTarget(g_target.point);
         g_viewControl.Orbit(drag);
       }
     }
-      // right mouse button zoom
-    else if (g_mouse.button == GLUT_RIGHT_BUTTON && g_mouse.state == GLUT_DOWN)
-    {
+    // right mouse button zoom
+    else if (g_mouse.button == GLUT_RIGHT_BUTTON && g_mouse.state == GLUT_DOWN) {
       double hfov = rayCamera->HFOV().Radian();
       double vfov = 2.0f * atan(tan(hfov / 2.0f) /
           rayCamera->AspectRatio());
       double distance = rayCamera->WorldPosition().Distance(
-          g_target.point);
+        g_target.point);
       double amount = ((-g_mouse.dragY /
-          static_cast<double>(rayCamera->ImageHeight()))
-          * distance * tan(vfov/2.0) * 6.0);
-      for (ir::CameraPtr camera : g_cameras)
-      {
+        static_cast<double>(rayCamera->ImageHeight())) *
+        distance * tan(vfov / 2.0) * 6.0);
+      for (ir::CameraPtr camera : g_cameras) {
         g_viewControl.SetCamera(camera);
         g_viewControl.SetTarget(g_target.point);
         g_viewControl.Zoom(amount);
@@ -237,8 +222,7 @@ void displayCB()
   CGLSetCurrentContext(g_context);
 #elif _WIN32
 #else
-  if (g_display)
-  {
+  if (g_display) {
     glXMakeCurrent(g_display, g_drawable, g_context);
   }
 #endif
@@ -253,7 +237,7 @@ void displayCB()
   glXMakeCurrent(g_glutDisplay, g_glutDrawable, g_glutContext);
 #endif
 
-  unsigned char *data = g_image->Data<unsigned char>();
+  unsigned char * data = g_image->Data<unsigned char>();
 
   glClearColor(0.5, 0.5, 0.5, 1);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -273,9 +257,9 @@ void idleCB()
 //////////////////////////////////////////////////
 void keyboardCB(unsigned char _key, int, int)
 {
-  if (_key == KEY_ESC || _key == 'q' || _key == 'Q')  {
+  if (_key == KEY_ESC || _key == 'q' || _key == 'Q') {
     exit(0);
-  }  else if (_key == KEY_TAB)  {
+  } else if (_key == KEY_TAB) {
     g_cameraIndex = (g_cameraIndex + 1) % g_cameras.size();
   }
 }
@@ -316,11 +300,11 @@ void printUsage()
 }
 
 //////////////////////////////////////////////////
-void run(std::vector<ir::CameraPtr> _cameras,
-         const std::vector<ir::NodePtr> &_nodes)
+void run(
+  std::vector<ir::CameraPtr> _cameras,
+  const std::vector<ir::NodePtr> & _nodes)
 {
-  if (_cameras.empty())
-  {
+  if (_cameras.empty()) {
     ignerr << "No cameras found. Scene will not be rendered" << std::endl;
     return;
   }

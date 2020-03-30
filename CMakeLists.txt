@@ -1,7 +1,9 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.10)
 project(ign-rviz)
-add_compile_options(-std=c++14 -O2)
-set(PYTHON_EXECUTABLE "/usr/bin/python3")
+add_compile_options(-std=c++14)
+
+find_package(PythonLibs 3)
+set(PYTHON_EXECUTABLE ${Python_EXECUTABLE})
 
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
@@ -31,7 +33,7 @@ find_package(OpenGL REQUIRED)
 include_directories(SYSTEM ${OpenGL_INCLUDE_DIRS})
 link_directories(${OpenGL_LIBRARY_DIRS})
 
-if (NOT APPLE)
+if(NOT APPLE)
   find_package(GLEW REQUIRED)
   include_directories(SYSTEM ${GLEW_INCLUDE_DIRS})
   link_directories(${GLEW_LIBRARY_DIRS})
@@ -55,5 +57,10 @@ install(TARGETS ign-rviz
 
 install(DIRECTORY launch
         DESTINATION share/${PROJECT_NAME}/)
+
+if(BUILD_TESTING)
+  find_package(ament_lint_auto REQUIRED)
+  ament_lint_auto_find_test_dependencies()
+endif()
 
 ament_package()

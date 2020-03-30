@@ -2,12 +2,13 @@
 // Created by Sarathkrishnan Ramesh on 2/26/20.
 //
 
-#include "ign-rviz/SceneManager.h"
+#include "ign-rviz/SceneManager.hpp"
 
-SceneManager::SceneManager() {
+SceneManager::SceneManager()
+{
   engine_names.emplace_back("ogre");
 
-  for (const auto& engine_name : engine_names) {
+  for (const auto & engine_name : engine_names) {
     try {
       CameraPtr camera = create_camera(engine_name);
       if (camera) {
@@ -16,14 +17,14 @@ SceneManager::SceneManager() {
         ScenePtr ptr = camera->Scene();
         VisualPtr root = ptr->RootVisual();
       }
-    }
-    catch (...) {
+    } catch (...) {
       std::cerr << "Error starting up: " << engine_name << std::endl;
     }
   }
 }
 
-CameraPtr SceneManager::create_camera(const std::string &engine_name) {
+CameraPtr SceneManager::create_camera(const std::string & engine_name)
+{
   // Create and populate scene
   engine = rendering::engine(engine_name);
   if (!engine) {
@@ -40,10 +41,11 @@ CameraPtr SceneManager::create_camera(const std::string &engine_name) {
   return std::dynamic_pointer_cast<Camera>(sensor);
 }
 
-void SceneManager::build_scene(ScenePtr scene) {
+void SceneManager::build_scene(ScenePtr scene)
+{
   // Initialize scene
   scene->SetAmbientLight(0.4, 0.4, 0.4);
-  scene->SetBackgroundColor(0.07,0.07,0.07 );
+  scene->SetBackgroundColor(0.07, 0.07, 0.07);
   VisualPtr root = scene->RootVisual();
 
   _sphere_geometry = scene->CreateSphere();
@@ -94,23 +96,25 @@ void SceneManager::build_scene(ScenePtr scene) {
   root->AddChild(camera);
 }
 
-GeometryPtr SceneManager::get_geometry(const int &geometry) {
+GeometryPtr SceneManager::get_geometry(const int & geometry)
+{
   ScenePtr scene = get_scene();
-  switch(geometry) {
+  switch (geometry) {
     case (int) IGN_GEOMETRY::PLANE: {
-      return scene->CreatePlane();
-    } case (int) IGN_GEOMETRY::BOX: {
-      return scene->CreateBox();
-    } case (int) IGN_GEOMETRY::CONE: {
-      return scene->CreateCone();
-    } case (int) IGN_GEOMETRY::CYLINDER: {
-      return scene->CreateCylinder();
-    } case (int) IGN_GEOMETRY::SPHERE: {
-      return scene->CreateSphere();
-    } default: return nullptr;
+        return scene->CreatePlane();
+      } case (int) IGN_GEOMETRY::BOX: {
+        return scene->CreateBox();
+      } case (int) IGN_GEOMETRY::CONE: {
+        return scene->CreateCone();
+      } case (int) IGN_GEOMETRY::CYLINDER: {
+        return scene->CreateCylinder();
+      } case (int) IGN_GEOMETRY::SPHERE: {
+        return scene->CreateSphere();
+      } default: return nullptr;
   }
 }
 
-ScenePtr SceneManager::get_scene() {
+ScenePtr SceneManager::get_scene()
+{
   return this->engine->SceneByName("scene");
 }

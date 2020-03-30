@@ -2,11 +2,13 @@
 // Created by Sarathkrishnan Ramesh on 2/26/20.
 //
 
-#include "ign-rviz/VisualizationManager.h"
+#include "ign-rviz/VisualizationManager.hpp"
 
 #include <utility>
 
-VisualizationManager::VisualizationManager(int &argc, char **argv, rclcpp::Node::SharedPtr node) : nh(std::move(node)) {
+VisualizationManager::VisualizationManager(int & argc, char ** argv, rclcpp::Node::SharedPtr node)
+: nh(std::move(node))
+{
   glutInit(&argc, argv);
   common::Console::SetVerbosity(4);
 
@@ -37,7 +39,8 @@ VisualizationManager::VisualizationManager(int &argc, char **argv, rclcpp::Node:
       std::bind(&VisualizationManager::marker_callback, this, std::placeholders::_1));
   tf_subscriber = nh->create_subscription<tf2_msgs::msg::TFMessage>(tf_topic, 10,
       std::bind(&VisualizationManager::tf_callback, this, std::placeholders::_1));
-  pointcloud_subscriber = nh->create_subscription<sensor_msgs::msg::PointCloud2>(pointcloud_topic, 10,
+  pointcloud_subscriber = nh->create_subscription<sensor_msgs::msg::PointCloud2>(pointcloud_topic,
+      10,
       std::bind(&VisualizationManager::cloud_callback, this, std::placeholders::_1));
 
   ScenePtr scene = get_scene();
@@ -58,7 +61,8 @@ VisualizationManager::VisualizationManager(int &argc, char **argv, rclcpp::Node:
   root->AddChild(pcl_visual);
 }
 
-void VisualizationManager::point_callback(const geometry_msgs::msg::PointStamped::SharedPtr msg) {
+void VisualizationManager::point_callback(const geometry_msgs::msg::PointStamped::SharedPtr msg)
+{
   float x = msg->point.x;
   float y = msg->point.y;
   float z = msg->point.z;
@@ -86,7 +90,8 @@ void VisualizationManager::point_callback(const geometry_msgs::msg::PointStamped
   root->AddChild(marker);
 }
 
-void VisualizationManager::pose_callback(const geometry_msgs::msg::PoseStamped::SharedPtr msg) {
+void VisualizationManager::pose_callback(const geometry_msgs::msg::PoseStamped::SharedPtr msg)
+{
   ScenePtr scene = get_scene();
   VisualPtr root = scene->RootVisual();
 
@@ -98,7 +103,8 @@ void VisualizationManager::pose_callback(const geometry_msgs::msg::PoseStamped::
   color->SetAmbient(1, 0, 0);
   color->SetDiffuse(1, 0, 0);
 
-  math::Quaternion quat_orig(msg->pose.orientation.w, msg->pose.orientation.x, msg->pose.orientation.y, msg->pose.orientation.z);
+  math::Quaternion quat_orig(msg->pose.orientation.w, msg->pose.orientation.x,
+    msg->pose.orientation.y, msg->pose.orientation.z);
   math::Quaternion quat_new(math::Vector3d(0, M_PI / 2, 0));
   quat_new = quat_orig * quat_new;
   quat_new.Normalize();
@@ -111,13 +117,16 @@ void VisualizationManager::pose_callback(const geometry_msgs::msg::PoseStamped::
   root->AddChild(pose_arrow);
 }
 
-void VisualizationManager::orientation_callback(const sensor_msgs::msg::Imu::SharedPtr msg) {
+void VisualizationManager::orientation_callback(const sensor_msgs::msg::Imu::SharedPtr msg)
+{
   axis->SetWorldScale(2);
-  axis->SetLocalRotation(msg->orientation.w, msg->orientation.x, msg->orientation.y, msg->orientation.z);
+  axis->SetLocalRotation(msg->orientation.w, msg->orientation.x, msg->orientation.y,
+    msg->orientation.z);
   RCLCPP_INFO(nh->get_logger(), "[Orientation Received]");
 }
 
-void VisualizationManager::marker_callback(const visualization_msgs::msg::Marker::SharedPtr msg) {
+void VisualizationManager::marker_callback(const visualization_msgs::msg::Marker::SharedPtr msg)
+{
   ScenePtr scene = get_scene();
   MarkerPtr marker = scene->CreateMarker();
 
@@ -129,8 +138,9 @@ void VisualizationManager::marker_callback(const visualization_msgs::msg::Marker
 
   // Delete marker
   if (msg->action == visualization_msgs::msg::Marker::DELETE) {
-    if(vis != nullptr)
+    if (vis != nullptr) {
       vis->RemoveGeometries();
+    }
     return;
   }
 
@@ -138,29 +148,34 @@ void VisualizationManager::marker_callback(const visualization_msgs::msg::Marker
   if (vis == nullptr) {
     if (msg->type == visualization_msgs::msg::Marker::ARROW) {
       vis = scene->CreateArrowVisual(unique_name);
-    }
-    else
+    } else {
       vis = scene->CreateVisual(unique_name);
+    }
     add_marker = true;
-  }
-  else
+  } else {
     vis->RemoveGeometries();
+  }
 
   // TODO: Implement visualization for Triangle, Cube & Sphere List, Text Message and Mesh Resource marker type
 
-  if (msg->type == visualization_msgs::msg::Marker::LINE_LIST || msg->type == visualization_msgs::msg::Marker::LINE_STRIP
-      || msg->type == visualization_msgs::msg::Marker::POINTS || msg->type == visualization_msgs::msg::Marker::CUBE_LIST
-      || msg->type == visualization_msgs::msg::Marker::SPHERE_LIST) {
+  if (msg->type == visualization_msgs::msg::Marker::LINE_LIST ||
+    msg->type == visualization_msgs::msg::Marker::LINE_STRIP ||
+    msg->type == visualization_msgs::msg::Marker::POINTS ||
+    msg->type == visualization_msgs::msg::Marker::CUBE_LIST ||
+    msg->type == visualization_msgs::msg::Marker::SPHERE_LIST)
+  {
 
-    for (const auto &point : msg->points)
+    for (const auto & point : msg->points) {
       marker->AddPoint(point.x, point.y, point.z, math::Color::White);
+    }
 
-    if (msg->type == visualization_msgs::msg::Marker::LINE_STRIP)
+    if (msg->type == visualization_msgs::msg::Marker::LINE_STRIP) {
       marker->SetType(MarkerType::MT_LINE_STRIP);
-    else if (msg->type == visualization_msgs::msg::Marker::LINE_LIST)
+    } else if (msg->type == visualization_msgs::msg::Marker::LINE_LIST) {
       marker->SetType(MarkerType::MT_LINE_LIST);
-    else
+    } else {
       marker->SetType(MarkerType::MT_POINTS);
+    }
 
   } else if (msg->type == visualization_msgs::msg::Marker::SPHERE) {
     marker->AddPoint(0, 0, 0, math::Color::White);
@@ -175,10 +190,11 @@ void VisualizationManager::marker_callback(const visualization_msgs::msg::Marker
 
   MaterialPtr color = scene->CreateMaterial();
   if (msg->type == visualization_msgs::msg::Marker::ARROW) {
-    color->SetAmbient(1,0,0,1);
-    color->SetDiffuse(1,0,0,1);
+    color->SetAmbient(1, 0, 0, 1);
+    color->SetDiffuse(1, 0, 0, 1);
 
-    math::Quaternion quat_orig(msg->pose.orientation.w, msg->pose.orientation.x, msg->pose.orientation.y, msg->pose.orientation.z);
+    math::Quaternion quat_orig(msg->pose.orientation.w, msg->pose.orientation.x,
+      msg->pose.orientation.y, msg->pose.orientation.z);
     math::Quaternion quat_new(math::Vector3d(0, M_PI / 2, 0));
     quat_new = quat_orig * quat_new;
     quat_new.Normalize();
@@ -195,12 +211,14 @@ void VisualizationManager::marker_callback(const visualization_msgs::msg::Marker
 
   VisualPtr root = scene->RootVisual();
 
-  if(add_marker)
+  if (add_marker) {
     root->AddChild(vis);
+  }
 }
 
-tf2::Quaternion get_rotation_to(const math::Vector3d &source, const math::Vector3d &destination) {
-  const math::Vector3d& fallbackAxis = math::Vector3d::Zero;
+tf2::Quaternion get_rotation_to(const math::Vector3d & source, const math::Vector3d & destination)
+{
+  const math::Vector3d & fallbackAxis = math::Vector3d::Zero;
   tf2::Quaternion q;
 
   math::Vector3d v0 = source;
@@ -210,18 +228,17 @@ tf2::Quaternion get_rotation_to(const math::Vector3d &source, const math::Vector
 
   double d = v0.Dot(v1);
 
-  if(d >= 1.0f) {
+  if (d >= 1.0f) {
     return q;
   }
 
-  if(d < (1e-6f - 1.0f)) {
-    if(fallbackAxis != math::Vector3d::Zero) {
+  if (d < (1e-6f - 1.0f)) {
+    if (fallbackAxis != math::Vector3d::Zero) {
       tf2::Vector3 temp(fallbackAxis.X(), fallbackAxis.Y(), fallbackAxis.Z());
       q.setRotation(temp, M_PI);
-    }
-    else {
+    } else {
       math::Vector3d axis = math::Vector3d::UnitX.Cross(source);
-      if(axis.Length() == 0) {
+      if (axis.Length() == 0) {
         axis = math::Vector3d::UnitY.Cross(source);
       }
       axis.Normalize();
@@ -244,17 +261,19 @@ tf2::Quaternion get_rotation_to(const math::Vector3d &source, const math::Vector
 }
 
 
-void VisualizationManager::create_tf_visual(std::unordered_map<std::string,
-                                                               std::vector<geometry_msgs::msg::TransformStamped>> &tf_tree,
-                                            std::string &base_frame_id,
-                                            MarkerPtr &marker,
-                                            math::Vector3f pose) {
+void VisualizationManager::create_tf_visual(
+  std::unordered_map<std::string,
+  std::vector<geometry_msgs::msg::TransformStamped>> & tf_tree,
+  std::string & base_frame_id,
+  MarkerPtr & marker,
+  math::Vector3f pose)
+{
 
   ScenePtr scene = get_scene();
   VisualPtr tf_visual = scene->VisualByName("tf_visual");
   auto parent = tf_tree[base_frame_id];
   for (auto child : parent) {
-    marker->AddPoint(pose.X(), pose.Y(), pose.Z(), math::Color(1,0,0,1));
+    marker->AddPoint(pose.X(), pose.Y(), pose.Z(), math::Color(1, 0, 0, 1));
     float x = pose.X() + child.transform.translation.x;
     float y = pose.Y() + child.transform.translation.y;
     float z = pose.Z() + child.transform.translation.z;
@@ -264,9 +283,9 @@ void VisualizationManager::create_tf_visual(std::unordered_map<std::string,
     frame_axis->SetLocalPosition(x, y, z);
     frame_axis->SetLocalScale(0.3);
     frame_axis->SetLocalRotation(child.transform.rotation.w,
-                           child.transform.rotation.x,
-                           child.transform.rotation.y,
-                           child.transform.rotation.z);
+      child.transform.rotation.x,
+      child.transform.rotation.y,
+      child.transform.rotation.z);
 
     float d1 = -x + pose.X();
     float d2 = -y + pose.Y();
@@ -277,22 +296,23 @@ void VisualizationManager::create_tf_visual(std::unordered_map<std::string,
 
     float dist = sqrt(pow(d1, 2) + pow(d2, 2) + pow(d3, 2));
 
-    if(dist != 0) {
+    if (dist != 0) {
       VisualPtr cone = scene->CreateVisual();
       cone->AddGeometry(scene->CreateCone());
 
       tf2::Quaternion ori = get_rotation_to(-math::Vector3d::UnitZ, dir_vec);
       tf2::Quaternion quat;
-      quat.setRPY(M_PI,0, 0);
+      quat.setRPY(M_PI, 0, 0);
       ori = ori * quat;
 
       cone->SetLocalScale(0.02, 0.02, 0.04);
-      cone->SetLocalPosition(pose.X() - (0.02 * (d1/dist)), pose.Y() - (0.02 * (d2/dist)), pose.Z() - (0.02 * (d3/dist)));
+      cone->SetLocalPosition(pose.X() - (0.02 * (d1 / dist)),
+        pose.Y() - (0.02 * (d2 / dist)), pose.Z() - (0.02 * (d3 / dist)));
       cone->SetLocalRotation(ori.w(), ori.x(), ori.y(), ori.z());
 
       MaterialPtr material = scene->CreateMaterial();
-      material->SetAmbient(1,0,1, 0.85);
-      material->SetDiffuse(1,0,1, 0.85);
+      material->SetAmbient(1, 0, 1, 0.85);
+      material->SetDiffuse(1, 0, 1, 0.85);
 
       cone->SetMaterial(material);
       tf_visual->AddChild(cone);
@@ -321,7 +341,8 @@ void VisualizationManager::create_tf_visual(std::unordered_map<std::string,
   }
 }
 
-void VisualizationManager::tf_callback(const tf2_msgs::msg::TFMessage::SharedPtr msg) {
+void VisualizationManager::tf_callback(const tf2_msgs::msg::TFMessage::SharedPtr msg)
+{
   ScenePtr scene = get_scene();
   MarkerPtr marker = scene->CreateMarker();
   marker->SetType(MarkerType::MT_LINE_LIST);
@@ -330,14 +351,14 @@ void VisualizationManager::tf_callback(const tf2_msgs::msg::TFMessage::SharedPtr
 
   std::unordered_map<std::string, std::vector<geometry_msgs::msg::TransformStamped>> tf_tree;
 
-  for(const auto& transform : msg->transforms) {
+  for (const auto & transform : msg->transforms) {
     std::string parent = transform.header.frame_id;
     tf_tree[parent].push_back(transform);
   }
 
   VisualPtr tf_visual = scene->VisualByName("tf_visual");
   bool add_marker = false;
-  if(tf_visual == nullptr) {
+  if (tf_visual == nullptr) {
     tf_visual = scene->CreateVisual("tf_visual");
     add_marker = true;
   }
@@ -362,18 +383,19 @@ void VisualizationManager::tf_callback(const tf2_msgs::msg::TFMessage::SharedPtr
   tf_visual->AddChild(text_visual);
 
   MaterialPtr color = scene->CreateMaterial();
-  color->SetAmbient(1,1,0, 0.8);
+  color->SetAmbient(1, 1, 0, 0.8);
 
   tf_visual->AddGeometry(marker);
   tf_visual->SetGeometryMaterial(color, false);
 
-  if(add_marker) {
+  if (add_marker) {
     VisualPtr root = scene->RootVisual();
     root->AddChild(tf_visual);
   }
 }
 
-void VisualizationManager::cloud_callback(const sensor_msgs::msg::PointCloud2::SharedPtr msg) {
+void VisualizationManager::cloud_callback(const sensor_msgs::msg::PointCloud2::SharedPtr msg)
+{
   pcl::PointCloud<pcl::PointXYZ> laser_cloud_in, laser_cloud_out;
   pcl::fromROSMsg(*msg, laser_cloud_in);
 
@@ -382,8 +404,9 @@ void VisualizationManager::cloud_callback(const sensor_msgs::msg::PointCloud2::S
 
   pcl_marker->ClearPoints();
 
-  for(int i = 0; i < static_cast<int>(laser_cloud_out.size()); ++i) {
-    pcl_marker->AddPoint(laser_cloud_out.points[i].x, laser_cloud_out.points[i].y, laser_cloud_out.points[i].z, math::Color::Red);
+  for (int i = 0; i < static_cast<int>(laser_cloud_out.size()); ++i) {
+    pcl_marker->AddPoint(laser_cloud_out.points[i].x, laser_cloud_out.points[i].y,
+      laser_cloud_out.points[i].z, math::Color::Red);
   }
 
   ScenePtr scene = get_scene();
@@ -392,21 +415,22 @@ void VisualizationManager::cloud_callback(const sensor_msgs::msg::PointCloud2::S
 
   try {
     geometry_msgs::msg::TransformStamped transformStamped = tfBuffer->lookupTransform(
-        "base_link", msg->header.frame_id.c_str(), msg->header.stamp);
+      "base_link", msg->header.frame_id.c_str(), msg->header.stamp);
 
     pcl_visual->SetLocalPosition(transformStamped.transform.translation.x,
-                                 transformStamped.transform.translation.y,
-                                 transformStamped.transform.translation.z);
+      transformStamped.transform.translation.y,
+      transformStamped.transform.translation.z);
 
     pcl_visual->SetLocalRotation(transformStamped.transform.rotation.w,
-                                 transformStamped.transform.rotation.x,
-                                 transformStamped.transform.rotation.y,
-                                 transformStamped.transform.rotation.z);
-  } catch(tf2::TransformException &ex) {
-    RCLCPP_ERROR(nh->get_logger(), "%s",ex.what());
+      transformStamped.transform.rotation.x,
+      transformStamped.transform.rotation.y,
+      transformStamped.transform.rotation.z);
+  } catch (tf2::TransformException & ex) {
+    RCLCPP_ERROR(nh->get_logger(), "%s", ex.what());
   }
 }
 
-void VisualizationManager::run() {
+void VisualizationManager::run()
+{
   ::run(cameras, nodes);
 }

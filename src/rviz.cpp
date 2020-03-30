@@ -2,9 +2,10 @@
 // Created by Sarathkrishnan Ramesh on 2/26/20.
 //
 
-#include "ign-rviz/VisualizationManager.h"
+#include "ign-rviz/VisualizationManager.hpp"
 
-int main(int argc, char** argv) {
+int main(int argc, char ** argv)
+{
   // Initialize ROS Node
   rclcpp::init(argc, argv);
   rclcpp::Node::SharedPtr node;
@@ -18,7 +19,8 @@ int main(int argc, char** argv) {
   VisualizationManager rviz(argc, argv, node);
 
   // Start async spinner
-  std::thread executor_thread(std::bind(&rclcpp::executors::MultiThreadedExecutor::spin, &executor));
+  std::thread executor_thread(std::bind(&rclcpp::executors::MultiThreadedExecutor::spin,
+    &executor));
 
   // Run renderer
   rviz.run();
