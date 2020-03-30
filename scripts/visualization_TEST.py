@@ -1,6 +1,5 @@
 import rclpy
 from rclpy.node import Node
-
 from geometry_msgs.msg import PointStamped
 from geometry_msgs.msg import PoseStamped
 from sensor_msgs.msg import Imu
@@ -94,16 +93,27 @@ class MarkerPublisher(Node):
 
     def timer_callback(self):
         msg = create_marker(0, "marker_viz", "cube")
+        msg.header.stamp.sec, msg.header.stamp.nanosec = self.get_clock().now().seconds_nanoseconds()
         self.publisher_.publish(msg)
+
         msg = create_marker(1, "marker_viz", "sphere")
+        msg.header.stamp.sec, msg.header.stamp.nanosec = self.get_clock().now().seconds_nanoseconds()
         self.publisher_.publish(msg)
+
         msg = create_marker(2, "marker_viz", "cylinder")
+        msg.header.stamp.sec, msg.header.stamp.nanosec = self.get_clock().now().seconds_nanoseconds()
         self.publisher_.publish(msg)
+
         msg = create_marker(3, "marker_viz", "arrow")
+        msg.header.stamp.sec, msg.header.stamp.nanosec = self.get_clock().now().seconds_nanoseconds()
         self.publisher_.publish(msg)
+
         msg = create_line(0, "line_viz", "list")
+        msg.header.stamp.sec, msg.header.stamp.nanosec = self.get_clock().now().seconds_nanoseconds()
         self.publisher_.publish(msg)
+
         msg = create_line(1, "line_viz", "strip")
+        msg.header.stamp.sec, msg.header.stamp.nanosec = self.get_clock().now().seconds_nanoseconds()
         self.publisher_.publish(msg)
 
         self.get_logger().info('Published markers')
@@ -113,7 +123,7 @@ class MarkerPublisher(Node):
 def main(args=None):
     rclpy.init(args=args)
 
-    viz_publisher = PointPublisher()
+    viz_publisher = MarkerPublisher()
 
     rclpy.spin(viz_publisher)
 

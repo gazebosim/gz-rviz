@@ -7,7 +7,7 @@ def generate_launch_description():
         launch_ros.actions.Node(
             package='ign-rviz', node_executable='ign-rviz', output='screen', parameters=[
                 {
-                    "point_topic": "/point1234",
+                    "point_topic": "/point",
                     "pose_topic": "/pose",
                     "imu_topic": "/imu",
                     "marker_topic": "/visualization_marker",

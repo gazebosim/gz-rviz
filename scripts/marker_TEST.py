@@ -5,7 +5,6 @@ from geometry_msgs.msg import Point
 def create_line(marker_id, ns, marker_type):
     marker = Marker()
 
-    # marker.header.stamp = rospy.Time().now()
     marker.ns = ns
     marker.id = marker_id
 
@@ -43,8 +42,6 @@ def create_line(marker_id, ns, marker_type):
 
 def create_marker(marker_id, ns, marker_type):
     marker = Marker()
-
-    # marker.header.stamp = rospy.Time().now()
     marker.ns = ns
     marker.id = marker_id
 
@@ -104,26 +101,3 @@ def create_marker(marker_id, ns, marker_type):
     marker.scale.z = 1.0
 
     return marker
-
-
-if __name__ == "__main__":
-    import rospy
-    rospy.init_node("marker_test_node")
-    marker_pub = rospy.Publisher("/visualization_marker", Marker, queue_size=10)
-    rate = rospy.Rate(1)
-    count = 0
-    while not rospy.is_shutdown():
-        marker_cube = create_marker(0, "marker_viz", "cube")
-        marker_sphere = create_marker(1, "marker_viz", "sphere")
-        marker_cylinder = create_marker(2, "marker_viz", "cylinder")
-        marker_arrow = create_marker(3, "marker_viz", "arrow")
-        marker_line_list = create_line(0, "line_viz", "list")
-        marker_line_strip = create_line(1, "line_viz", "strip")
-        rate.sleep()
-        marker_pub.publish(marker_cube)
-        marker_pub.publish(marker_sphere)
-        marker_pub.publish(marker_arrow)
-        marker_pub.publish(marker_cylinder)
-        marker_pub.publish(marker_line_strip)
-        marker_pub.publish(marker_line_list)
-        break
