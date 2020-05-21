@@ -5,6 +5,9 @@
 #include "ign-rviz/VisualizationManager.hpp"
 
 #include <utility>
+#include <mutex>
+
+std::mutex tf_lock;
 
 VisualizationManager::VisualizationManager(int & argc, char ** argv, rclcpp::Node::SharedPtr node)
 : nh(std::move(node))
@@ -21,6 +24,7 @@ VisualizationManager::VisualizationManager(int & argc, char ** argv, rclcpp::Nod
   nh->declare_parameter("marker_topic", "/visualization_marker");
   nh->declare_parameter("tf_topic", "/tf_static");
   nh->declare_parameter("pointcloud_topic", "/cloud_in");
+  nh->declare_parameter("fixed_frame", "base_link");
 
   std::string point_topic = nh->get_parameter("point_topic").as_string();
   std::string pose_topic = nh->get_parameter("pose_topic").as_string();
@@ -28,6 +32,7 @@ VisualizationManager::VisualizationManager(int & argc, char ** argv, rclcpp::Nod
   std::string marker_topic = nh->get_parameter("marker_topic").as_string();
   std::string tf_topic = nh->get_parameter("tf_topic").as_string();
   std::string pointcloud_topic = nh->get_parameter("pointcloud_topic").as_string();
+  this->fixed_frame = nh->get_parameter("fixed_frame").as_string();
 
   point_subscriber = nh->create_subscription<geometry_msgs::msg::PointStamped>(point_topic, 10,
       std::bind(&VisualizationManager::point_callback, this, std::placeholders::_1));
@@ -59,6 +64,9 @@ VisualizationManager::VisualizationManager(int & argc, char ** argv, rclcpp::Nod
   VisualPtr pcl_visual = scene->CreateVisual("pcl");
   pcl_visual->AddGeometry(pcl_marker);
   root->AddChild(pcl_visual);
+
+  VisualPtr tf_visual = scene->CreateVisual("tf_visual");
+  root->AddChild(tf_visual);
 }
 
 void VisualizationManager::point_callback(const geometry_msgs::msg::PointStamped::SharedPtr msg)
@@ -260,137 +268,66 @@ tf2::Quaternion get_rotation_to(const math::Vector3d & source, const math::Vecto
   return q;
 }
 
-
-void VisualizationManager::create_tf_visual(
-  std::unordered_map<std::string,
-  std::vector<geometry_msgs::msg::TransformStamped>> & tf_tree,
-  std::string & base_frame_id,
-  MarkerPtr & marker,
-  math::Vector3f pose)
-{
-
-  ScenePtr scene = get_scene();
-  VisualPtr tf_visual = scene->VisualByName("tf_visual");
-  auto parent = tf_tree[base_frame_id];
-  for (auto child : parent) {
-    marker->AddPoint(pose.X(), pose.Y(), pose.Z(), math::Color(1, 0, 0, 1));
-    float x = pose.X() + child.transform.translation.x;
-    float y = pose.Y() + child.transform.translation.y;
-    float z = pose.Z() + child.transform.translation.z;
-    marker->AddPoint(x, y, z, math::Color::White);
-
-    AxisVisualPtr frame_axis = scene->CreateAxisVisual();
-    frame_axis->SetLocalPosition(x, y, z);
-    frame_axis->SetLocalScale(0.3);
-    frame_axis->SetLocalRotation(child.transform.rotation.w,
-      child.transform.rotation.x,
-      child.transform.rotation.y,
-      child.transform.rotation.z);
-
-    float d1 = -x + pose.X();
-    float d2 = -y + pose.Y();
-    float d3 = -z + pose.Z();
-
-    math::Vector3d dir_vec(d1, d2, d3);
-    dir_vec = dir_vec.Normalize();
-
-    float dist = sqrt(pow(d1, 2) + pow(d2, 2) + pow(d3, 2));
-
-    if (dist != 0) {
-      VisualPtr cone = scene->CreateVisual();
-      cone->AddGeometry(scene->CreateCone());
-
-      tf2::Quaternion ori = get_rotation_to(-math::Vector3d::UnitZ, dir_vec);
-      tf2::Quaternion quat;
-      quat.setRPY(M_PI, 0, 0);
-      ori = ori * quat;
-
-      cone->SetLocalScale(0.02, 0.02, 0.04);
-      cone->SetLocalPosition(pose.X() - (0.02 * (d1 / dist)),
-        pose.Y() - (0.02 * (d2 / dist)), pose.Z() - (0.02 * (d3 / dist)));
-      cone->SetLocalRotation(ori.w(), ori.x(), ori.y(), ori.z());
-
-      MaterialPtr material = scene->CreateMaterial();
-      material->SetAmbient(1, 0, 1, 0.85);
-      material->SetDiffuse(1, 0, 1, 0.85);
-
-      cone->SetMaterial(material);
-      tf_visual->AddChild(cone);
-    }
-
-    TextPtr link_name = scene->CreateText();
-    link_name->SetTextString(child.child_frame_id.c_str());
-    link_name->SetShowOnTop(true);
-    link_name->SetTextAlignment(TextHorizontalAlign::CENTER, TextVerticalAlign::CENTER);
-    link_name->SetCharHeight(0.15);
-
-    MaterialPtr text_color = scene->CreateMaterial();
-    text_color->SetDiffuse(1, 1, 1);
-
-    VisualPtr text_visual = scene->CreateVisual();
-
-    text_visual->AddGeometry(link_name);
-    text_visual->SetLocalPosition(x, y, z);
-
-    text_visual->SetMaterial(text_color);
-    tf_visual->AddChild(text_visual);
-
-    tf_visual->AddChild(frame_axis);
-
-    create_tf_visual(tf_tree, child.child_frame_id, marker, math::Vector3f(x, y, z));
-  }
-}
-
 void VisualizationManager::tf_callback(const tf2_msgs::msg::TFMessage::SharedPtr msg)
 {
+  std::lock_guard<std::mutex> lock(tf_lock);
+
+  // Get availaable TF Frames
+  std::vector<std::string> frame_ids;
+  tfBuffer->_getFrameStrings(frame_ids);
+
+  std::cout << "Fixed frame: " << fixed_frame << std::endl;
+
+  // Generate Timpoint from tf header
+  builtin_interfaces::msg::Time time_stamp = msg->transforms[0].header.stamp;
+  tf2::TimePoint time_point = tf2::TimePoint(std::chrono::seconds(
+        time_stamp.sec) + std::chrono::nanoseconds(time_stamp.nanosec));
+
+
+  // Update map of latest tf pose (given fixed frame)
+  for (const auto fr : frame_ids) {
+    try {
+      geometry_msgs::msg::TransformStamped tff = tfBuffer->lookupTransform(fixed_frame, time_point,
+          fr, time_point,
+          fixed_frame);
+      tree_tf[tff.child_frame_id] = ignition::math::Pose3d(tff.transform.translation.x,
+          tff.transform.translation.y,
+          tff.transform.translation.z,
+          tff.transform.rotation.w,
+          tff.transform.rotation.x,
+          tff.transform.rotation.y,
+          tff.transform.rotation.z);
+    } catch (...) {
+      // std::cout << "[Transform lookup error] Using old tf" << std::endl;
+    }
+  }
+
   ScenePtr scene = get_scene();
-  MarkerPtr marker = scene->CreateMarker();
-  marker->SetType(MarkerType::MT_LINE_LIST);
-
-  std::string base_frame_id = "base_link";
-
-  std::unordered_map<std::string, std::vector<geometry_msgs::msg::TransformStamped>> tf_tree;
-
-  for (const auto & transform : msg->transforms) {
-    std::string parent = transform.header.frame_id;
-    tf_tree[parent].push_back(transform);
-  }
-
   VisualPtr tf_visual = scene->VisualByName("tf_visual");
-  bool add_marker = false;
-  if (tf_visual == nullptr) {
-    tf_visual = scene->CreateVisual("tf_visual");
-    add_marker = true;
+
+  for (const auto frame : tree_tf) {
+    std::cout << fixed_frame << " -> " << frame.first << " " << frame.second.Pos().X() << " " <<
+      frame.second.Pos().Y() << " " << frame.second.Pos().Z() << std::endl;
+
+    NodePtr axis = tf_visual->ChildByName("axis_" + frame.first);
+    if (axis == nullptr) {
+      axis = scene->CreateAxisVisual("axis_" + frame.first);
+      axis->SetLocalPose(frame.second);
+      tf_visual->AddChild(axis);
+      std::cout << "Created new axis" << std::endl;
+    } else {
+      axis->SetLocalPose(frame.second);
+    }
   }
 
-  create_tf_visual(tf_tree, base_frame_id, marker, math::Vector3f(0, 0, 0));
+  tf_visual->PreRender();
 
-  TextPtr link_name = scene->CreateText();
-  link_name->SetTextString(base_frame_id);
-  link_name->SetShowOnTop(true);
-  link_name->SetTextAlignment(TextHorizontalAlign::CENTER, TextVerticalAlign::CENTER);
-  link_name->SetCharHeight(0.15);
+  std::cout << "################" << std::endl;
 
-  MaterialPtr text_color = scene->CreateMaterial();
-  text_color->SetDiffuse(1, 1, 1);
-
-  VisualPtr text_visual = scene->CreateVisual();
-
-  text_visual->AddGeometry(link_name);
-  text_visual->SetLocalPosition(0, 0, 0);
-
-  text_visual->SetMaterial(text_color);
-  tf_visual->AddChild(text_visual);
-
-  MaterialPtr color = scene->CreateMaterial();
-  color->SetAmbient(1, 1, 0, 0.8);
-
-  tf_visual->AddGeometry(marker);
-  tf_visual->SetGeometryMaterial(color, false);
-
-  if (add_marker) {
-    VisualPtr root = scene->RootVisual();
-    root->AddChild(tf_visual);
+  // Naive Delay
+  for (int i = 0; i < 10000; i++) {
+    for (int j = 0; j < 2500; j++) {
+    }
   }
 }
 

@@ -45,6 +45,9 @@ private:
   AxisVisualPtr axis;
   MarkerPtr pcl_marker;
 
+  std::string fixed_frame;
+  std::map<std::string, ignition::math::Pose3d> tree_tf;
+
   std::shared_ptr<tf2_ros::Buffer> tfBuffer;
   std::shared_ptr<tf2_ros::TransformListener> tfListener;
 

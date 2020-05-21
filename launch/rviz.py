@@ -11,8 +11,9 @@ def generate_launch_description():
                     "pose_topic": "/pose",
                     "imu_topic": "/imu",
                     "marker_topic": "/visualization_marker",
-                    "tf_topic": "/tf_static",
-                    "pointcloud_topic": "/cloud_in"
+                    "tf_topic": "/tf",
+                    "pointcloud_topic": "/cloud_in",
+                    "fixed_frame": "world"
                 },
             ]),
     ])
