@@ -1,2 +1,2 @@
-#Ignition-Rviz
-ROS package for Robot Visualization(RViz) developed using Ignition Rendering Library.
+# Ignition RViz
+ROS package for RViz developed using Ignition Rendering Library.
