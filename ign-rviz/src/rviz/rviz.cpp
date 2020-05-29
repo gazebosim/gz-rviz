@@ -9,7 +9,7 @@
   #include <ignition/gui/MainWindow.hh>
   #include <ignition/gui/qt.h>
 
-  #include "rviz/gui/rviz.hpp"
+  #include "ignition/rviz/rviz.hpp"
 #endif
 
 int main(int argc, char ** argv)

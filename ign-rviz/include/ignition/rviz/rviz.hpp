@@ -2,8 +2,8 @@
 // Created by Sarathkrishnan Ramesh on 22/5/20.
 //
 
-#ifndef RVIZ__GUI__RVIZ_HPP_
-#define RVIZ__GUI__RVIZ_HPP_
+#ifndef IGNITION__RVIZ__RVIZ_HPP_
+#define IGNITION__RVIZ__RVIZ_HPP_
 
 #include <iostream>
 
@@ -29,4 +29,4 @@ public:
 }  // namespace rviz
 }  // namespace ignition
 
-#endif  // RVIZ__GUI__RVIZ_HPP_
+#endif  // IGNITION__RVIZ__RVIZ_HPP_

@@ -29,7 +29,7 @@ find_package(ignition-gui4 REQUIRED)
 find_package(ignition-common3 REQUIRED)
 find_package(ignition-rendering4 REQUIRED)
 
-qt5_add_resources(resources_RCC include/rviz/gui/rviz.qrc)
+qt5_add_resources(resources_RCC include/ignition/rviz/rviz.qrc)
 
 include_directories(SYSTEM
   ${IGNITION-COMMON_INCLUDE_DIRS}
@@ -47,7 +47,7 @@ link_directories(
 
 include_directories(include)
 
-add_executable(ign-rviz src/gui/rviz.cpp include/rviz/gui/rviz.hpp ${resources_RCC})
+add_executable(ign-rviz src/rviz/rviz.cpp include/ignition/rviz/rviz.hpp ${resources_RCC})
 
 ament_target_dependencies(ign-rviz
   ignition-gui4
