@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>ign-rviz-plugins</name>
+  <version>0.0.0</version>
+  <description>This package contains visualization plugins for ign-rviz</description>
+
+  <maintainer email="sarathkrishnan99@gmail.com">Sarathkrishnan Ramesh</maintainer>
+
+  <license>TODO</license>
+
+  <build_depend>rclcpp</build_depend>
+  <build_depend>geometry_msgs</build_depend>
+  <build_depend>tf2_msgs</build_depend>
+  <build_depend>pluginlib</build_depend>
+
+  <build_export_depend>rclcpp</build_export_depend>
+  <build_export_depend>geometry_msgs</build_export_depend>
+  <build_export_depend>tf2_msgs</build_export_depend>
+  <build_export_depend>pluginlib</build_export_depend>
+
+  <exec_depend>rclcpp</exec_depend>
+  <exec_depend>geometry_msgs</exec_depend>
+  <exec_depend>tf2_msgs</exec_depend>
+  <exec_depend>pluginlib</exec_depend>
+
+  <test_depend>ament_lint_auto</test_depend>
+  <test_depend>ament_cmake_lint_cmake</test_depend>
+  <test_depend>ament_cmake_cpplint</test_depend>
+  <test_depend>ament_cmake_xmllint</test_depend>
+  <test_depend>ament_cmake_cppcheck</test_depend>
+  <test_depend>ament_cmake_uncrustify</test_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>
