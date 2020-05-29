@@ -15,6 +15,9 @@
   <build_depend>tf2_geometry_msgs</build_depend>
   <build_depend>tf2_msgs</build_depend>
   <build_depend>tf2_ros</build_depend>
+  <build_depend>pluginlib</build_depend>
+  <build_depend>ign-rviz-plugins</build_depend>
+
 
   <build_export_depend>rclcpp</build_export_depend>
   <build_export_depend>rclpy</build_export_depend>
@@ -23,6 +26,9 @@
   <build_export_depend>tf2_geometry_msgs</build_export_depend>
   <build_export_depend>tf2_msgs</build_export_depend>
   <build_export_depend>tf2_ros</build_export_depend>
+  <build_export_depend>pluginlib</build_export_depend>
+  <build_export_depend>ign-rviz-plugins</build_export_depend>
+
 
   <exec_depend>rclcpp</exec_depend>
   <exec_depend>rclpy</exec_depend>
@@ -31,6 +37,9 @@
   <exec_depend>tf2_geometry_msgs</exec_depend>
   <exec_depend>tf2_msgs</exec_depend>
   <exec_depend>tf2_ros</exec_depend>
+  <exec_depend>pluginlib</exec_depend>
+  <exec_depend>ign-rviz-plugins</exec_depend>
+
 
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_cmake_lint_cmake</test_depend>

@@ -14,6 +14,8 @@
 
 int main(int argc, char ** argv)
 {
+  rclcpp::init(argc, argv);
+
   ignition::common::Console::SetVerbosity(4);
 
   ignition::gui::Application app(argc, argv);
@@ -21,6 +23,14 @@ int main(int argc, char ** argv)
   app.LoadPlugin("Scene3D");
 
   ignition::rviz::RViz rviz_app;
+
+  rviz_app.init_ros();
+  rclcpp::executors::MultiThreadedExecutor executor;
+  executor.add_node(rviz_app.node);
+  std::thread executor_thread(std::bind(
+      &rclcpp::executors::MultiThreadedExecutor::spin,
+      &executor));
+
   auto context = new QQmlContext(app.Engine()->rootContext());
   context->setContextProperty("RViz", &rviz_app);
 
@@ -42,6 +52,9 @@ int main(int argc, char ** argv)
   item->setParent(app.Engine());
 
   app.exec();
+
+  executor.cancel();
+  executor_thread.join();
 
   return 0;
 }

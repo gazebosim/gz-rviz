@@ -23,6 +23,8 @@ find_package(visualization_msgs REQUIRED)
 find_package(tf2_geometry_msgs REQUIRED)
 find_package(tf2_msgs REQUIRED)
 find_package(tf2_ros REQUIRED)
+find_package(pluginlib REQUIRED)
+find_package(ign-rviz-plugins REQUIRED)
 
 # Ignition libraries
 find_package(ignition-gui4 REQUIRED)
@@ -51,6 +53,11 @@ add_executable(ign-rviz src/rviz/rviz.cpp include/ignition/rviz/rviz.hpp ${resou
 
 ament_target_dependencies(ign-rviz
   ignition-gui4
+  rclcpp
+  pluginlib
+  geometry_msgs
+  tf2_msgs
+  ign-rviz-plugins
 )
 
 target_link_libraries(ign-rviz Qt5::Core Qt5::Qml Qt5::Quick Qt5::QuickControls2)

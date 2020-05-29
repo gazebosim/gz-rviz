@@ -11,9 +11,11 @@ Rectangle {
             case "addGrid3D":
                 RViz.addGrid3D();
                 break;
-            case "addTF":
-                console.log("Under development");
+            case "addTFDisplay":
+                RViz.addTFDisplay();
                 break;
+            case "addPointStampedDisplay":
+                RViz.addPointStampedDisplay();
             default:
                 parent.onAction(action);
                 break;
@@ -30,7 +32,12 @@ Rectangle {
 
         ListElement {
             title: "TF"
-            action: "addTF"
+            action: "addTFDisplay"
+        }
+
+        ListElement {
+            title: "PointStamped"
+            action: "addPointStampedDisplay"
         }
 
         ListElement {
