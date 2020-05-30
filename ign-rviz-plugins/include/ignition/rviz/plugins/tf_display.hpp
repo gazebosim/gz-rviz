@@ -29,7 +29,7 @@ namespace rviz
 {
 namespace plugins
 {
-class TFDisplay : public MessageDisplayBase<tf2_msgs::msg::TFMessage>
+class TFDisplay : public MessageDisplay<tf2_msgs::msg::TFMessage>
 {
 public:
   TFDisplay();

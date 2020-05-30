@@ -25,7 +25,7 @@ namespace rviz
 namespace plugins
 {
 PointDisplay::PointDisplay()
-: MessageDisplayBase()
+: MessageDisplay()
 {
   this->engine = ignition::rendering::engine("ogre");
   this->scene = this->engine->SceneByName("scene");
@@ -59,4 +59,4 @@ void PointDisplay::callback(geometry_msgs::msg::PointStamped::SharedPtr msg)
 
 PLUGINLIB_EXPORT_CLASS(
   ignition::rviz::plugins::PointDisplay,
-  ignition::rviz::plugins::MessageDisplayBase<geometry_msgs::msg::PointStamped>)
+  ignition::rviz::plugins::MessageDisplayBase)

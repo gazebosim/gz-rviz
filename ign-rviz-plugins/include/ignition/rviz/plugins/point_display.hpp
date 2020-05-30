@@ -29,7 +29,7 @@ namespace rviz
 {
 namespace plugins
 {
-class PointDisplay : public MessageDisplayBase<geometry_msgs::msg::PointStamped>
+class PointDisplay : public MessageDisplay<geometry_msgs::msg::PointStamped>
 {
 public:
   PointDisplay();

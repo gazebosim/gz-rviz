@@ -41,8 +41,7 @@ class RViz : public QObject
 
 public:
   RViz()
-  : tf_loader("ign-rviz-plugins", "ignition::rviz::plugins::MessageDisplayBase"), point_loader(
-      "ign-rviz-plugins", "ignition::rviz::plugins::MessageDisplayBase")
+  : plugin_loader("ign-rviz-plugins", "ignition::rviz::plugins::MessageDisplayBase")
   {
   }
 
@@ -60,7 +59,9 @@ public:
   Q_INVOKABLE void addTFDisplay()
   {
     try {
-      tf_plugin = tf_loader.createSharedInstance("ignition/rviz/plugins/TFDisplay");
+      tf_plugin = std::dynamic_pointer_cast<plugins::MessageDisplay<tf2_msgs::msg::TFMessage>>(
+        plugin_loader.createSharedInstance(
+          "ignition/rviz/plugins/TFDisplay"));
       tf_plugin->initialize(this->node);
       tf_plugin->setTopic("/tf");
     } catch (pluginlib::PluginlibException & ex) {
@@ -74,7 +75,10 @@ public:
   Q_INVOKABLE void addPointStampedDisplay()
   {
     try {
-      point_plugin = point_loader.createSharedInstance("ignition/rviz/plugins/PointDisplay");
+      point_plugin =
+        std::dynamic_pointer_cast<plugins::MessageDisplay<geometry_msgs::msg::PointStamped>>(
+        plugin_loader.createSharedInstance(
+          "ignition/rviz/plugins/PointDisplay"));
       point_plugin->initialize(this->node);
       point_plugin->setTopic("/point");
     } catch (pluginlib::PluginlibException & ex) {
@@ -103,13 +107,13 @@ public:
 private:
   // Data Members
   rclcpp::Node::SharedPtr node;
-  std::shared_ptr<plugins::MessageDisplayBase<tf2_msgs::msg::TFMessage>> tf_plugin;
-  pluginlib::ClassLoader<plugins::MessageDisplayBase<tf2_msgs::msg::TFMessage>>
-  tf_loader;
-  std::shared_ptr<plugins::MessageDisplayBase<geometry_msgs::msg::PointStamped>>
-  point_plugin;
-  pluginlib::ClassLoader<plugins::MessageDisplayBase<geometry_msgs::msg::PointStamped>>
-  point_loader;
+
+  // Plugins
+  std::shared_ptr<plugins::MessageDisplay<tf2_msgs::msg::TFMessage>> tf_plugin;
+  std::shared_ptr<plugins::MessageDisplay<geometry_msgs::msg::PointStamped>> point_plugin;
+
+  // Plugin Loader
+  pluginlib::ClassLoader<plugins::MessageDisplayBase> plugin_loader;
 };
 }  // namespace rviz
 }  // namespace ignition

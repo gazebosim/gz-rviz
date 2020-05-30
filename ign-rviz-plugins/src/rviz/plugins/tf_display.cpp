@@ -25,7 +25,7 @@ namespace rviz
 namespace plugins
 {
 TFDisplay::TFDisplay()
-: MessageDisplayBase()
+: MessageDisplay()
 {
   this->engine = ignition::rendering::engine("ogre");
   this->scene = this->engine->SceneByName("scene");
@@ -54,4 +54,4 @@ void TFDisplay::callback(tf2_msgs::msg::TFMessage::SharedPtr msg)
 
 PLUGINLIB_EXPORT_CLASS(
   ignition::rviz::plugins::TFDisplay,
-  ignition::rviz::plugins::MessageDisplayBase<tf2_msgs::msg::TFMessage>)
+  ignition::rviz::plugins::MessageDisplayBase)

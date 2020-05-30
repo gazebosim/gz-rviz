@@ -24,14 +24,8 @@ namespace rviz
 {
 namespace plugins
 {
-template<typename MessageType>
 class MessageDisplayBase
 {
-protected:
-  typename rclcpp::Subscription<MessageType>::SharedPtr subscriber;
-  rclcpp::Node::SharedPtr node;
-  std::string topic_name;
-
 public:
   MessageDisplayBase() {}
   virtual ~MessageDisplayBase() {}
@@ -42,6 +36,19 @@ public:
    * @throws anything rclcpp::exceptions::throw_from_rcl_error can throw.
    */
   virtual void initialize(rclcpp::Node::SharedPtr) = 0;
+};
+
+template<typename MessageType>
+class MessageDisplay : public MessageDisplayBase
+{
+protected:
+  typename rclcpp::Subscription<MessageType>::SharedPtr subscriber;
+  rclcpp::Node::SharedPtr node;
+  std::string topic_name;
+
+public:
+  MessageDisplay() {}
+  virtual ~MessageDisplay() {}
 
   /**
    * @brief ROS subscriber callback function
