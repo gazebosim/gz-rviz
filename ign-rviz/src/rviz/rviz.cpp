@@ -1,6 +1,16 @@
+// Copyright (c) 2020 Sarathkrishnan Ramesh
 //
-// Created by Sarathkrishnan Ramesh on 22/5/20.
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
 //
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 
 #include <ignition/common/Console.hh>
 
@@ -26,7 +36,7 @@ int main(int argc, char ** argv)
 
   rviz_app.init_ros();
   rclcpp::executors::MultiThreadedExecutor executor;
-  executor.add_node(rviz_app.node);
+  executor.add_node(rviz_app.get_node());
   std::thread executor_thread(std::bind(
       &rclcpp::executors::MultiThreadedExecutor::spin,
       &executor));
