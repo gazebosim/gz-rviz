@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.10)
 project(ign-rviz-plugins)
 
+set(CMAKE_AUTOMOC ON)
+
 # Default to C++14
 if(NOT CMAKE_CXX_STANDARD)
   set(CMAKE_CXX_STANDARD 14)
@@ -19,14 +21,16 @@ find_package(pluginlib REQUIRED)
 # Ignition libraries
 find_package(ignition-common3 REQUIRED)
 find_package(ignition-rendering4 REQUIRED)
+find_package(ignition-gui4 REQUIRED)
 
 include_directories(include)
 
 include_directories(SYSTEM
   ${IGNITION-COMMON_INCLUDE_DIRS}
+  ${IGNITION-GUI_INCLUDE_DIRS}
 )
 
-file(GLOB_RECURSE default_plugins "src/rviz/plugins/*.cpp")
+file(GLOB_RECURSE default_plugins "src/rviz/plugins/tf_display.cpp" "include/ignition/rviz/plugins/message_display_base.hpp" "include/ignition/rviz/plugins/tf_display.hpp")
 
 add_library(ign-rviz-plugins SHARED
   ${default_plugins}
@@ -38,6 +42,7 @@ ament_target_dependencies(ign-rviz-plugins
   rclcpp
   geometry_msgs
   tf2_msgs
+  ignition-gui4
 )
 
 target_include_directories(ign-rviz-plugins

@@ -31,8 +31,10 @@ namespace plugins
 {
 class PointDisplay : public MessageDisplay<geometry_msgs::msg::PointStamped>
 {
+  // Q_OBJECT
 public:
   PointDisplay();
+  ~PointDisplay();
 
   /**
    * @brief PointStamped ROS Visualzation plugin initialization
@@ -54,6 +56,8 @@ public:
    * @throws anything rclcpp::exceptions::throw_from_rcl_error can throw.
    */
   void setTopic(std::string);
+
+  // void LoadConfig(const tinyxml2::XMLElement * /*_pluginElem*/);
 
 private:
   ignition::rendering::RenderEngine * engine;

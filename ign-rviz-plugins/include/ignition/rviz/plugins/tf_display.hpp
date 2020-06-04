@@ -19,7 +19,6 @@
 #include <tf2_msgs/msg/tf_message.hpp>
 
 #include <string>
-
 #include "ignition/rviz/plugins/message_display_base.hpp"
 
 
@@ -31,8 +30,10 @@ namespace plugins
 {
 class TFDisplay : public MessageDisplay<tf2_msgs::msg::TFMessage>
 {
+ Q_OBJECT
 public:
   TFDisplay();
+  ~TFDisplay();
 
   /**
    * @brief TFMessage ROS Visualzation plugin initialization
@@ -54,6 +55,8 @@ public:
    * @throws anything rclcpp::exceptions::throw_from_rcl_error can throw.
    */
   void setTopic(std::string);
+
+  // void LoadConfig(const tinyxml2::XMLElement * /*_pluginElem*/);
 
 private:
   ignition::rendering::RenderEngine * engine;

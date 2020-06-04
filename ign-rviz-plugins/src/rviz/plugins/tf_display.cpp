@@ -31,6 +31,10 @@ TFDisplay::TFDisplay()
   this->scene = this->engine->SceneByName("scene");
 }
 
+TFDisplay::~TFDisplay() {
+
+}
+
 void TFDisplay::initialize(rclcpp::Node::SharedPtr node)
 {
   this->node = std::move(node);
@@ -46,6 +50,10 @@ void TFDisplay::setTopic(std::string topic_name)
 
 void TFDisplay::callback(tf2_msgs::msg::TFMessage::SharedPtr msg)
 {
+  for(const auto transform : msg->transforms) {
+    std::cout << transform.header.frame_id << std::endl;
+  }
+
   std::cout << "[" << this->topic_name << "]\tMessage received" << std::endl;
 }
 }  // namespace plugins

@@ -18,14 +18,20 @@
 #include <rclcpp/rclcpp.hpp>
 #include <string>
 
+#ifndef Q_MOC_RUN
+  #include <ignition/gui/qt.h>
+  #include <ignition/gui/Plugin.hh>
+#endif
+
 namespace ignition
 {
 namespace rviz
 {
 namespace plugins
 {
-class MessageDisplayBase
+class MessageDisplayBase : public QObject
 {
+  Q_OBJECT
 public:
   MessageDisplayBase() {}
   virtual ~MessageDisplayBase() {}
@@ -35,33 +41,38 @@ public:
    * @param ROS Node shared pointer
    * @throws anything rclcpp::exceptions::throw_from_rcl_error can throw.
    */
-  virtual void initialize(rclcpp::Node::SharedPtr) = 0;
+  virtual void initialize(rclcpp::Node::SharedPtr) {};
+  // virtual void LoadConfig(const tinyxml2::XMLElement * /*_pluginElem*/) {}
 };
 
 template<typename MessageType>
 class MessageDisplay : public MessageDisplayBase
 {
-protected:
-  typename rclcpp::Subscription<MessageType>::SharedPtr subscriber;
-  rclcpp::Node::SharedPtr node;
-  std::string topic_name;
-
 public:
-  MessageDisplay() {}
+  MessageDisplay() : MessageDisplayBase() {}
   virtual ~MessageDisplay() {}
+
+  virtual void initialize(rclcpp::Node::SharedPtr) {};
 
   /**
    * @brief ROS subscriber callback function
    * @param ROS message type shared pointer
    * @throws anything rclcpp::exceptions::throw_from_rcl_error can throw.
    */
-  virtual void callback(typename MessageType::SharedPtr) = 0;
+  virtual void callback(typename MessageType::SharedPtr) {};
 
   /**
    * @brief Set ROS subscriber topic
    * @param ROS topic name
    */
-  virtual void setTopic(std::string) = 0;
+  virtual void setTopic(std::string) {};
+
+  // virtual void LoadConfig(const tinyxml2::XMLElement * /*_pluginElem*/) {}
+
+protected:
+  typename rclcpp::Subscription<MessageType>::SharedPtr subscriber;
+  rclcpp::Node::SharedPtr node;
+  std::string topic_name;
 };
 }  // namespace plugins
 }  // namespace rviz

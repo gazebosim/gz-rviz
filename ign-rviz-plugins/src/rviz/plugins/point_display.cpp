@@ -32,6 +32,10 @@ PointDisplay::PointDisplay()
   auto x = this->scene->CreateAxisVisual();
 }
 
+PointDisplay::~PointDisplay() {
+
+}
+
 void PointDisplay::initialize(rclcpp::Node::SharedPtr node)
 {
   this->node = std::move(node);

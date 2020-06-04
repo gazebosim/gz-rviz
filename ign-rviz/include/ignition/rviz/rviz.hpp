@@ -69,22 +69,22 @@ public:
     }
   }
 
-  /**
-   * @brief Load PointStamped Visualization Plugin
-   */
-  Q_INVOKABLE void addPointStampedDisplay()
-  {
-    try {
-      point_plugin =
-        std::dynamic_pointer_cast<plugins::MessageDisplay<geometry_msgs::msg::PointStamped>>(
-        plugin_loader.createSharedInstance(
-          "ignition/rviz/plugins/PointDisplay"));
-      point_plugin->initialize(this->node);
-      point_plugin->setTopic("/point");
-    } catch (pluginlib::PluginlibException & ex) {
-      std::cout << ex.what() << std::endl;
-    }
-  }
+  // /**
+  //  * @brief Load PointStamped Visualization Plugin
+  //  */
+  // Q_INVOKABLE void addPointStampedDisplay()
+  // {
+  //   try {
+  //     point_plugin =
+  //       std::dynamic_pointer_cast<plugins::MessageDisplay<geometry_msgs::msg::PointStamped>>(
+  //       plugin_loader.createSharedInstance(
+  //         "ignition/rviz/plugins/PointDisplay"));
+  //     point_plugin->initialize(this->node);
+  //     point_plugin->setTopic("/point");
+  //   } catch (pluginlib::PluginlibException & ex) {
+  //     std::cout << ex.what() << std::endl;
+  //   }
+  // }
 
   /**
    * @brief Initialize ignition RViz ROS node
@@ -110,7 +110,7 @@ private:
 
   // Plugins
   std::shared_ptr<plugins::MessageDisplay<tf2_msgs::msg::TFMessage>> tf_plugin;
-  std::shared_ptr<plugins::MessageDisplay<geometry_msgs::msg::PointStamped>> point_plugin;
+  // std::shared_ptr<plugins::MessageDisplay<geometry_msgs::msg::PointStamped>> point_plugin;
 
   // Plugin Loader
   pluginlib::ClassLoader<plugins::MessageDisplayBase> plugin_loader;
