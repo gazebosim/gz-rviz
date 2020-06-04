@@ -32,40 +32,45 @@ namespace plugins
 class MessageDisplayBase : public QObject
 {
   Q_OBJECT
-public:
-  MessageDisplayBase() {}
-  virtual ~MessageDisplayBase() {}
+  public:
+    MessageDisplayBase()
+    : QObject() {}
 
   /**
    * @brief ROS Visualzation plugin initialization function
    * @param ROS Node shared pointer
    * @throws anything rclcpp::exceptions::throw_from_rcl_error can throw.
    */
-  virtual void initialize(rclcpp::Node::SharedPtr) {};
+  public:
+    virtual void initialize(rclcpp::Node::SharedPtr) {};
+
   // virtual void LoadConfig(const tinyxml2::XMLElement * /*_pluginElem*/) {}
 };
 
 template<typename MessageType>
 class MessageDisplay : public MessageDisplayBase
 {
+  // No Q_OBJECT macro here, moc does not support Q_OBJECT in a templated class.
 public:
-  MessageDisplay() : MessageDisplayBase() {}
+  MessageDisplay()
+  : MessageDisplayBase() {}
+
   virtual ~MessageDisplay() {}
 
-  virtual void initialize(rclcpp::Node::SharedPtr) {};
+  virtual void initialize(rclcpp::Node::SharedPtr) {}
 
   /**
    * @brief ROS subscriber callback function
    * @param ROS message type shared pointer
    * @throws anything rclcpp::exceptions::throw_from_rcl_error can throw.
    */
-  virtual void callback(typename MessageType::SharedPtr) {};
+  virtual void callback(typename MessageType::SharedPtr) {}
 
   /**
    * @brief Set ROS subscriber topic
    * @param ROS topic name
    */
-  virtual void setTopic(std::string) {};
+  virtual void setTopic(std::string) {}
 
   // virtual void LoadConfig(const tinyxml2::XMLElement * /*_pluginElem*/) {}
 
@@ -77,5 +82,4 @@ protected:
 }  // namespace plugins
 }  // namespace rviz
 }  // namespace ignition
-
 #endif  // IGNITION__RVIZ__PLUGINS__MESSAGE_DISPLAY_BASE_HPP_

@@ -66,4 +66,8 @@ private:
 }  // namespace rviz
 }  // namespace ignition
 
+#include <pluginlib/class_list_macros.hpp>  // NOLINT
+PLUGINLIB_EXPORT_CLASS(ignition::rviz::plugins::TFDisplay,
+                       ignition::rviz::plugins::MessageDisplayBase)
+
 #endif  // IGNITION__RVIZ__PLUGINS__TF_DISPLAY_HPP_

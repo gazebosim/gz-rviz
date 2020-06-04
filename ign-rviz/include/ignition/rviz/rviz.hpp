@@ -42,8 +42,7 @@ class RViz : public QObject
 public:
   RViz()
   : plugin_loader("ign-rviz-plugins", "ignition::rviz::plugins::MessageDisplayBase")
-  {
-  }
+  {}
 
   /**
    * @brief Add Grid visual to Scene3D

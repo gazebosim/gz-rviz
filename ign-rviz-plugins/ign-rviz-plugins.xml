@@ -1,11 +1,5 @@
 <library path="ign-rviz-plugins">
 	<class
-		name="ignition/rviz/plugins/PointDisplay"
-		type="ignition::rviz::plugins::PointDisplay"
-		base_class_type="ignition::rviz::plugins::MessageDisplayBase">
-		<description>Visualization plugin for geoemtry_msgs/msgs/PointStamped</description>
-	</class>
-	<class
 		name="ignition/rviz/plugins/TFDisplay"
 		type="ignition::rviz::plugins::TFDisplay"
 		base_class_type="ignition::rviz::plugins::MessageDisplayBase">

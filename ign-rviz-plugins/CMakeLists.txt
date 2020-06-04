@@ -17,6 +17,7 @@ find_package(rclcpp REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(tf2_msgs REQUIRED)
 find_package(pluginlib REQUIRED)
+find_package(Qt5Widgets CONFIG REQUIRED)
 
 # Ignition libraries
 find_package(ignition-common3 REQUIRED)
@@ -30,10 +31,14 @@ include_directories(SYSTEM
   ${IGNITION-GUI_INCLUDE_DIRS}
 )
 
-file(GLOB_RECURSE default_plugins "src/rviz/plugins/tf_display.cpp" "include/ignition/rviz/plugins/message_display_base.hpp" "include/ignition/rviz/plugins/tf_display.hpp")
+set(ign_rviz_plugins_headers_to_moc
+  "include/ignition/rviz/plugins/message_display_base.hpp"
+  "include/ignition/rviz/plugins/tf_display.hpp"
+)
 
 add_library(ign-rviz-plugins SHARED
-  ${default_plugins}
+  ${ign_rviz_plugins_headers_to_moc}
+  src/rviz/plugins/tf_display.cpp
 )
 
 ament_target_dependencies(ign-rviz-plugins
@@ -49,6 +54,7 @@ target_include_directories(ign-rviz-plugins
   PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>
+  ${Qt5Widgets_INCLUDE_DIRS}
 )
 
 pluginlib_export_plugin_description_file(ign-rviz-plugins ign-rviz-plugins.xml)
@@ -59,6 +65,7 @@ install(
 )
 
 ament_export_include_directories(include)
+ament_export_libraries(ign-rviz-plugins)
 
 install(
   TARGETS ign-rviz-plugins
