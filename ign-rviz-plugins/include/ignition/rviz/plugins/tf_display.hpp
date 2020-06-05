@@ -65,5 +65,4 @@ private:
 }  // namespace plugins
 }  // namespace rviz
 }  // namespace ignition
-
 #endif  // IGNITION__RVIZ__PLUGINS__TF_DISPLAY_HPP_
