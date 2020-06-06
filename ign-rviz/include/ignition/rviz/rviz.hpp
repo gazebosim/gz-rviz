@@ -62,7 +62,7 @@ public:
         plugin_loader.createSharedInstance(
           "ignition/rviz/plugins/TFDisplay"));
       tf_plugin->initialize(this->node);
-      tf_plugin->setTopic("/tf");
+      tf_plugin->setFrameManager(this->frameManager);
       tf_plugin->installEventFilter(ignition::gui::App()->findChild<ignition::gui::MainWindow *>());
     } catch (pluginlib::PluginlibException & ex) {
       std::cout << ex.what() << std::endl;
@@ -93,6 +93,8 @@ public:
   void init_ros()
   {
     this->node = std::make_shared<rclcpp::Node>("ignition_rviz");
+    this->frameManager = std::make_shared<common::FrameManager>(this->node);
+    this->frameManager->setFixedFrame("world");
   }
 
   /**
@@ -114,6 +116,8 @@ private:
 
   // Plugin Loader
   pluginlib::ClassLoader<plugins::MessageDisplayBase> plugin_loader;
+
+  std::shared_ptr<common::FrameManager> frameManager;
 };
 }  // namespace rviz
 }  // namespace ignition

@@ -13,10 +13,15 @@
 // limitations under the License.
 
 #include "ignition/rviz/plugins/tf_display.hpp"
+
 #include <pluginlib/class_list_macros.hpp>
+#include <ignition/math.hh>
 
 #include <string>
 #include <utility>
+#include <memory>
+#include <vector>
+
 
 namespace ignition
 {
@@ -29,6 +34,13 @@ TFDisplay::TFDisplay()
 {
   this->engine = ignition::rendering::engine("ogre");
   this->scene = this->engine->SceneByName("scene");
+  rendering::AxisVisualPtr axis = this->scene->CreateAxisVisual();
+  this->visualFrames.resize(6);
+  for (int i = 0; i < 6; i++) {
+    this->visualFrames[i] = this->scene->CreateAxisVisual();
+    this->visualFrames[i]->SetLocalScale(0.75);
+    this->scene->RootVisual()->AddChild(this->visualFrames[i]);
+  }
 }
 
 TFDisplay::~TFDisplay()
@@ -47,31 +59,31 @@ void TFDisplay::setTopic(std::string topic_name)
     std::bind(&TFDisplay::callback, this, std::placeholders::_1));
 }
 
-void TFDisplay::callback(tf2_msgs::msg::TFMessage::SharedPtr msg)
-{
-  std::lock_guard<std::mutex>(this->lock);
-
-  this->x = msg->transforms[0].transform.rotation.x;
-  this->y = msg->transforms[0].transform.rotation.y;
-  this->z = msg->transforms[0].transform.rotation.z;
-  this->w = msg->transforms[0].transform.rotation.w;
-}
-
 bool TFDisplay::eventFilter(QObject * object, QEvent * event)
 {
   std::lock_guard<std::mutex>(this->lock);
-  if (this->axis == nullptr) {
-    this->axis = this->scene->CreateAxisVisual();
-    this->scene->RootVisual()->AddChild(axis);
+  std::vector<std::string> frameIds;
+  frameManager->getFrames(frameIds);
+
+  for (int i = 0; i < static_cast<int>(frameIds.size()); i++) {
+    ignition::math::Pose3d pose;
+
+    this->frameManager->getFramePose(frameIds[i], pose);
+    this->visualFrames[i]->SetLocalPosition(pose.Pos());
+    this->visualFrames[i]->SetLocalRotation(pose.Rot());
   }
 
-  this->axis->SetLocalRotation(this->w, this->x, this->y, this->z);
   return QObject::eventFilter(object, event);
 }
 
 void TFDisplay::installEventFilter(ignition::gui::MainWindow * window)
 {
   window->installEventFilter(this);
+}
+
+void TFDisplay::setFrameManager(std::shared_ptr<common::FrameManager> frameManager)
+{
+  this->frameManager = std::move(frameManager);
 }
 }  // namespace plugins
 }  // namespace rviz

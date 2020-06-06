@@ -20,8 +20,10 @@
 
 #include <string>
 #include <mutex>
-#include "ignition/rviz/plugins/message_display_base.hpp"
+#include <memory>
+#include <vector>
 
+#include "ignition/rviz/plugins/message_display_base.hpp"
 
 namespace ignition
 {
@@ -49,7 +51,7 @@ public:
    * @param Shared pointer of TFMessage ROS message
    * @throws anything rclcpp::exceptions::throw_from_rcl_error can throw.
    */
-  void callback(const tf2_msgs::msg::TFMessage::SharedPtr);
+  void callback(const tf2_msgs::msg::TFMessage::SharedPtr) {}
 
   /**
    * @brief Set ROS subscriber topic
@@ -62,12 +64,14 @@ public:
 
   void installEventFilter(ignition::gui::MainWindow *);
 
+  void setFrameManager(std::shared_ptr<common::FrameManager>);
+
 private:
   ignition::rendering::AxisVisualPtr axis;
   ignition::rendering::RenderEngine * engine;
   ignition::rendering::ScenePtr scene;
   std::mutex lock;
-  float x, y, z, w;
+  std::vector<rendering::AxisVisualPtr> visualFrames;
 };
 }  // namespace plugins
 }  // namespace rviz

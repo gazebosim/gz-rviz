@@ -17,18 +17,23 @@ find_package(rclcpp REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(tf2_msgs REQUIRED)
 find_package(pluginlib REQUIRED)
-find_package(Qt5Widgets CONFIG REQUIRED)
+find_package(tf2_ros REQUIRED)
 
 # Ignition libraries
 find_package(ignition-common3 REQUIRED)
 find_package(ignition-rendering4 REQUIRED)
 find_package(ignition-gui4 REQUIRED)
+find_package(ignition-math7 REQUIRED)
+find_package(Qt5Widgets CONFIG REQUIRED)
+
+find_package(ign-rviz-common REQUIRED)
 
 include_directories(include)
 
 include_directories(SYSTEM
   ${IGNITION-COMMON_INCLUDE_DIRS}
   ${IGNITION-GUI_INCLUDE_DIRS}
+  ${IGNITION-MATH_INCLUDE_DIRS}
 )
 
 set(ign_rviz_plugins_headers_to_moc
@@ -47,7 +52,10 @@ ament_target_dependencies(ign-rviz-plugins
   rclcpp
   geometry_msgs
   tf2_msgs
+  tf2_ros
   ignition-gui4
+  ignition-math7
+  ign-rviz-common
 )
 
 target_include_directories(ign-rviz-plugins

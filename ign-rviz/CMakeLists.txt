@@ -28,11 +28,13 @@ find_package(tf2_msgs REQUIRED)
 find_package(tf2_ros REQUIRED)
 find_package(pluginlib REQUIRED)
 find_package(ign-rviz-plugins REQUIRED)
+find_package(ign-rviz-common REQUIRED)
 
 # Ignition libraries
 find_package(ignition-gui4 REQUIRED)
 find_package(ignition-common3 REQUIRED)
 find_package(ignition-rendering4 REQUIRED)
+find_package(ignition-math7 REQUIRED)
 
 qt5_add_resources(resources_RCC include/ignition/rviz/rviz.qrc)
 
@@ -48,6 +50,7 @@ include_directories(SYSTEM
 link_directories(
   ${IGNITION-COMMON_LIBRARY_DIRS}
   ${IGNITION-GUI_LIBRARY_DIRS}
+  ${IGNITION-MATH_LIBRARY_DIRS}
 )
 
 include_directories(include)
@@ -60,7 +63,10 @@ ament_target_dependencies(ign-rviz
   pluginlib
   geometry_msgs
   tf2_msgs
+  tf2_ros
   ign-rviz-plugins
+  ign-rviz-common
+  ignition-math7
 )
 
 target_link_libraries(ign-rviz Qt5::Core Qt5::Qml Qt5::Quick Qt5::QuickControls2)

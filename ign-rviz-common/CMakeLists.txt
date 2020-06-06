@@ -1,0 +1,68 @@
+cmake_minimum_required(VERSION 3.10)
+project(ign-rviz-common)
+add_compile_options(-std=c++14)
+
+# ROS2 packages
+find_package(ament_cmake REQUIRED)
+find_package(rclcpp REQUIRED)
+find_package(std_msgs REQUIRED)
+find_package(geometry_msgs REQUIRED)
+find_package(tf2_geometry_msgs REQUIRED)
+find_package(tf2_msgs REQUIRED)
+find_package(tf2_ros REQUIRED)
+
+# Igntiion Libraries
+find_package(ignition-math7)
+
+include_directories(include)
+
+include_directories(SYSTEM
+  ${IGNITION-MATH_INCLUDE_DIRS}
+)
+
+add_library(ign-rviz-common SHARED
+  src/rviz/common/frame_manager.cpp
+)
+
+ament_target_dependencies(ign-rviz-common
+  rclcpp
+  tf2_ros
+  tf2_msgs
+  geometry_msgs
+  tf2_geometry_msgs
+  ignition-math7
+)
+
+target_include_directories(ign-rviz-common
+  PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>
+)
+
+install(
+  TARGETS ign-rviz-common
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION bin
+  INCLUDES DESTINATION include
+)
+
+install(
+  DIRECTORY include/
+  DESTINATION include
+)
+
+ament_export_include_directories(
+  include
+)
+
+ament_export_libraries(
+  ${PROJECT_NAME}
+)
+
+if(BUILD_TESTING)
+  find_package(ament_lint_auto REQUIRED)
+  ament_lint_auto_find_test_dependencies()
+endif()
+
+ament_package()

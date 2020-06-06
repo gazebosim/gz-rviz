@@ -17,12 +17,15 @@
 
 #include <rclcpp/rclcpp.hpp>
 #include <string>
+#include <memory>
 
 #ifndef Q_MOC_RUN
   #include <ignition/gui/qt.h>
   #include <ignition/gui/Plugin.hh>
 #endif
 #include <ignition/gui/MainWindow.hh>
+
+#include "ignition/rviz/common/frame_manager.hpp"
 
 namespace ignition
 {
@@ -76,6 +79,7 @@ public:
    */
   virtual void setTopic(std::string) {}
   virtual void installEventFilter(ignition::gui::MainWindow *) {}
+  virtual void setFrameManager(std::shared_ptr<common::FrameManager>) {}
 
   // virtual void LoadConfig(const tinyxml2::XMLElement * /*_pluginElem*/) {}
 
@@ -83,6 +87,7 @@ protected:
   typename rclcpp::Subscription<MessageType>::SharedPtr subscriber;
   rclcpp::Node::SharedPtr node;
   std::string topic_name;
+  std::shared_ptr<common::FrameManager> frameManager;
 };
 }  // namespace plugins
 }  // namespace rviz
