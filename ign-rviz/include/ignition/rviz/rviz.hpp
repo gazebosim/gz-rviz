@@ -63,6 +63,7 @@ public:
           "ignition/rviz/plugins/TFDisplay"));
       tf_plugin->initialize(this->node);
       tf_plugin->setTopic("/tf");
+      tf_plugin->installEventFilter(ignition::gui::App()->findChild<ignition::gui::MainWindow *>());
     } catch (pluginlib::PluginlibException & ex) {
       std::cout << ex.what() << std::endl;
     }

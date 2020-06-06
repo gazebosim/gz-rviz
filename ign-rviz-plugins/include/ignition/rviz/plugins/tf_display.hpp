@@ -19,6 +19,7 @@
 #include <tf2_msgs/msg/tf_message.hpp>
 
 #include <string>
+#include <mutex>
 #include "ignition/rviz/plugins/message_display_base.hpp"
 
 
@@ -30,7 +31,8 @@ namespace plugins
 {
 class TFDisplay : public MessageDisplay<tf2_msgs::msg::TFMessage>
 {
- Q_OBJECT
+  Q_OBJECT
+
 public:
   TFDisplay();
   ~TFDisplay();
@@ -56,11 +58,16 @@ public:
    */
   void setTopic(std::string);
 
-  // void LoadConfig(const tinyxml2::XMLElement * /*_pluginElem*/);
+  bool eventFilter(QObject *, QEvent *);
+
+  void installEventFilter(ignition::gui::MainWindow *);
 
 private:
+  ignition::rendering::AxisVisualPtr axis;
   ignition::rendering::RenderEngine * engine;
   ignition::rendering::ScenePtr scene;
+  std::mutex lock;
+  float x, y, z, w;
 };
 }  // namespace plugins
 }  // namespace rviz

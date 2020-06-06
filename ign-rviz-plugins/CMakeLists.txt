@@ -55,6 +55,7 @@ target_include_directories(ign-rviz-plugins
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>
   ${Qt5Widgets_INCLUDE_DIRS}
+  ${IGNITION-GUI_INCLUDE_DIRS}
 )
 
 pluginlib_export_plugin_description_file(ign-rviz-plugins ign-rviz-plugins.xml)

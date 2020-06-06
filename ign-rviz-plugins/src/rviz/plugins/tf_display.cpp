@@ -31,9 +31,8 @@ TFDisplay::TFDisplay()
   this->scene = this->engine->SceneByName("scene");
 }
 
-TFDisplay::~TFDisplay() {
-
-}
+TFDisplay::~TFDisplay()
+{}
 
 void TFDisplay::initialize(rclcpp::Node::SharedPtr node)
 {
@@ -50,11 +49,29 @@ void TFDisplay::setTopic(std::string topic_name)
 
 void TFDisplay::callback(tf2_msgs::msg::TFMessage::SharedPtr msg)
 {
-  for(const auto transform : msg->transforms) {
-    std::cout << transform.header.frame_id << std::endl;
+  std::lock_guard<std::mutex>(this->lock);
+
+  this->x = msg->transforms[0].transform.rotation.x;
+  this->y = msg->transforms[0].transform.rotation.y;
+  this->z = msg->transforms[0].transform.rotation.z;
+  this->w = msg->transforms[0].transform.rotation.w;
+}
+
+bool TFDisplay::eventFilter(QObject * object, QEvent * event)
+{
+  std::lock_guard<std::mutex>(this->lock);
+  if (this->axis == nullptr) {
+    this->axis = this->scene->CreateAxisVisual();
+    this->scene->RootVisual()->AddChild(axis);
   }
 
-  std::cout << "[" << this->topic_name << "]\tMessage received" << std::endl;
+  this->axis->SetLocalRotation(this->w, this->x, this->y, this->z);
+  return QObject::eventFilter(object, event);
+}
+
+void TFDisplay::installEventFilter(ignition::gui::MainWindow * window)
+{
+  window->installEventFilter(this);
 }
 }  // namespace plugins
 }  // namespace rviz

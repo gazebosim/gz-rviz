@@ -32,6 +32,7 @@ namespace plugins
 class PointDisplay : public MessageDisplay<geometry_msgs::msg::PointStamped>
 {
   // Q_OBJECT
+
 public:
   PointDisplay();
   ~PointDisplay();

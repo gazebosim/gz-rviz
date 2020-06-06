@@ -22,6 +22,7 @@
   #include <ignition/gui/qt.h>
   #include <ignition/gui/Plugin.hh>
 #endif
+#include <ignition/gui/MainWindow.hh>
 
 namespace ignition
 {
@@ -32,17 +33,19 @@ namespace plugins
 class MessageDisplayBase : public QObject
 {
   Q_OBJECT
-  public:
-    MessageDisplayBase()
-    : QObject() {}
+
+public:
+  MessageDisplayBase()
+  : QObject() {}
 
   /**
    * @brief ROS Visualzation plugin initialization function
    * @param ROS Node shared pointer
    * @throws anything rclcpp::exceptions::throw_from_rcl_error can throw.
    */
-  public:
-    virtual void initialize(rclcpp::Node::SharedPtr) {};
+
+public:
+  virtual void initialize(rclcpp::Node::SharedPtr) {}
 
   // virtual void LoadConfig(const tinyxml2::XMLElement * /*_pluginElem*/) {}
 };
@@ -51,6 +54,7 @@ template<typename MessageType>
 class MessageDisplay : public MessageDisplayBase
 {
   // No Q_OBJECT macro here, moc does not support Q_OBJECT in a templated class.
+
 public:
   MessageDisplay()
   : MessageDisplayBase() {}
@@ -71,6 +75,7 @@ public:
    * @param ROS topic name
    */
   virtual void setTopic(std::string) {}
+  virtual void installEventFilter(ignition::gui::MainWindow *) {}
 
   // virtual void LoadConfig(const tinyxml2::XMLElement * /*_pluginElem*/) {}
 
