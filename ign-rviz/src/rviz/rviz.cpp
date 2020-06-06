@@ -12,7 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include <ament_index_cpp/get_package_share_directory.hpp>
 #include <ignition/common/Console.hh>
+#include <string>
 
 #ifndef Q_MOC_RUN
   #include <ignition/gui/Application.hh>
@@ -30,7 +32,8 @@ int main(int argc, char ** argv)
 
   ignition::gui::Application app(argc, argv);
 
-  app.LoadPlugin("Scene3D");
+  std::string package_share_directory = ament_index_cpp::get_package_share_directory("ign-rviz");
+  app.LoadConfig(package_share_directory + "/config/rviz.config");
 
   ignition::rviz::RViz rviz_app;
 
