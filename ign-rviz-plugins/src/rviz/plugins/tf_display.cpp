@@ -36,13 +36,38 @@ TFDisplay::TFDisplay()
   this->engine = ignition::rendering::engine("ogre");
   this->scene = this->engine->SceneByName("scene");
   this->visualFrames.resize(6);
+  this->tfArrows.resize(6);
+
+  // Register pink material if not registered
+  rendering::MaterialPtr pink;
+  if (!this->scene->MaterialRegistered("Default/TransPink")) {
+    pink = this->scene->CreateMaterial("Default/TransPink");
+    pink->SetAmbient(1.0, 0.0, 1.0);
+    pink->SetDiffuse(1.0, 0.0, 1.0);
+    pink->SetEmissive(1.0, 1.0, 0.0);
+    pink->SetTransparency(0.5);
+    pink->SetCastShadows(false);
+    pink->SetReceiveShadows(false);
+    pink->SetLightingEnabled(false);
+  } else {
+    pink = this->scene->Material("Default/TransPink");
+  }
+
+  // Default Yellow Material
+  rendering::MaterialPtr yellow = this->scene->Material("Default/TransYellow");
+
   for (int i = 0; i < 6; i++) {
     this->visualFrames[i] = this->scene->CreateVisual();
 
     // Add axis
     rendering::AxisVisualPtr axis = this->scene->CreateAxisVisual();
-    axis->SetLocalScale(0.75);
+    axis->SetLocalScale(0.5);
     this->visualFrames[i]->AddChild(axis);
+
+    // Add arrow
+    rendering::ArrowVisualPtr arrow = this->createTfArrow();
+    arrow->SetVisible(false);
+    this->tfArrows[i] = arrow;
 
     // Add text
     rendering::TextPtr frameName = this->scene->CreateText();
@@ -54,25 +79,8 @@ TFDisplay::TFDisplay()
     frameName->SetCharHeight(0.15);
     this->visualFrames[i]->AddGeometry(frameName);
     this->scene->RootVisual()->AddChild(this->visualFrames[i]);
+    this->scene->RootVisual()->AddChild(this->tfArrows[i]);
   }
-
-  this->tfLines = this->scene->CreateVisual();
-  rendering::MarkerPtr marker = this->scene->CreateMarker();
-  marker->SetType(rendering::MarkerType::MT_LINE_LIST);
-  this->tfLines->AddGeometry(marker);
-
-  // Register yellow material if not registered
-  rendering::MaterialPtr mat;
-  if (!this->scene->MaterialRegistered("yellow")) {
-    mat = this->scene->CreateMaterial("yellow");
-    mat->SetAmbient(1.0, 1.0, 0.0);
-  } else {
-    mat = this->scene->Material("yellow");
-  }
-
-  this->tfLines->SetGeometryMaterial(mat, false);
-
-  this->scene->RootVisual()->AddChild(tfLines);
 }
 
 TFDisplay::~TFDisplay()
@@ -91,17 +99,23 @@ void TFDisplay::setTopic(std::string topic_name)
     std::bind(&TFDisplay::callback, this, std::placeholders::_1));
 }
 
+rendering::ArrowVisualPtr TFDisplay::createTfArrow()
+{
+  rendering::ArrowVisualPtr arrow = this->scene->CreateArrowVisual();
+  rendering::VisualPtr head = arrow->Head();
+  head->SetMaterial(this->scene->Material("Default/TransPink"));
+  rendering::VisualPtr shaft = arrow->Shaft();
+  shaft->Scale(0.5, 0.5, 1.5);
+  arrow->SetOrigin(0, 0, -0.75);
+  shaft->SetMaterial(this->scene->Material("Default/TransYellow"));
+  return arrow;
+}
+
 bool TFDisplay::eventFilter(QObject * object, QEvent * event)
 {
   std::lock_guard<std::mutex>(this->lock);
   std::vector<std::string> frameIds;
   frameManager->getFrames(frameIds);
-
-  rendering::MarkerPtr marker = std::dynamic_pointer_cast<rendering::Marker>(
-    this->tfLines->GeometryByIndex(
-      0));
-  marker->AddPoint(0, 0, 0, math::Color::Yellow);
-  marker->ClearPoints();
 
   for (int i = 0; i < static_cast<int>(frameIds.size()); i++) {
     ignition::math::Pose3d pose, parentPose;
@@ -116,8 +130,19 @@ bool TFDisplay::eventFilter(QObject * object, QEvent * event)
 
     bool result = this->frameManager->getParentPose(frameIds[i], parentPose);
     if (result) {
-      marker->AddPoint(pose.Pos(), math::Color::Yellow);
-      marker->AddPoint(parentPose.Pos(), math::Color::Yellow);
+      math::Vector3d dir = parentPose.Pos() - pose.Pos();
+      double dist = dir.Length();
+      if (dist > 0.25) {
+        this->tfArrows[i]->SetVisible(true);
+        math::Quaterniond quat;
+        quat.From2Axes(-math::Vector3d::UnitZ, dir);
+        quat *= math::Quaterniond::EulerToQuaternion(M_PI, 0, 0);
+        this->tfArrows[i]->SetLocalRotation(quat);
+        this->tfArrows[i]->SetLocalScale(1, 1, dist);
+        this->tfArrows[i]->SetLocalPosition(pose.Pos());
+      } else {
+        this->tfArrows[i]->SetVisible(false);
+      }
     }
   }
 

@@ -66,13 +66,16 @@ public:
 
   void setFrameManager(std::shared_ptr<common::FrameManager>);
 
+protected:
+  rendering::ArrowVisualPtr createTfArrow();
+
 private:
   ignition::rendering::AxisVisualPtr axis;
   ignition::rendering::RenderEngine * engine;
   ignition::rendering::ScenePtr scene;
   std::mutex lock;
   std::vector<rendering::VisualPtr> visualFrames;
-  rendering::VisualPtr tfLines;
+  std::vector<rendering::ArrowVisualPtr> tfArrows;
 };
 }  // namespace plugins
 }  // namespace rviz
