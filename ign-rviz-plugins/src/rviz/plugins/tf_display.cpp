@@ -16,6 +16,7 @@
 
 #include <pluginlib/class_list_macros.hpp>
 #include <ignition/math.hh>
+#include <ignition/math/Color.hh>
 
 #include <string>
 #include <utility>
@@ -34,13 +35,44 @@ TFDisplay::TFDisplay()
 {
   this->engine = ignition::rendering::engine("ogre");
   this->scene = this->engine->SceneByName("scene");
-  rendering::AxisVisualPtr axis = this->scene->CreateAxisVisual();
   this->visualFrames.resize(6);
   for (int i = 0; i < 6; i++) {
-    this->visualFrames[i] = this->scene->CreateAxisVisual();
-    this->visualFrames[i]->SetLocalScale(0.75);
+    this->visualFrames[i] = this->scene->CreateVisual();
+
+    // Add axis
+    rendering::AxisVisualPtr axis = this->scene->CreateAxisVisual();
+    axis->SetLocalScale(0.75);
+    this->visualFrames[i]->AddChild(axis);
+
+    // Add text
+    rendering::TextPtr frameName = this->scene->CreateText();
+    frameName->SetTextString("frame");
+    frameName->SetShowOnTop(true);
+    frameName->SetTextAlignment(
+      rendering::TextHorizontalAlign::CENTER,
+      rendering::TextVerticalAlign::CENTER);
+    frameName->SetCharHeight(0.15);
+    this->visualFrames[i]->AddGeometry(frameName);
     this->scene->RootVisual()->AddChild(this->visualFrames[i]);
   }
+
+  this->tfLines = this->scene->CreateVisual();
+  rendering::MarkerPtr marker = this->scene->CreateMarker();
+  marker->SetType(rendering::MarkerType::MT_LINE_LIST);
+  this->tfLines->AddGeometry(marker);
+
+  // Register yellow material if not registered
+  rendering::MaterialPtr mat;
+  if (!this->scene->MaterialRegistered("yellow")) {
+    mat = this->scene->CreateMaterial("yellow");
+    mat->SetAmbient(1.0, 1.0, 0.0);
+  } else {
+    mat = this->scene->Material("yellow");
+  }
+
+  this->tfLines->SetGeometryMaterial(mat, false);
+
+  this->scene->RootVisual()->AddChild(tfLines);
 }
 
 TFDisplay::~TFDisplay()
@@ -65,12 +97,28 @@ bool TFDisplay::eventFilter(QObject * object, QEvent * event)
   std::vector<std::string> frameIds;
   frameManager->getFrames(frameIds);
 
-  for (int i = 0; i < static_cast<int>(frameIds.size()); i++) {
-    ignition::math::Pose3d pose;
+  rendering::MarkerPtr marker = std::dynamic_pointer_cast<rendering::Marker>(
+    this->tfLines->GeometryByIndex(
+      0));
+  marker->AddPoint(0, 0, 0, math::Color::Yellow);
+  marker->ClearPoints();
 
+  for (int i = 0; i < static_cast<int>(frameIds.size()); i++) {
+    ignition::math::Pose3d pose, parentPose;
     this->frameManager->getFramePose(frameIds[i], pose);
-    this->visualFrames[i]->SetLocalPosition(pose.Pos());
-    this->visualFrames[i]->SetLocalRotation(pose.Rot());
+
+    // Set Frame Text
+    rendering::TextPtr frameName = std::dynamic_pointer_cast<rendering::Text>(
+      this->visualFrames[i]->GeometryByIndex(0));
+    frameName->SetTextString(frameIds[i]);
+
+    this->visualFrames[i]->SetLocalPose(pose);
+
+    bool result = this->frameManager->getParentPose(frameIds[i], parentPose);
+    if (result) {
+      marker->AddPoint(pose.Pos(), math::Color::Yellow);
+      marker->AddPoint(parentPose.Pos(), math::Color::Yellow);
+    }
   }
 
   return QObject::eventFilter(object, event);

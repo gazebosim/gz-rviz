@@ -71,7 +71,8 @@ private:
   ignition::rendering::RenderEngine * engine;
   ignition::rendering::ScenePtr scene;
   std::mutex lock;
-  std::vector<rendering::AxisVisualPtr> visualFrames;
+  std::vector<rendering::VisualPtr> visualFrames;
+  rendering::VisualPtr tfLines;
 };
 }  // namespace plugins
 }  // namespace rviz

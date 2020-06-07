@@ -34,7 +34,7 @@ find_package(ign-rviz-common REQUIRED)
 find_package(ignition-gui4 REQUIRED)
 find_package(ignition-common3 REQUIRED)
 find_package(ignition-rendering4 REQUIRED)
-find_package(ignition-math7 REQUIRED)
+find_package(ignition-math6 REQUIRED)
 
 qt5_add_resources(resources_RCC include/ignition/rviz/rviz.qrc)
 
@@ -66,7 +66,7 @@ ament_target_dependencies(ign-rviz
   tf2_ros
   ign-rviz-plugins
   ign-rviz-common
-  ignition-math7
+  ignition-math6
 )
 
 target_link_libraries(ign-rviz Qt5::Core Qt5::Qml Qt5::Quick Qt5::QuickControls2)

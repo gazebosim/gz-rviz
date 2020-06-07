@@ -60,9 +60,10 @@ void FrameManager::tf_callback(tf2_msgs::msg::TFMessage::SharedPtr msg)
   tfBuffer->_getFrameStrings(frame_ids);
 
   builtin_interfaces::msg::Time timeStamp = msg->transforms[0].header.stamp;
-  tf2::TimePoint timePoint = tf2::TimePoint(
-    std::chrono::seconds(
-      timeStamp.sec) + std::chrono::nanoseconds(timeStamp.nanosec));
+  timePoint =
+    tf2::TimePoint(
+    std::chrono::seconds(timeStamp.sec) +
+    std::chrono::nanoseconds(timeStamp.nanosec));
 
   for (const auto frame : frame_ids) {
     try {
@@ -80,13 +81,13 @@ void FrameManager::tf_callback(tf2_msgs::msg::TFMessage::SharedPtr msg)
         tf.transform.rotation.y,
         tf.transform.rotation.z);
     } catch (tf2::LookupException e) {
-      RCLCPP_ERROR(this->node->get_logger(), e.what());
+      RCLCPP_WARN(this->node->get_logger(), e.what());
     } catch (tf2::ConnectivityException e) {
-      RCLCPP_ERROR(this->node->get_logger(), e.what());
+      RCLCPP_WARN(this->node->get_logger(), e.what());
     } catch (tf2::ExtrapolationException e) {
-      RCLCPP_ERROR(this->node->get_logger(), e.what());
+      RCLCPP_WARN(this->node->get_logger(), e.what());
     } catch (tf2::InvalidArgumentException e) {
-      RCLCPP_ERROR(this->node->get_logger(), e.what());
+      RCLCPP_WARN(this->node->get_logger(), e.what());
     }
   }
 }
@@ -102,8 +103,21 @@ bool FrameManager::getFramePose(std::string & frame, ignition::math::Pose3d & po
     pose = it->second;
     return true;
   }
-
   return false;
+}
+
+bool FrameManager::getParentPose(std::string & child, ignition::math::Pose3d & pose)
+{
+  std::lock_guard<std::mutex>(this->tf_mutex_);
+
+  std::string parent;
+  bool parentAvailable = tfBuffer->_getParent(child, this->timePoint, parent);
+
+  if (!parentAvailable) {
+    return false;
+  }
+
+  return this->getFramePose(parent, pose);
 }
 
 }  // namespace common

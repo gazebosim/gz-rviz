@@ -48,6 +48,8 @@ public:
 
   bool getFramePose(std::string &, ignition::math::Pose3d &);
 
+  bool getParentPose(std::string & /*child*/, ignition::math::Pose3d &);
+
   void getFrames(std::vector<std::string> &);
 
 protected:
@@ -63,6 +65,7 @@ private:
   std::shared_ptr<tf2_ros::TransformListener> tfListener;
   rclcpp::Subscription<tf2_msgs::msg::TFMessage>::SharedPtr subscriber;
   std::unordered_map<std::string, ignition::math::Pose3d> tfTree;
+  tf2::TimePoint timePoint;
 };
 }  // namespace common
 }  // namespace rviz

@@ -12,7 +12,7 @@ find_package(tf2_msgs REQUIRED)
 find_package(tf2_ros REQUIRED)
 
 # Igntiion Libraries
-find_package(ignition-math7)
+find_package(ignition-math6)
 
 include_directories(include)
 
@@ -30,7 +30,7 @@ ament_target_dependencies(ign-rviz-common
   tf2_msgs
   geometry_msgs
   tf2_geometry_msgs
-  ignition-math7
+  ignition-math6
 )
 
 target_include_directories(ign-rviz-common

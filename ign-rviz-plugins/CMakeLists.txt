@@ -23,7 +23,7 @@ find_package(tf2_ros REQUIRED)
 find_package(ignition-common3 REQUIRED)
 find_package(ignition-rendering4 REQUIRED)
 find_package(ignition-gui4 REQUIRED)
-find_package(ignition-math7 REQUIRED)
+find_package(ignition-math6 REQUIRED)
 find_package(Qt5Widgets CONFIG REQUIRED)
 
 find_package(ign-rviz-common REQUIRED)
@@ -54,7 +54,7 @@ ament_target_dependencies(ign-rviz-plugins
   tf2_msgs
   tf2_ros
   ignition-gui4
-  ignition-math7
+  ignition-math6
   ign-rviz-common
 )
 
