@@ -42,6 +42,11 @@ void FrameManager::setFixedFrame(std::string fixedFrame)
   this->fixedFrame = fixedFrame;
 }
 
+std::string FrameManager::getFixedFrame()
+{
+  return this->fixedFrame;
+}
+
 void FrameManager::getFrames(std::vector<std::string> & frames)
 {
   tfBuffer->_getFrameStrings(frames);

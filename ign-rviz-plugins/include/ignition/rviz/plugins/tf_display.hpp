@@ -68,14 +68,15 @@ public:
 
 protected:
   rendering::ArrowVisualPtr createTfArrow();
+  void updateTF();
+  rendering::VisualPtr createVisualFrame();
 
 private:
   ignition::rendering::AxisVisualPtr axis;
   ignition::rendering::RenderEngine * engine;
   ignition::rendering::ScenePtr scene;
   std::mutex lock;
-  std::vector<rendering::VisualPtr> visualFrames;
-  std::vector<rendering::ArrowVisualPtr> tfArrows;
+  ignition::rendering::VisualPtr tfRootVisual;
 };
 }  // namespace plugins
 }  // namespace rviz

@@ -52,6 +52,8 @@ public:
 
   void getFrames(std::vector<std::string> &);
 
+  std::string getFixedFrame();
+
 protected:
   void tf_callback(const tf2_msgs::msg::TFMessage::SharedPtr);
 
