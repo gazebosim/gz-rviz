@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sarathkrishnan Ramesh
+// Copyright (c) 2020 Open Source Robotics Foundation, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -49,8 +49,6 @@ public:
 
 public:
   virtual void initialize(rclcpp::Node::SharedPtr) {}
-
-  // virtual void LoadConfig(const tinyxml2::XMLElement * /*_pluginElem*/) {}
 };
 
 template<typename MessageType>
@@ -80,8 +78,6 @@ public:
   virtual void setTopic(std::string) {}
   virtual void installEventFilter(ignition::gui::MainWindow *) {}
   virtual void setFrameManager(std::shared_ptr<common::FrameManager>) {}
-
-  // virtual void LoadConfig(const tinyxml2::XMLElement * /*_pluginElem*/) {}
 
 protected:
   typename rclcpp::Subscription<MessageType>::SharedPtr subscriber;

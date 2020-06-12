@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sarathkrishnan Ramesh
+// Copyright (c) 2020 Open Source Robotics Foundation, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -72,6 +72,10 @@ void FrameManager::tf_callback(tf2_msgs::msg::TFMessage::SharedPtr msg)
 
   for (const auto frame : frame_ids) {
     try {
+      /*
+       * TODO(Sarathkrishnan Ramesh): Reducing the tiemout for lookupTransform affects
+       * smoothness of tf visualization.
+       */
       geometry_msgs::msg::TransformStamped tf = tfBuffer->lookupTransform(
         fixedFrame, timePoint,
         frame, timePoint,
@@ -85,13 +89,13 @@ void FrameManager::tf_callback(tf2_msgs::msg::TFMessage::SharedPtr msg)
         tf.transform.rotation.x,
         tf.transform.rotation.y,
         tf.transform.rotation.z);
-    } catch (tf2::LookupException e) {
+    } catch (tf2::LookupException & e) {
       RCLCPP_WARN(this->node->get_logger(), e.what());
-    } catch (tf2::ConnectivityException e) {
+    } catch (tf2::ConnectivityException & e) {
       RCLCPP_WARN(this->node->get_logger(), e.what());
-    } catch (tf2::ExtrapolationException e) {
+    } catch (tf2::ExtrapolationException & e) {
       RCLCPP_WARN(this->node->get_logger(), e.what());
-    } catch (tf2::InvalidArgumentException e) {
+    } catch (tf2::InvalidArgumentException & e) {
       RCLCPP_WARN(this->node->get_logger(), e.what());
     }
   }

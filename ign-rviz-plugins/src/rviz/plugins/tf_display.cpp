@@ -31,6 +31,8 @@ namespace rviz
 {
 namespace plugins
 {
+#define MIN_FRAME_DISTANCE 0.25
+
 TFDisplay::TFDisplay()
 : MessageDisplay()
 {
@@ -165,7 +167,7 @@ void TFDisplay::updateTF()
           0));
       math::Vector3d dir = parentPose.Pos() - pose.Pos();
       double dist = dir.Length();
-      if (dist > 0.25) {
+      if (dist >= MIN_FRAME_DISTANCE) {
         arrow->SetVisible(true);
         math::Quaterniond quat;
         quat.From2Axes(-math::Vector3d::UnitZ, dir);

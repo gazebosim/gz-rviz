@@ -14,8 +14,6 @@ Rectangle {
             case "addTFDisplay":
                 RViz.addTFDisplay();
                 break;
-            case "addPointStampedDisplay":
-                RViz.addPointStampedDisplay();
             default:
                 parent.onAction(action);
                 break;
@@ -33,11 +31,6 @@ Rectangle {
         ListElement {
             title: "TF"
             action: "addTFDisplay"
-        }
-
-        ListElement {
-            title: "PointStamped"
-            action: "addPointStampedDisplay"
         }
 
         ListElement {
