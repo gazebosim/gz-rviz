@@ -70,7 +70,7 @@ public:
   }
 
   /**
-   * @brief Initialize ignition RViz ROS node
+   * @brief Initialize ignition RViz ROS node and frame manager
    * @throws anything rclcpp::exceptions::throw_from_rcl_error can throw.
    */
   void init_ros()
