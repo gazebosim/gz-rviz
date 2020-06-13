@@ -42,12 +42,10 @@ public:
   : QObject() {}
 
   /**
-   * @brief ROS Visualzation plugin initialization function
-   * @param ROS Node shared pointer
+   * @brief Initialization function for visualization plugins
+   * @param[in] node: ROS Node shared pointer
    * @throws anything rclcpp::exceptions::throw_from_rcl_error can throw.
    */
-
-public:
   virtual void initialize(rclcpp::Node::SharedPtr) {}
 };
 
@@ -62,21 +60,32 @@ public:
 
   virtual ~MessageDisplay() {}
 
+  // Documentation Inherited
   virtual void initialize(rclcpp::Node::SharedPtr) {}
 
   /**
    * @brief ROS subscriber callback function
-   * @param ROS message type shared pointer
+   * @param[in] msg: ROS message type shared pointer
    * @throws anything rclcpp::exceptions::throw_from_rcl_error can throw.
    */
   virtual void callback(typename MessageType::SharedPtr) {}
 
   /**
    * @brief Set ROS subscriber topic
-   * @param ROS topic name
+   * @param[in] topic_name: ROS topic name
    */
   virtual void setTopic(std::string) {}
+
+  /**
+   * @brief Install an event filter on ths object
+   * @param[in] window: Application main window
+   */
   virtual void installEventFilter(ignition::gui::MainWindow *) {}
+
+  /**
+   * @brief Store reference to FrameManager
+   * @param[in] frameManager: Shared pointer to FrameManager object
+   */
   virtual void setFrameManager(std::shared_ptr<common::FrameManager>) {}
 
 protected:
