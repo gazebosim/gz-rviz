@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
-project(ign-rviz-plugins)
+project(ign_rviz_plugins)
 
 set(CMAKE_AUTOMOC ON)
 
@@ -26,7 +26,7 @@ find_package(ignition-gui4 REQUIRED)
 find_package(ignition-math6 REQUIRED)
 find_package(Qt5Widgets CONFIG REQUIRED)
 
-find_package(ign-rviz-common REQUIRED)
+find_package(ign_rviz_common REQUIRED)
 
 include_directories(include)
 
@@ -41,12 +41,12 @@ set(ign_rviz_plugins_headers_to_moc
   "include/ignition/rviz/plugins/tf_display.hpp"
 )
 
-add_library(ign-rviz-plugins SHARED
+add_library(ign_rviz_plugins SHARED
   ${ign_rviz_plugins_headers_to_moc}
   src/rviz/plugins/tf_display.cpp
 )
 
-ament_target_dependencies(ign-rviz-plugins
+ament_target_dependencies(ign_rviz_plugins
   ignition-rendering4
   pluginlib
   rclcpp
@@ -55,10 +55,10 @@ ament_target_dependencies(ign-rviz-plugins
   tf2_ros
   ignition-gui4
   ignition-math6
-  ign-rviz-common
+  ign_rviz_common
 )
 
-target_include_directories(ign-rviz-plugins
+target_include_directories(ign_rviz_plugins
   PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>
@@ -66,7 +66,7 @@ target_include_directories(ign-rviz-plugins
   ${IGNITION-GUI_INCLUDE_DIRS}
 )
 
-pluginlib_export_plugin_description_file(ign-rviz-plugins ign-rviz-plugins.xml)
+pluginlib_export_plugin_description_file(ign_rviz_plugins ign_rviz_plugins.xml)
 
 install(
   DIRECTORY include/
@@ -74,10 +74,10 @@ install(
 )
 
 ament_export_include_directories(include)
-ament_export_libraries(ign-rviz-plugins)
+ament_export_libraries(ign_rviz_plugins)
 
 install(
-  TARGETS ign-rviz-plugins
+  TARGETS ign_rviz_plugins
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin

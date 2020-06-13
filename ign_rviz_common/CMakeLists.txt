@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
-project(ign-rviz-common)
+project(ign_rviz_common)
 
 # Default to C++14
 if(NOT CMAKE_CXX_STANDARD)
@@ -27,11 +27,11 @@ include_directories(SYSTEM
   ${IGNITION-MATH_INCLUDE_DIRS}
 )
 
-add_library(ign-rviz-common SHARED
+add_library(ign_rviz_common SHARED
   src/rviz/common/frame_manager.cpp
 )
 
-ament_target_dependencies(ign-rviz-common
+ament_target_dependencies(ign_rviz_common
   rclcpp
   tf2_ros
   tf2_msgs
@@ -40,14 +40,14 @@ ament_target_dependencies(ign-rviz-common
   ignition-math6
 )
 
-target_include_directories(ign-rviz-common
+target_include_directories(ign_rviz_common
   PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>
 )
 
 install(
-  TARGETS ign-rviz-common
+  TARGETS ign_rviz_common
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin
