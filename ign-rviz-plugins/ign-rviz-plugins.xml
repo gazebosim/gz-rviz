@@ -1,0 +1,8 @@
+<library path="ign-rviz-plugins">
+	<class
+		name="ignition/rviz/plugins/TFDisplay"
+		type="ignition::rviz::plugins::TFDisplay"
+		base_class_type="ignition::rviz::plugins::MessageDisplayBase">
+		<description>Visualization plugin for tf2_msgs/msg/TFMessage</description>
+	</class>
+</library>
