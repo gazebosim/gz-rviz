@@ -11,5 +11,5 @@ ROS package for RViz developed using Ignition Rendering Library.
   ```
 - To launch ign-rviz use the following command
   ```bash
-  ros2 launch ign-rviz rviz.py
+  ros2 launch ign_rviz rviz.launch.py
   ```

@@ -41,7 +41,7 @@ class RViz : public QObject
 
 public:
   RViz()
-  : plugin_loader("ign-rviz-plugins", "ignition::rviz::plugins::MessageDisplayBase")
+  : plugin_loader("ign_rviz_plugins", "ignition::rviz::plugins::MessageDisplayBase")
   {}
 
   /**

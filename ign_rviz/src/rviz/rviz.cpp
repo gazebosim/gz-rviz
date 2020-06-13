@@ -32,7 +32,7 @@ int main(int argc, char ** argv)
 
   ignition::gui::Application app(argc, argv);
 
-  std::string package_share_directory = ament_index_cpp::get_package_share_directory("ign-rviz");
+  std::string package_share_directory = ament_index_cpp::get_package_share_directory("ign_rviz");
   app.LoadConfig(package_share_directory + "/config/rviz.config");
 
   ignition::rviz::RViz rviz_app;
