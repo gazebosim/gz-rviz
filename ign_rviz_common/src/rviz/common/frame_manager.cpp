@@ -25,6 +25,11 @@ namespace rviz
 {
 namespace common
 {
+/**
+ * Stores reference to ROS Node
+ * Creates a tfBuffer and tfListener.
+ * Creates a tf subscription and binds callback to it.
+ */
 FrameManager::FrameManager(rclcpp::Node::SharedPtr node)
 {
   this->node = std::move(node);
@@ -37,21 +42,25 @@ FrameManager::FrameManager(rclcpp::Node::SharedPtr node)
     std::bind(&FrameManager::tf_callback, this, std::placeholders::_1));
 }
 
+////////////////////////////////////////////////////////////////////////////////
 void FrameManager::setFixedFrame(std::string fixedFrame)
 {
   this->fixedFrame = fixedFrame;
 }
 
+////////////////////////////////////////////////////////////////////////////////
 std::string FrameManager::getFixedFrame()
 {
   return this->fixedFrame;
 }
 
+////////////////////////////////////////////////////////////////////////////////
 void FrameManager::getFrames(std::vector<std::string> & frames)
 {
   tfBuffer->_getFrameStrings(frames);
 }
 
+////////////////////////////////////////////////////////////////////////////////
 void FrameManager::tf_callback(tf2_msgs::msg::TFMessage::SharedPtr msg)
 {
   std::lock_guard<std::mutex>(this->tf_mutex_);
@@ -101,6 +110,7 @@ void FrameManager::tf_callback(tf2_msgs::msg::TFMessage::SharedPtr msg)
   }
 }
 
+////////////////////////////////////////////////////////////////////////////////
 bool FrameManager::getFramePose(std::string & frame, ignition::math::Pose3d & pose)
 {
   std::lock_guard<std::mutex>(this->tf_mutex_);
@@ -115,6 +125,7 @@ bool FrameManager::getFramePose(std::string & frame, ignition::math::Pose3d & po
   return false;
 }
 
+////////////////////////////////////////////////////////////////////////////////
 bool FrameManager::getParentPose(std::string & child, ignition::math::Pose3d & pose)
 {
   std::lock_guard<std::mutex>(this->tf_mutex_);
