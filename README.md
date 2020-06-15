@@ -51,3 +51,17 @@ source install/setup.zsh
 # Launch ign-rviz
 ros2 launch ign_rviz rviz.launch.py
 ```
+
+### Instruction to generate documentation
+
+Project documentation can be generated with the help of doxygen using the following commands.
+
+```bash
+cd ~/colcon_ws/src/ign-rviz/docs/
+
+# Generate documentation
+doxygen rviz.doxyfile
+
+# View documentation
+firefox ./html/index.html
+```

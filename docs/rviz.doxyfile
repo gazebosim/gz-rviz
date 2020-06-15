@@ -1,0 +1,16 @@
+# Doxyfile 1.8.13
+
+PROJECT_NAME           = "Ignition RViz"
+
+PROJECT_NUMBER         = 0.1
+
+PROJECT_BRIEF          = "RViz developed using ignition rendering"
+
+INPUT                  = ../README.md \
+                         ../ign_rviz_common/ \
+                         ../ign_rviz_plugins/ \
+                         ../ign_rviz/
+
+RECURSIVE              = YES
+
+USE_MDFILE_AS_MAINPAGE = ../README.md
