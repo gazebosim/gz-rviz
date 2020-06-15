@@ -1,15 +1,53 @@
 # Ignition RViz
 
-ROS package for RViz developed using Ignition Rendering Library.
+RViz is a 3D visualization program for robots using ROS.
 
-### Instructions
-- Cone the repository in `src` folder of your workspace
-- Source ROS2
-- Use colcon to build the packages
-  ```bash
-  colcon build
-  ```
-- To launch ign-rviz use the following command
-  ```bash
-  ros2 launch ign_rviz rviz.launch.py
-  ```
+This version of RViz is developed using Ignition Rendering Library.
+
+### Requirements
+
+- ROS2
+- ignition libraries
+	- ign-common3
+	- ign-gui4
+	- ign-rendering4
+	- ign-math6
+- pluginlib
+- Qt5
+
+### Setup the repository
+
+- **Create a colcon workspace**
+```bash
+mkdir -p ~/colcon_ws/src
+cd ~/colcon_ws/src
+```
+- **Clone the repository**
+```bash
+git clone https://github.com/Sarath18/ign-rviz.git
+```
+
+- **Build ign-rviz**
+```bash
+# Go to the root of your colcon workspace
+cd ../
+
+# Source ROS2
+source /opt/ros/foxy/setup.bash  # If using bash
+source /opt/ros/foxy/setup.zsh   # If using zsh
+
+# Build ign-rviz
+colcon build
+```
+
+### Launch ign-rviz
+
+Ignition Rviz can be launched using the following command
+
+```bash
+# Source the workspace
+source install/setup.zsh
+
+# Launch ign-rviz
+ros2 launch ign_rviz rviz.launch.py
+```

@@ -36,39 +36,51 @@ class TFDisplay : public MessageDisplay<tf2_msgs::msg::TFMessage>
   Q_OBJECT
 
 public:
+  /**
+   * Constructor for tf visualization plugin
+   */
   TFDisplay();
+
   ~TFDisplay();
 
-  /**
-   * @brief TFMessage ROS Visualzation plugin initialization
-   * @param ROS Node shared pointer
-   * @throws anything rclcpp::exceptions::throw_from_rcl_error can throw.
-   */
+  // Documentation Inherited
   void initialize(rclcpp::Node::SharedPtr);
 
-  /**
-   * @brief ROS subscriber callback function
-   * @param Shared pointer of TFMessage ROS message
-   * @throws anything rclcpp::exceptions::throw_from_rcl_error can throw.
-   */
+  // Documentation Inherited
   void callback(const tf2_msgs::msg::TFMessage::SharedPtr) {}
 
-  /**
-   * @brief Set ROS subscriber topic
-   * @param ROS topic name
-   * @throws anything rclcpp::exceptions::throw_from_rcl_error can throw.
-   */
+  // Documentation inherited
   void setTopic(std::string);
 
+  /**
+   * @brief Qt eventFilters. Original documentation can be found
+   * <a href="https://doc.qt.io/qt-5/qobject.html#eventFilter">here</a>
+   */
   bool eventFilter(QObject *, QEvent *);
 
+  // Documentation inherited
   void installEventFilter(ignition::gui::MainWindow *);
 
+  // Documentation inherited
   void setFrameManager(std::shared_ptr<common::FrameManager>);
 
 protected:
+  /**
+   * @brief Create custom arrow visual for visualizing tf links
+   * @return tf arrow visual
+   */
   rendering::ArrowVisualPtr createTfArrow();
+
+  /**
+   * @brief Update tf visualization
+   */
   void updateTF();
+
+  /**
+   * @brief Creates a frame visual which includes an axis
+   * an arrow, and text visual
+   * @return A frame visual
+   */
   rendering::VisualPtr createVisualFrame();
 
 private:
