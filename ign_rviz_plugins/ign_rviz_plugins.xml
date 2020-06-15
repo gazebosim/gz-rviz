@@ -1,4 +1,4 @@
-<library path="ign-rviz-plugins">
+<library path="ign_rviz_plugins">
 	<class
 		name="ignition/rviz/plugins/TFDisplay"
 		type="ignition::rviz::plugins::TFDisplay"

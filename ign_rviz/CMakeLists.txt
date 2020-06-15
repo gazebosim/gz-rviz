@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
-project(ign-rviz)
+project(ign_rviz)
 
 # Default to C++14
 if(NOT CMAKE_CXX_STANDARD)
@@ -27,8 +27,8 @@ find_package(tf2_geometry_msgs REQUIRED)
 find_package(tf2_msgs REQUIRED)
 find_package(tf2_ros REQUIRED)
 find_package(pluginlib REQUIRED)
-find_package(ign-rviz-plugins REQUIRED)
-find_package(ign-rviz-common REQUIRED)
+find_package(ign_rviz_plugins REQUIRED)
+find_package(ign_rviz_common REQUIRED)
 
 # Ignition libraries
 find_package(ignition-gui4 REQUIRED)
@@ -55,23 +55,23 @@ link_directories(
 
 include_directories(include)
 
-add_executable(ign-rviz src/rviz/rviz.cpp include/ignition/rviz/rviz.hpp ${resources_RCC})
+add_executable(ign_rviz src/rviz/rviz.cpp include/ignition/rviz/rviz.hpp ${resources_RCC})
 
-ament_target_dependencies(ign-rviz
+ament_target_dependencies(ign_rviz
   ignition-gui4
   rclcpp
   pluginlib
   geometry_msgs
   tf2_msgs
   tf2_ros
-  ign-rviz-plugins
-  ign-rviz-common
+  ign_rviz_plugins
+  ign_rviz_common
   ignition-math6
 )
 
-target_link_libraries(ign-rviz Qt5::Core Qt5::Qml Qt5::Quick Qt5::QuickControls2)
+target_link_libraries(ign_rviz Qt5::Core Qt5::Qml Qt5::Quick Qt5::QuickControls2)
 
-install(TARGETS ign-rviz
+install(TARGETS ign_rviz
         DESTINATION lib/${PROJECT_NAME})
 
 install(DIRECTORY launch
