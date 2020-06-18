@@ -31,11 +31,19 @@
 #include <ignition/rviz/plugins/message_display_base.hpp>
 
 #include <memory>
+#include <vector>
 
 namespace ignition
 {
 namespace rviz
 {
+
+template<typename MessageType>
+using DisplayPlugin = std::shared_ptr<plugins::MessageDisplay<MessageType>>;
+
+template<typename MessageType>
+using DisplayPluginList = std::vector<DisplayPlugin<MessageType>>;
+
 class RViz : public QObject
 {
   Q_OBJECT
@@ -59,12 +67,17 @@ public:
   Q_INVOKABLE void addTFDisplay()
   {
     try {
-      tf_plugin = std::dynamic_pointer_cast<plugins::MessageDisplay<tf2_msgs::msg::TFMessage>>(
+      // Create new instance of plugin
+      DisplayPlugin<tf2_msgs::msg::TFMessage> tf_plugin =
+        std::dynamic_pointer_cast<plugins::MessageDisplay<tf2_msgs::msg::TFMessage>>(
         plugin_loader.createSharedInstance(
           "ignition/rviz/plugins/TFDisplay"));
       tf_plugin->initialize(this->node);
       tf_plugin->setFrameManager(this->frameManager);
       tf_plugin->installEventFilter(ignition::gui::App()->findChild<ignition::gui::MainWindow *>());
+
+      // Add the new plugin to the list
+      tf_plugins.push_back(tf_plugin);
     } catch (pluginlib::PluginlibException & ex) {
       std::cout << ex.what() << std::endl;
     }
@@ -76,7 +89,8 @@ public:
   Q_INVOKABLE void addLaserScanDisplay()
   {
     try {
-      laser_scan_plugin =
+      // Create new instance of plugin
+      DisplayPlugin<sensor_msgs::msg::LaserScan> laser_scan_plugin =
         std::dynamic_pointer_cast<plugins::MessageDisplay<sensor_msgs::msg::LaserScan>>(
         plugin_loader.createSharedInstance(
           "ignition/rviz/plugins/LaserScanDisplay"));
@@ -85,6 +99,9 @@ public:
       laser_scan_plugin->setFrameManager(this->frameManager);
       laser_scan_plugin->installEventFilter(
         ignition::gui::App()->findChild<ignition::gui::MainWindow *>());
+
+      // Add the new plugin to the list
+      laser_scan_plugins.push_back(laser_scan_plugin);
     } catch (pluginlib::PluginlibException & ex) {
       std::cout << ex.what() << std::endl;
     }
@@ -114,9 +131,9 @@ private:
   // Data Members
   rclcpp::Node::SharedPtr node;
 
-  // Plugins
-  std::shared_ptr<plugins::MessageDisplay<tf2_msgs::msg::TFMessage>> tf_plugin;
-  std::shared_ptr<plugins::MessageDisplay<sensor_msgs::msg::LaserScan>> laser_scan_plugin;
+  // Plugins list
+  DisplayPluginList<tf2_msgs::msg::TFMessage> tf_plugins;
+  DisplayPluginList<sensor_msgs::msg::LaserScan> laser_scan_plugins;
 
   // Plugin Loader
   pluginlib::ClassLoader<plugins::MessageDisplayBase> plugin_loader;
