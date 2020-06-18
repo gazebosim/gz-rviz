@@ -25,6 +25,7 @@
 #include <rclcpp/rclcpp.hpp>
 #include <geometry_msgs/msg/point_stamped.hpp>
 #include <tf2_msgs/msg/tf_message.hpp>
+#include <sensor_msgs/msg/laser_scan.hpp>
 
 #include <pluginlib/class_loader.hpp>
 #include <ignition/rviz/plugins/message_display_base.hpp>
@@ -70,6 +71,26 @@ public:
   }
 
   /**
+   * @brief Loads LaserScan Visualization Plugin
+   */
+  Q_INVOKABLE void addLaserScanDisplay()
+  {
+    try {
+      laser_scan_plugin =
+        std::dynamic_pointer_cast<plugins::MessageDisplay<sensor_msgs::msg::LaserScan>>(
+        plugin_loader.createSharedInstance(
+          "ignition/rviz/plugins/LaserScanDisplay"));
+      laser_scan_plugin->initialize(this->node);
+      laser_scan_plugin->setTopic("/scan");
+      laser_scan_plugin->setFrameManager(this->frameManager);
+      laser_scan_plugin->installEventFilter(
+        ignition::gui::App()->findChild<ignition::gui::MainWindow *>());
+    } catch (pluginlib::PluginlibException & ex) {
+      std::cout << ex.what() << std::endl;
+    }
+  }
+
+  /**
    * @brief Initialize ignition RViz ROS node and frame manager
    * @throws anything rclcpp::exceptions::throw_from_rcl_error can throw.
    */
@@ -95,6 +116,7 @@ private:
 
   // Plugins
   std::shared_ptr<plugins::MessageDisplay<tf2_msgs::msg::TFMessage>> tf_plugin;
+  std::shared_ptr<plugins::MessageDisplay<sensor_msgs::msg::LaserScan>> laser_scan_plugin;
 
   // Plugin Loader
   pluginlib::ClassLoader<plugins::MessageDisplayBase> plugin_loader;
