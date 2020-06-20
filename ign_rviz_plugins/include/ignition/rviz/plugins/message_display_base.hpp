@@ -24,6 +24,7 @@
   #include <ignition/gui/Plugin.hh>
 #endif
 #include <ignition/gui/MainWindow.hh>
+#include <ignition/gui/Application.hh>
 
 #include "ignition/rviz/common/frame_manager.hpp"
 
@@ -33,13 +34,13 @@ namespace rviz
 {
 namespace plugins
 {
-class MessageDisplayBase : public QObject
+class MessageDisplayBase : public gui::Plugin
 {
   Q_OBJECT
 
 public:
   MessageDisplayBase()
-  : QObject() {}
+  : Plugin() {}
 
   /**
    * @brief Initialization function for visualization plugins
@@ -81,6 +82,8 @@ public:
    * @param[in] window: Application main window
    */
   virtual void installEventFilter(ignition::gui::MainWindow *) {}
+
+  virtual void loadGUIConfig(gui::Application *) {}
 
   /**
    * @brief Store reference to FrameManager

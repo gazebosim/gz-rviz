@@ -65,6 +65,7 @@ public:
 
   // Documentation inherited
   void setFrameManager(std::shared_ptr<common::FrameManager>);
+  void loadGUIConfig(gui::Application *app) {}
 
 protected:
   /**

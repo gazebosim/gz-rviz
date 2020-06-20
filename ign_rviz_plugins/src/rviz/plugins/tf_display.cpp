@@ -65,11 +65,41 @@ TFDisplay::TFDisplay()
   // Create a default visual frame
   rendering::VisualPtr visualFrame = this->createVisualFrame();
   tfRootVisual->AddChild(visualFrame);
+
+
+  // view.setSource(QUrl::fromLocalFile(":tf_display/tf_display.qml"));
+  // view.show();
+  // object = view.rootObject();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 TFDisplay::~TFDisplay()
 {}
+
+////////////////////////////////////////////////////////////////////////////////
+void TFDisplay::loadGUIConfig(gui::Application *app) {
+  RCLCPP_INFO(this->node->get_logger(), "Loading plugin qml");
+  std::string filename = "tf_display";
+  this->context = new QQmlContext(app->Engine()->rootContext());
+  this->context->setContextProperty(QString::fromStdString(filename), this);
+
+  // Instantiate plugin QML file into a component
+  std::string qmlFile(":/" + filename + "/" + filename + ".qml");
+  QQmlComponent component(app->Engine(), QString::fromStdString(qmlFile));
+
+  // Create an item for the plugin
+  this->pluginItem = qobject_cast<QQuickItem *>(component.create(this->context));
+  if (!this->pluginItem)
+  {
+    ignerr << "Failed to instantiate QML file [" << qmlFile << "]." << std::endl
+           << "* Are you sure it's been added to the .qrc file?" << std::endl
+           << "* Are you sure the file is valid QML? "
+           << "You can check with the `qmlscene` tool" << std::endl;
+    return;
+  }
+  this->title = "TF Plugin";
+  RCLCPP_INFO(this->node->get_logger(), "Success!");
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 void TFDisplay::initialize(rclcpp::Node::SharedPtr node)

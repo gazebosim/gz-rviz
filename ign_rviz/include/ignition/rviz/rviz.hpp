@@ -75,6 +75,7 @@ public:
       tf_plugin->initialize(this->node);
       tf_plugin->setFrameManager(this->frameManager);
       tf_plugin->installEventFilter(ignition::gui::App()->findChild<ignition::gui::MainWindow *>());
+      tf_plugin->loadGUIConfig(this->app.get());
 
       // Add the new plugin to the list
       tf_plugins.push_back(tf_plugin);
@@ -139,6 +140,8 @@ private:
   pluginlib::ClassLoader<plugins::MessageDisplayBase> plugin_loader;
 
   std::shared_ptr<common::FrameManager> frameManager;
+public:
+  std::shared_ptr<ignition::gui::Application> app;
 };
 }  // namespace rviz
 }  // namespace ignition

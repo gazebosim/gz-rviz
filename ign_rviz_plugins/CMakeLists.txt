@@ -37,6 +37,8 @@ include_directories(SYSTEM
   ${IGNITION-MATH_INCLUDE_DIRS}
 )
 
+qt5_add_resources(resources_RCC include/ignition/rviz/plugins/tf_display.qrc)
+
 set(ign_rviz_plugins_headers_to_moc
   "include/ignition/rviz/plugins/message_display_base.hpp"
   "include/ignition/rviz/plugins/tf_display.hpp"
@@ -47,6 +49,7 @@ add_library(ign_rviz_plugins SHARED
   ${ign_rviz_plugins_headers_to_moc}
   src/rviz/plugins/tf_display.cpp
   src/rviz/plugins/laser_scan_display.cpp
+  ${resources_RCC}
 )
 
 ament_target_dependencies(ign_rviz_plugins
@@ -61,6 +64,8 @@ ament_target_dependencies(ign_rviz_plugins
   ignition-math6
   ign_rviz_common
 )
+
+target_link_libraries(ign_rviz_plugins Qt5::Core Qt5::Qml Qt5::Quick Qt5::QuickControls2)
 
 target_include_directories(ign_rviz_plugins
   PUBLIC

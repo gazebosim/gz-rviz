@@ -22,6 +22,9 @@
 #include <mutex>
 #include <memory>
 #include <vector>
+#include <QQuickView>
+#include <QQmlContext>
+#include <QQuickItem>
 
 #include "ignition/rviz/plugins/message_display_base.hpp"
 
@@ -63,6 +66,7 @@ public:
 
   // Documentation inherited
   void setFrameManager(std::shared_ptr<common::FrameManager>);
+  void loadGUIConfig(gui::Application *app);
 
 protected:
   /**
@@ -89,6 +93,10 @@ private:
   ignition::rendering::ScenePtr scene;
   std::mutex lock;
   ignition::rendering::VisualPtr tfRootVisual;
+  // QQuickView view;
+  // QObject *object;
+  QQmlContext *context;
+  QQuickItem *pluginItem;
 };
 }  // namespace plugins
 }  // namespace rviz

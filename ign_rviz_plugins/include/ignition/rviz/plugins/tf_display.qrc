@@ -1,0 +1,5 @@
+<!DOCTYPE RCC><RCC version="1.0">
+  <qresource prefix="tf_display/">
+    <file>tf_display.qml</file>
+  </qresource>
+</RCC>

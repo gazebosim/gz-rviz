@@ -30,12 +30,13 @@ int main(int argc, char ** argv)
 
   ignition::common::Console::SetVerbosity(4);
 
-  ignition::gui::Application app(argc, argv);
+  ignition::rviz::RViz rviz_app;
+  rviz_app.app = std::make_shared<ignition::gui::Application>(argc, argv);
+
+  // ignition::gui::Application app(argc, argv);
 
   std::string package_share_directory = ament_index_cpp::get_package_share_directory("ign_rviz");
-  app.LoadConfig(package_share_directory + "/config/rviz.config");
-
-  ignition::rviz::RViz rviz_app;
+  rviz_app.app->LoadConfig(package_share_directory + "/config/rviz.config");
 
   rviz_app.init_ros();
   rclcpp::executors::MultiThreadedExecutor executor;
@@ -44,10 +45,10 @@ int main(int argc, char ** argv)
       &rclcpp::executors::MultiThreadedExecutor::spin,
       &executor));
 
-  auto context = new QQmlContext(app.Engine()->rootContext());
+  auto context = new QQmlContext(rviz_app.app->Engine()->rootContext());
   context->setContextProperty("RViz", &rviz_app);
 
-  QQmlComponent component(app.Engine(), ":/RViz/RVizDrawer.qml");
+  QQmlComponent component(rviz_app.app->Engine(), ":/RViz/RVizDrawer.qml");
   auto item = qobject_cast<QQuickItem *>(component.create(context));
   if (!item) {
     ignerr << "Failed to initialize" << std::endl;
@@ -56,15 +57,15 @@ int main(int argc, char ** argv)
 
   QQmlEngine::setObjectOwnership(item, QQmlEngine::CppOwnership);
 
-  auto win = app.findChild<ignition::gui::MainWindow *>()->QuickWindow();
+  auto win = rviz_app.app->findChild<ignition::gui::MainWindow *>()->QuickWindow();
   win->setTitle("Ignition RViz");
 
   auto displayType = win->findChild<QQuickItem *>("sideDrawer");
 
   item->setParentItem(displayType);
-  item->setParent(app.Engine());
+  item->setParent(rviz_app.app->Engine());
 
-  app.exec();
+  rviz_app.app->exec();
 
   executor.cancel();
   executor_thread.join();
