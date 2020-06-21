@@ -42,13 +42,6 @@ LaserScanDisplay::LaserScanDisplay()
   // Create root visual for laser scan
   this->rootVisual = this->scene->CreateVisual();
 
-  // Attach a point geometry to root visual
-  rendering::MarkerPtr marker = this->scene->CreateMarker();
-  marker->SetType(rendering::MarkerType::MT_POINTS);
-
-  this->rootVisual->AddGeometry(marker);
-  this->rootVisual->SetGeometryMaterial(this->scene->Material("Default/White"), false);
-
   // Attach root visual to scene
   this->scene->RootVisual()->AddChild(this->rootVisual);
 }
@@ -87,6 +80,15 @@ void LaserScanDisplay::callback(const sensor_msgs::msg::LaserScan::SharedPtr msg
 bool LaserScanDisplay::eventFilter(QObject * object, QEvent * event)
 {
   if (event->type() == gui::events::Render::kType) {
+    // Attach a point geometry to root visual
+    if (static_cast<int>(this->rootVisual->GeometryCount()) == 0) {
+      rendering::MarkerPtr marker = this->scene->CreateMarker();
+      marker->SetType(rendering::MarkerType::MT_POINTS);
+
+      this->rootVisual->AddGeometry(marker);
+      this->rootVisual->SetGeometryMaterial(this->scene->Material("Default/White"), false);
+    }
+
     update();
   }
 
