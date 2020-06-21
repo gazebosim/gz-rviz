@@ -14,6 +14,9 @@ Rectangle {
             case "addTFDisplay":
                 RViz.addTFDisplay();
                 break;
+            case "addLaserScanDisplay":
+                RViz.addLaserScanDisplay();
+                break;
             default:
                 parent.onAction(action);
                 break;
@@ -31,6 +34,11 @@ Rectangle {
         ListElement {
             title: "TF"
             action: "addTFDisplay"
+        }
+
+        ListElement {
+            title: "LaserScan"
+            action: "addLaserScanDisplay"
         }
 
         ListElement {

@@ -26,6 +26,7 @@ find_package(geometry_msgs REQUIRED)
 find_package(tf2_geometry_msgs REQUIRED)
 find_package(tf2_msgs REQUIRED)
 find_package(tf2_ros REQUIRED)
+find_package(sensor_msgs REQUIRED)
 find_package(pluginlib REQUIRED)
 find_package(ign_rviz_plugins REQUIRED)
 find_package(ign_rviz_common REQUIRED)
@@ -64,6 +65,7 @@ ament_target_dependencies(ign_rviz
   geometry_msgs
   tf2_msgs
   tf2_ros
+  sensor_msgs
   ign_rviz_plugins
   ign_rviz_common
   ignition-math6

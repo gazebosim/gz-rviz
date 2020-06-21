@@ -5,4 +5,10 @@
 		base_class_type="ignition::rviz::plugins::MessageDisplayBase">
 		<description>Visualization plugin for tf2_msgs/msg/TFMessage</description>
 	</class>
+	<class
+		name="ignition/rviz/plugins/LaserScanDisplay"
+		type="ignition::rviz::plugins::LaserScanDisplay"
+		base_class_type="ignition::rviz::plugins::MessageDisplayBase">
+		<description>Visualization plugin for sensor_msgs/msg/LaserScan</description>
+	</class>
 </library>

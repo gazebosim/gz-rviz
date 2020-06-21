@@ -18,6 +18,7 @@ find_package(geometry_msgs REQUIRED)
 find_package(tf2_msgs REQUIRED)
 find_package(pluginlib REQUIRED)
 find_package(tf2_ros REQUIRED)
+find_package(sensor_msgs REQUIRED)
 
 # Ignition libraries
 find_package(ignition-common3 REQUIRED)
@@ -39,11 +40,13 @@ include_directories(SYSTEM
 set(ign_rviz_plugins_headers_to_moc
   "include/ignition/rviz/plugins/message_display_base.hpp"
   "include/ignition/rviz/plugins/tf_display.hpp"
+  "include/ignition/rviz/plugins/laser_scan_display.hpp"
 )
 
 add_library(ign_rviz_plugins SHARED
   ${ign_rviz_plugins_headers_to_moc}
   src/rviz/plugins/tf_display.cpp
+  src/rviz/plugins/laser_scan_display.cpp
 )
 
 ament_target_dependencies(ign_rviz_plugins
@@ -53,6 +56,7 @@ ament_target_dependencies(ign_rviz_plugins
   geometry_msgs
   tf2_msgs
   tf2_ros
+  sensor_msgs
   ignition-gui4
   ignition-math6
   ign_rviz_common
