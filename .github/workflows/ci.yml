@@ -16,6 +16,7 @@ jobs:
       id: configure
       run: |
         mkdir -p colcon_ws/src
+        cd ..
         mv ign-rviz colcon_ws/src/
         source  /opt/ros/foxy/setup.bash
     - name: Build project
