@@ -4,6 +4,8 @@ RViz is a 3D visualization program for robots using ROS.
 
 This version of RViz is developed using Ignition Rendering Library.
 
+![Ignition RViz CI](https://github.com/Sarath18/ign-rviz/workflows/Ignition%20RViz%20CI/badge.svg)
+
 ### Requirements
 
 - ROS2
