@@ -15,13 +15,8 @@ jobs:
     - name: Setup colcon workspace
       id: configure
       run: |
-        pwd
-        ls
-        cd /
-        echo "__________________"
-        ls
         mkdir -p colcon_ws/src
-        mv ign-rviz /colcon_ws/src/
+        mv ign-rviz colcon_ws/src/
         source  /opt/ros/foxy/setup.bash
     - name: Build project
       id: build
