@@ -28,22 +28,22 @@ Rectangle {
 
         ListElement {
             title: "Grid"
-            action: "addGrid3D"
+            actionElement: "addGrid3D"
         }
 
         ListElement {
             title: "TF"
-            action: "addTFDisplay"
+            actionElement: "addTFDisplay"
         }
 
         ListElement {
             title: "LaserScan"
-            action: "addLaserScanDisplay"
+            actionElement: "addLaserScanDisplay"
         }
 
         ListElement {
             title: "Exit"
-            action: "close"
+            actionElement: "close"
         }
     }
 
@@ -57,7 +57,7 @@ Rectangle {
             text: title
             highlighted: ListView.isCurrentItem
             onClicked: {
-                displayDrawer.onAction(action);
+                displayDrawer.onAction(actionElement);
                 displayDrawer.parent.closeDrawer();
             }
         }
