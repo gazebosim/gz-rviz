@@ -88,7 +88,52 @@ void TFDisplay::loadGUIConfig(gui::Application *app) {
            << "You can check with the `qmlscene` tool" << std::endl;
     return;
   }
+
+  QQmlEngine::setObjectOwnership(this->pluginItem, QQmlEngine::CppOwnership);
+  auto window = app->findChild<ignition::gui::MainWindow *>()->QuickWindow();
+
+  // Instantiate a card
+  std::string qmlIgnCard(":qml/IgnCard.qml");
+  QQmlComponent cardComp(app->Engine(), QString(QString::fromStdString(qmlIgnCard)));
+  auto cardItem = qobject_cast<QQuickItem *>(cardComp.create());
+  if (!cardItem)
+  {
+    ignerr << "Internal error: Failed to instantiate QML file [" << qmlFile
+           << "]" << std::endl;
+    return;
+  }
+
+  QQmlEngine::setObjectOwnership(cardItem, QQmlEngine::CppOwnership);
+
+  // Get card parts
+  auto cardContentItem = cardItem->findChild<QQuickItem *>("content");
+  if (!cardContentItem)
+  {
+    ignerr << "Null card content QQuickItem!" << std::endl;
+    return;
+  }
+
+  auto cardToolbarItem = cardItem->findChild<QQuickItem *>("cardToolbar");
+  if (!cardToolbarItem)
+  {
+    ignerr << "Null toolbar content QQuickItem!" << std::endl;
+    return;
+  }
+
+  auto bgItem = window->findChild<QQuickItem *>("background");
+  if (!bgItem)
+  {
+    ignerr << "Internal error: missing background item" << std::endl;
+    return;
+  }
+  cardItem->setParentItem(bgItem);
+  cardItem->setParent(app->Engine());
+
+  this->pluginItem->setParentItem(cardContentItem);
+  this->pluginItem->setParent(app->Engine());
+
   this->title = "TF Plugin";
+
   RCLCPP_INFO(this->node->get_logger(), "Success!");
 }
 

@@ -19,7 +19,8 @@ import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.3
 
 Rectangle {
-  id: tf_display
+  id: tfDisplay
+  anchors.fill: parent
   color: "#ff0000"
   Layout.minimumWidth: 300
   Layout.minimumHeight: 300
