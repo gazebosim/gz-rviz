@@ -61,15 +61,6 @@ TFDisplay::TFDisplay()
   // Create a root visual for tf visualization
   this->tfRootVisual = this->scene->CreateVisual();
   this->scene->RootVisual()->AddChild(tfRootVisual);
-
-  // Create a default visual frame
-  rendering::VisualPtr visualFrame = this->createVisualFrame();
-  tfRootVisual->AddChild(visualFrame);
-
-
-  // view.setSource(QUrl::fromLocalFile(":tf_display/tf_display.qml"));
-  // view.show();
-  // object = view.rootObject();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -97,7 +88,52 @@ void TFDisplay::loadGUIConfig(gui::Application *app) {
            << "You can check with the `qmlscene` tool" << std::endl;
     return;
   }
+
+  QQmlEngine::setObjectOwnership(this->pluginItem, QQmlEngine::CppOwnership);
+  auto window = app->findChild<ignition::gui::MainWindow *>()->QuickWindow();
+
+  // Instantiate a card
+  std::string qmlIgnCard(":qml/IgnCard.qml");
+  QQmlComponent cardComp(app->Engine(), QString(QString::fromStdString(qmlIgnCard)));
+  auto cardItem = qobject_cast<QQuickItem *>(cardComp.create());
+  if (!cardItem)
+  {
+    ignerr << "Internal error: Failed to instantiate QML file [" << qmlFile
+           << "]" << std::endl;
+    return;
+  }
+
+  QQmlEngine::setObjectOwnership(cardItem, QQmlEngine::CppOwnership);
+
+  // Get card parts
+  auto cardContentItem = cardItem->findChild<QQuickItem *>("content");
+  if (!cardContentItem)
+  {
+    ignerr << "Null card content QQuickItem!" << std::endl;
+    return;
+  }
+
+  auto cardToolbarItem = cardItem->findChild<QQuickItem *>("cardToolbar");
+  if (!cardToolbarItem)
+  {
+    ignerr << "Null toolbar content QQuickItem!" << std::endl;
+    return;
+  }
+
+  auto bgItem = window->findChild<QQuickItem *>("background");
+  if (!bgItem)
+  {
+    ignerr << "Internal error: missing background item" << std::endl;
+    return;
+  }
+  cardItem->setParentItem(bgItem);
+  cardItem->setParent(app->Engine());
+
+  this->pluginItem->setParentItem(cardContentItem);
+  this->pluginItem->setParent(app->Engine());
+
   this->title = "TF Plugin";
+
   RCLCPP_INFO(this->node->get_logger(), "Success!");
 }
 
@@ -174,6 +210,18 @@ rendering::VisualPtr TFDisplay::createVisualFrame()
 bool TFDisplay::eventFilter(QObject * object, QEvent * event)
 {
   if (event->type() == gui::events::Render::kType) {
+    // Create a default visual frame
+    if ((static_cast<int>(this->tfRootVisual->ChildCount()) == 0) && this->frameManager) {
+      rendering::VisualPtr visualFrame = this->createVisualFrame();
+
+      // Display Axis with fixed frame name
+      rendering::TextPtr frameName = std::dynamic_pointer_cast<rendering::Text>(
+        visualFrame->GeometryByIndex(0));
+      frameName->SetTextString(this->frameManager->getFixedFrame());
+
+      tfRootVisual->AddChild(visualFrame);
+    }
+
     updateTF();
   }
 
@@ -253,15 +301,6 @@ void TFDisplay::installEventFilter(ignition::gui::MainWindow * window)
 void TFDisplay::setFrameManager(std::shared_ptr<common::FrameManager> frameManager)
 {
   this->frameManager = std::move(frameManager);
-
-  // Display Axis with fixed frame name
-  if (this->tfRootVisual->ChildCount() == 1) {
-    rendering::VisualPtr visualFrame = std::dynamic_pointer_cast<rendering::Visual>(
-      this->tfRootVisual->ChildByIndex(0));
-    rendering::TextPtr frameName = std::dynamic_pointer_cast<rendering::Text>(
-      visualFrame->GeometryByIndex(0));
-    frameName->SetTextString(this->frameManager->getFixedFrame());
-  }
 }
 
 }  // namespace plugins
