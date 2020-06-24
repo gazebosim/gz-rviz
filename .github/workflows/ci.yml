@@ -29,4 +29,6 @@ jobs:
       id: test
       run: |
         cd /home/colcon_ws/
-        colcon test
+        . /opt/ros/foxy/setup.sh
+        colcon test --event-handlers console_direct+
+        colcon test-result
