@@ -4,4 +4,4 @@ build/
 .vscode
 html/
 latex/
-
+*.qmlc

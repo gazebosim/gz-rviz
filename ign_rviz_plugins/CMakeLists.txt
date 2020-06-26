@@ -37,6 +37,37 @@ include_directories(SYSTEM
   ${IGNITION-MATH_INCLUDE_DIRS}
 )
 
+qt5_add_resources(resources_RCC include/ignition/rviz/plugins/AxesDisplay.qrc)
+
+add_library(AxesDisplay SHARED ${headers_MOC}
+  include/ignition/rviz/plugins/AxesDisplay.hpp
+  include/ignition/rviz/plugins/message_display_base.hpp
+  src/rviz/plugins/AxesDisplay.cpp
+  ${resources_RCC}
+)
+
+ament_target_dependencies(AxesDisplay
+  rclcpp
+  geometry_msgs
+  tf2_msgs
+  tf2_ros
+  sensor_msgs
+  ignition-gui4
+  ignition-math6
+  ignition-rendering4
+  ign_rviz_common
+)
+
+target_link_libraries(AxesDisplay Qt5::Core Qt5::Qml Qt5::Quick Qt5::QuickControls2)
+
+target_include_directories(AxesDisplay
+  PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>
+  ${Qt5Widgets_INCLUDE_DIRS}
+  ${IGNITION-GUI_INCLUDE_DIRS}
+)
+
 set(ign_rviz_plugins_headers_to_moc
   "include/ignition/rviz/plugins/message_display_base.hpp"
   "include/ignition/rviz/plugins/tf_display.hpp"
@@ -82,6 +113,16 @@ ament_export_libraries(ign_rviz_plugins)
 
 install(
   TARGETS ign_rviz_plugins
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION bin
+  INCLUDES DESTINATION include
+)
+
+ament_export_libraries(AxesDisplay)
+
+install(
+  TARGETS AxesDisplay
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin

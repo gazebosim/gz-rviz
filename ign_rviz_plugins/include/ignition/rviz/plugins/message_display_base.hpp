@@ -33,13 +33,13 @@ namespace rviz
 {
 namespace plugins
 {
-class MessageDisplayBase : public QObject
+class MessageDisplayBase : public gui::Plugin
 {
   Q_OBJECT
 
 public:
   MessageDisplayBase()
-  : QObject() {}
+  : Plugin() {}
 
   /**
    * @brief Initialization function for visualization plugins
@@ -47,6 +47,15 @@ public:
    * @throws anything rclcpp::exceptions::throw_from_rcl_error can throw.
    */
   virtual void initialize(rclcpp::Node::SharedPtr) {}
+
+  /**
+   * @brief Store reference to FrameManager
+   * @param[in] frameManager: Shared pointer to FrameManager object
+   */
+  virtual void setFrameManager(std::shared_ptr<common::FrameManager>) {}
+
+protected:
+  std::shared_ptr<common::FrameManager> frameManager;
 };
 
 template<typename MessageType>
@@ -82,17 +91,13 @@ public:
    */
   virtual void installEventFilter(ignition::gui::MainWindow *) {}
 
-  /**
-   * @brief Store reference to FrameManager
-   * @param[in] frameManager: Shared pointer to FrameManager object
-   */
+  // Documentation Inherited
   virtual void setFrameManager(std::shared_ptr<common::FrameManager>) {}
 
 protected:
   typename rclcpp::Subscription<MessageType>::SharedPtr subscriber;
   rclcpp::Node::SharedPtr node;
   std::string topic_name;
-  std::shared_ptr<common::FrameManager> frameManager;
 };
 }  // namespace plugins
 }  // namespace rviz

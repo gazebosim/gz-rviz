@@ -107,6 +107,14 @@ public:
     }
   }
 
+  Q_INVOKABLE void addAxesDisplay()
+  {
+    ignition::gui::App()->LoadPlugin("AxesDisplay");
+    auto axis_plugin =
+      ignition::gui::App()->findChild<ignition::rviz::plugins::MessageDisplayBase *>();
+    axis_plugin->setFrameManager(this->frameManager);
+  }
+
   /**
    * @brief Initialize ignition RViz ROS node and frame manager
    * @throws anything rclcpp::exceptions::throw_from_rcl_error can throw.
