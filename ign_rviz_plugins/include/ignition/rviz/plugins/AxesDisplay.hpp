@@ -40,13 +40,13 @@ class AxesDisplay : public MessageDisplayBase
 public:
   // Constructor
   AxesDisplay();
-  
+
   // Destructor
   ~AxesDisplay();
-  
+
   // Documentation Inherited
   void LoadConfig(const tinyxml2::XMLElement * /*_pluginElem*/);
-  
+
   // Documentation Inherited
   void setFrameManager(std::shared_ptr<common::FrameManager> frameManager);
 
@@ -59,10 +59,30 @@ public:
   /**
    * @brief Set axis frame
    */
-  Q_INVOKABLE void setFrame(QString);
+  Q_INVOKABLE void setFrame(const QString &);
+
+  /**
+   * @brief Set axis length
+   */
+  Q_INVOKABLE void setLength(const float &);
+
+  /**
+   * @brief Set axis radius
+   */
+  Q_INVOKABLE void setRadius(const float &);
+
+  /**
+   * @brief Set axis arrow head visibility
+   */
+  Q_INVOKABLE void setHeadVisibility(const bool &);
 
 private:
+  void setScale();
   std::mutex lock;
+  float length;
+  float radius;
+  bool headVisible;
+  bool dirty;
   rendering::RenderEngine * engine;
   rendering::ScenePtr scene;
   rendering::AxisVisualPtr rootVisual;

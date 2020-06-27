@@ -20,27 +20,78 @@ import QtQuick.Layouts 1.3
 
 Item {
   Layout.minimumWidth: 250
-  Layout.minimumHeight: 200
+  Layout.minimumHeight: 280
   anchors.fill: parent
   anchors.margins: 10
 
-  RowLayout {
+  ColumnLayout {
     width: parent.width
-    spacing: 10
-        
-    TextField {
-      id: frameField
-      Layout.fillWidth: true
-      Layout.minimumWidth: 50
-      width: 150
-      placeholderText: "Frame"
-      text: "<Fixed Frame>"
+    spacing: 6
+
+    RowLayout {
+      width: parent.width
+      spacing: 10
+
+      TextField {
+        id: frameField
+        Layout.fillWidth: true
+        Layout.minimumWidth: 50
+        width: 150
+        placeholderText: "Frame"
+        text: "<Fixed Frame>"
+      }
+
+      Button {
+        width: 50
+        text: "Set"
+        onClicked: { AxesDisplay.setFrame(frameField.text) }
+      }
     }
 
-    Button {
-      width: 50
-      text: "Set"
-      onClicked: { AxesDisplay.setFrame(frameField.text) }
+    RowLayout {
+      width: parent.width
+      spacing: 10
+
+      TextField {
+        id: lengthField
+        Layout.fillWidth: true
+        Layout.minimumWidth: 50
+        width: 150
+        placeholderText: "Length"
+        text: "1.0"
+      }
+
+      Button {
+        width: 50
+        text: "Set"
+        onClicked: { AxesDisplay.setLength(lengthField.text) }
+      }
+    }
+
+    RowLayout {
+      width: parent.width
+      spacing: 10
+
+      TextField {
+        id: radiusField
+        Layout.fillWidth: true
+        Layout.minimumWidth: 50
+        width: 150
+        placeholderText: "Radius"
+        text: "0.1"
+      }
+
+      Button {
+        width: 50
+        text: "Set"
+        onClicked: { AxesDisplay.setRadius(radiusField.text) }
+      }
+    }
+
+    CheckBox {
+      checked: false
+      text: qsTr("Show axis head")
+      onClicked: { AxesDisplay.setHeadVisibility(checked) }
     }
   }
 }

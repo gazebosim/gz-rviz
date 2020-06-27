@@ -28,10 +28,22 @@ namespace plugins
 {
 ////////////////////////////////////////////////////////////////////////////////
 AxesDisplay::AxesDisplay()
+: length(1.0), radius(0.1), headVisible(false), dirty(false)
 {
   ignition::gui::App()->findChild<ignition::gui::MainWindow *>()->installEventFilter(this);
   this->engine = rendering::engine("ogre");
   this->scene = this->engine->SceneByName("scene");
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void AxesDisplay::setScale()
+{
+  for (int i = 0; i < 3; ++i) {
+    auto arrow =
+      std::dynamic_pointer_cast<rendering::ArrowVisual>(this->rootVisual->ChildByIndex(i));
+    arrow->SetLocalScale(this->radius * 20, this->radius * 20, this->length * 2);
+    arrow->ShowArrowHead(this->headVisible);
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -40,6 +52,7 @@ bool AxesDisplay::eventFilter(QObject * object, QEvent * event)
   if (event->type() == gui::events::Render::kType) {
     if (rootVisual == nullptr) {
       rootVisual = this->scene->CreateAxisVisual();
+      setScale();
       this->scene->RootVisual()->AddChild(rootVisual);
     }
     // Update pose
@@ -49,6 +62,11 @@ bool AxesDisplay::eventFilter(QObject * object, QEvent * event)
       if (this->frameManager->getFramePose(frame, pose)) {
         rootVisual->SetLocalPose(pose);
       }
+
+      if (dirty) {
+        setScale();
+        this->dirty = false;
+      }
     }
   }
 
@@ -56,10 +74,40 @@ bool AxesDisplay::eventFilter(QObject * object, QEvent * event)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void AxesDisplay::setFrame(QString frame)
+void AxesDisplay::setFrame(const QString & frame)
 {
   std::lock_guard(this->lock);
   this->frame = frame.toStdString();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void AxesDisplay::setLength(const float & length)
+{
+  std::lock_guard(this->lock);
+  if (!isnan(length)) {
+    this->length = length;
+    this->dirty = true;
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void AxesDisplay::setRadius(const float & radius)
+{
+  std::lock_guard(this->lock);
+  if (!isnan(radius)) {
+    this->radius = radius;
+    this->dirty = true;
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void AxesDisplay::setHeadVisibility(const bool & visible)
+{
+  std::lock_guard(this->lock);
+  if (!isnan(radius)) {
+    this->headVisible = visible;
+    this->dirty = true;
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
