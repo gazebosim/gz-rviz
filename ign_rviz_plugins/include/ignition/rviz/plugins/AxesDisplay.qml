@@ -17,6 +17,7 @@
 import QtQuick 2.9
 import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.3
+import QtQuick.Controls.Material 2.1
 
 Item {
   Layout.minimumWidth: 250
@@ -30,41 +31,49 @@ Item {
 
     RowLayout {
       width: parent.width
-      spacing: 10
-
-      TextField {
-        id: frameField
-        Layout.fillWidth: true
-        Layout.minimumWidth: 50
-        width: 150
-        placeholderText: "Frame"
-        text: "<Fixed Frame>"
+      RoundButton {
+        text: "\u21bb"
+        Material.background: Material.primary
+        onClicked: {
+          AxesDisplay.onRefresh();
+        }
       }
 
-      Button {
-        width: 50
-        text: "Set"
-        onClicked: { AxesDisplay.setFrame(frameField.text) }
+      ComboBox {
+        id: combo
+        Layout.fillWidth: true
+        model: AxesDisplay.frameList
+        currentIndex: -1
+        displayText: currentIndex === -1 ? "<Fixed Frame>" : currentText
+        onCurrentIndexChanged: {
+          if (currentIndex < 0)
+            return;
+
+          AxesDisplay.setFrame(textAt(currentIndex));
+        }
       }
     }
 
     RowLayout {
       width: parent.width
       spacing: 10
+
+      Text {
+        width: 50
+        Layout.minimumWidth: 50
+        text: "Length"
+        font.pointSize: 10.5
+      }
 
       TextField {
         id: lengthField
         Layout.fillWidth: true
         Layout.minimumWidth: 50
         width: 150
-        placeholderText: "Length"
-        text: "1.0"
-      }
-
-      Button {
-        width: 50
-        text: "Set"
-        onClicked: { AxesDisplay.setLength(lengthField.text) }
+        placeholderText: "1.0"
+        onEditingFinished: {
+           AxesDisplay.setLength(lengthField.text)
+        }
       }
     }
 
@@ -72,19 +81,22 @@ Item {
       width: parent.width
       spacing: 10
 
+      Text {
+        width: 50
+        Layout.minimumWidth: 50
+        text: "Radius"
+        font.pointSize: 10.5
+      }
+
       TextField {
         id: radiusField
         Layout.fillWidth: true
         Layout.minimumWidth: 50
         width: 150
-        placeholderText: "Radius"
-        text: "0.1"
-      }
-
-      Button {
-        width: 50
-        text: "Set"
-        onClicked: { AxesDisplay.setRadius(radiusField.text) }
+        placeholderText: "0.1"
+        onEditingFinished: {
+           AxesDisplay.setRadius(radiusField.text)
+        }
       }
     }
 

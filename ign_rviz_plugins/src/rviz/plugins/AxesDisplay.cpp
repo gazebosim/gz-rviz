@@ -19,6 +19,8 @@
 
 #include <memory>
 #include <utility>
+#include <vector>
+#include <string>
 
 namespace ignition
 {
@@ -124,6 +126,29 @@ void AxesDisplay::setFrameManager(std::shared_ptr<common::FrameManager> frameMan
   std::lock_guard(this->lock);
   this->frameManager = std::move(frameManager);
   this->frame = this->frameManager->getFixedFrame();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+QStringList AxesDisplay::getFrameList() const
+{
+  return this->frameList;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void AxesDisplay::onRefresh()
+{
+  // Clear
+  this->frameList.clear();
+
+  // Get updated list
+  std::vector<std::string> allFrames;
+  this->frameManager->getFrames(allFrames);
+
+  for (const auto frame : allFrames) {
+    this->frameList.push_back(QString::fromStdString(frame));
+  }
+
+  this->frameListChanged();
 }
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -37,6 +37,16 @@ class AxesDisplay : public MessageDisplayBase
 {
   Q_OBJECT
 
+  /**
+   *  @brief Frame List
+   */
+  Q_PROPERTY(
+    QStringList frameList
+    READ getFrameList
+    WRITE setFrameList
+    NOTIFY frameListChanged
+  )
+
 public:
   // Constructor
   AxesDisplay();
@@ -76,6 +86,30 @@ public:
    */
   Q_INVOKABLE void setHeadVisibility(const bool &);
 
+  /**
+   * @brief Get the frame list as a string
+   * @return List of frames
+   */
+  Q_INVOKABLE QStringList getFrameList() const;
+
+  /**
+   * @brief Set the frame list from a string
+   * @param[in] _frameList List of frames
+   */
+  Q_INVOKABLE void setFrameList(const QStringList & _frameList);
+
+signals:
+  /**
+   * @brief Notify that frame list has changed
+   */
+  void frameListChanged();
+
+public slots:
+  /**
+   * @brief Callback when refresh button is pressed.
+   */
+  void onRefresh();
+
 private:
   void setScale();
   std::mutex lock;
@@ -87,6 +121,7 @@ private:
   rendering::ScenePtr scene;
   rendering::AxisVisualPtr rootVisual;
   std::string frame;
+  QStringList frameList;
 };
 
 }  // namespace plugins
