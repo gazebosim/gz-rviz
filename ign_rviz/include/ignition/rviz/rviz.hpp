@@ -109,10 +109,18 @@ public:
 
   Q_INVOKABLE void addAxesDisplay()
   {
+    // Load plugin
     ignition::gui::App()->LoadPlugin("AxesDisplay");
-    auto axis_plugin =
-      ignition::gui::App()->findChild<ignition::rviz::plugins::MessageDisplayBase *>();
-    axis_plugin->setFrameManager(this->frameManager);
+
+    auto axes_plugins =
+      ignition::gui::App()->findChildren<ignition::rviz::plugins::MessageDisplayBase *>();
+    int axes_plugin_count = axes_plugins.size() - 1;
+
+    // Set frame manager and install event filter for recently added plugin
+    axes_plugins[axes_plugin_count]->setFrameManager(this->frameManager);
+    ignition::gui::App()->findChild<ignition::gui::MainWindow *>()->installEventFilter(
+      axes_plugins[
+        axes_plugin_count]);
   }
 
   /**

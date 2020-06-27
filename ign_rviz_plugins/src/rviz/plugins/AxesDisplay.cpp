@@ -30,7 +30,6 @@ namespace plugins
 AxesDisplay::AxesDisplay()
 : length(1.0), radius(0.1), headVisible(false), dirty(false)
 {
-  ignition::gui::App()->findChild<ignition::gui::MainWindow *>()->installEventFilter(this);
   this->engine = rendering::engine("ogre");
   this->scene = this->engine->SceneByName("scene");
 }
@@ -114,6 +113,7 @@ void AxesDisplay::setHeadVisibility(const bool & visible)
 AxesDisplay::~AxesDisplay()
 {
   std::lock_guard(this->lock);
+  // Delete visual
   ignition::gui::App()->findChild<ignition::gui::MainWindow *>()->removeEventFilter(this);
   this->scene->DestroyVisual(this->rootVisual);
 }
@@ -122,7 +122,6 @@ AxesDisplay::~AxesDisplay()
 void AxesDisplay::setFrameManager(std::shared_ptr<common::FrameManager> frameManager)
 {
   std::lock_guard(this->lock);
-  // Delete visual
   this->frameManager = std::move(frameManager);
   this->frame = this->frameManager->getFixedFrame();
 }
