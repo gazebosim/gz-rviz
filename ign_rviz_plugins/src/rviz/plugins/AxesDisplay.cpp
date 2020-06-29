@@ -17,6 +17,7 @@
 #include <ignition/gui/Application.hh>
 #include <ignition/gui/GuiEvents.hh>
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 #include <vector>
@@ -71,6 +72,10 @@ bool AxesDisplay::eventFilter(QObject * object, QEvent * event)
     }
   }
 
+  // TODO(Sarathkrishnan Ramesh): Add rviz events for
+  // 1. Updating fixed frame changes
+  // 2. Updating combo-box when tf frames change
+
   return QObject::eventFilter(object, event);
 }
 
@@ -78,7 +83,12 @@ bool AxesDisplay::eventFilter(QObject * object, QEvent * event)
 void AxesDisplay::setFrame(const QString & frame)
 {
   std::lock_guard(this->lock);
-  this->frame = frame.toStdString();
+
+  if (frame.toStdString() == "<Fixed Frame>") {
+    this->frame = this->frameManager->getFixedFrame();
+  } else {
+    this->frame = frame.toStdString();
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -126,6 +136,9 @@ void AxesDisplay::setFrameManager(std::shared_ptr<common::FrameManager> frameMan
   std::lock_guard(this->lock);
   this->frameManager = std::move(frameManager);
   this->frame = this->frameManager->getFixedFrame();
+
+  // Update frame list
+  this->onRefresh();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -143,6 +156,9 @@ void AxesDisplay::onRefresh()
   // Get updated list
   std::vector<std::string> allFrames;
   this->frameManager->getFrames(allFrames);
+  std::sort(allFrames.begin(), allFrames.end());
+
+  this->frameList.push_back(QString::fromStdString("<Fixed Frame>"));
 
   for (const auto frame : allFrames) {
     this->frameList.push_back(QString::fromStdString(frame));
