@@ -35,6 +35,9 @@ int main(int argc, char ** argv)
   std::string package_share_directory = ament_index_cpp::get_package_share_directory("ign_rviz");
   app.LoadConfig(package_share_directory + "/config/rviz.config");
 
+  std::string plugin_directory = ament_index_cpp::get_package_prefix("ign_rviz_plugins");
+  ignition::gui::App()->AddPluginPath(plugin_directory + "/lib");
+
   ignition::rviz::RViz rviz_app;
 
   rviz_app.init_ros();

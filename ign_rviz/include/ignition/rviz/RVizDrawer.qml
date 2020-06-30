@@ -17,6 +17,9 @@ Rectangle {
             case "addLaserScanDisplay":
                 RViz.addLaserScanDisplay();
                 break;
+            case "addAxesDisplay":
+                RViz.addAxesDisplay();
+                break;
             default:
                 parent.onAction(action);
                 break;
@@ -39,6 +42,11 @@ Rectangle {
         ListElement {
             title: "LaserScan"
             actionElement: "addLaserScanDisplay"
+        }
+
+        ListElement {
+            title: "Axes"
+            actionElement: "addAxesDisplay"
         }
 
         ListElement {
