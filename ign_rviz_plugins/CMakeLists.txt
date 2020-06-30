@@ -47,11 +47,7 @@ add_library(AxesDisplay SHARED ${headers_MOC}
 )
 
 ament_target_dependencies(AxesDisplay
-  rclcpp
-  geometry_msgs
-  tf2_msgs
   tf2_ros
-  sensor_msgs
   ignition-gui4
   ignition-math6
   ignition-rendering4

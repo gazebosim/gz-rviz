@@ -33,7 +33,14 @@ namespace plugins
 AxesDisplay::AxesDisplay()
 : length(1.0), radius(0.1), headVisible(false), dirty(false)
 {
+  // TODO(Sarathkrishnan Ramesh)
+  // Add support to select render engine using config file
   this->engine = rendering::engine("ogre");
+  if (!this->engine) {
+    igndbg << "Engine '" << "ogre" << "' is not supported" << std::endl;
+    return;
+  }
+
   this->scene = this->engine->SceneByName("scene");
 }
 
@@ -168,7 +175,7 @@ void AxesDisplay::onRefresh()
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void AxesDisplay::LoadConfig(const tinyxml2::XMLElement */*_pluginElem*/)
+void AxesDisplay::LoadConfig(const tinyxml2::XMLElement * /*_pluginElem*/)
 {
   if (this->title.empty()) {
     this->title = "Axis";
