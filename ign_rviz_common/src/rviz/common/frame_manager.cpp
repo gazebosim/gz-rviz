@@ -45,12 +45,16 @@ FrameManager::FrameManager(rclcpp::Node::SharedPtr node)
 ////////////////////////////////////////////////////////////////////////////////
 void FrameManager::setFixedFrame(std::string fixedFrame)
 {
+  std::lock_guard<std::mutex>(this->tf_mutex_);
+
+  this->tfTree.clear();
   this->fixedFrame = fixedFrame;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 std::string FrameManager::getFixedFrame()
 {
+  std::lock_guard<std::mutex>(this->tf_mutex_);
   return this->fixedFrame;
 }
 

@@ -32,6 +32,8 @@
 
 #include <memory>
 #include <vector>
+#include <chrono>
+#include <thread>
 
 namespace ignition
 {
@@ -132,6 +134,19 @@ public:
     this->node = std::make_shared<rclcpp::Node>("ignition_rviz");
     this->frameManager = std::make_shared<common::FrameManager>(this->node);
     this->frameManager->setFixedFrame("world");
+
+    // TODO(Sarathkrishnan Ramesh): Add splash screen to hide this delay
+
+    // Small delay for tfBuffer to get populated
+    std::this_thread::sleep_for(std::chrono::milliseconds(800));
+
+    // Load Global Options plugin
+    ignition::gui::App()->LoadPlugin("GlobalOptions");
+    auto globalOptionsPlugin =
+      ignition::gui::App()->findChild<ignition::rviz::plugins::MessageDisplayBase *>();
+
+    // Set frame manager and install
+    globalOptionsPlugin->setFrameManager(this->frameManager);
   }
 
   /**
