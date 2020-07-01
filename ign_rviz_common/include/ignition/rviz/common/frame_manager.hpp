@@ -17,6 +17,8 @@
 
 #include <ignition/math/Pose3.hh>
 
+#include <QObject>
+
 #include <tf2_ros/buffer.h>
 #include <tf2_ros/transform_listener.h>
 #include <tf2_msgs/msg/tf_message.hpp>
@@ -35,8 +37,10 @@ namespace rviz
 {
 namespace common
 {
-class FrameManager
+class FrameManager : public QObject
 {
+  Q_OBJECT
+
 public:
   /**
    * @brief Constructor for FrameManager

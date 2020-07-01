@@ -12,12 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "ignition/rviz/common/frame_manager.hpp"
+#include <ignition/gui/Application.hh>
+#include <ignition/gui/MainWindow.hh>
 
 #include <string>
 #include <utility>
 #include <memory>
 #include <vector>
+
+#include "ignition/rviz/common/rviz_events.hpp"
+#include "ignition/rviz/common/frame_manager.hpp"
 
 namespace ignition
 {
@@ -31,6 +35,7 @@ namespace common
  * Creates a tf subscription and binds callback to it.
  */
 FrameManager::FrameManager(rclcpp::Node::SharedPtr node)
+: QObject()
 {
   this->node = std::move(node);
 
@@ -49,6 +54,13 @@ void FrameManager::setFixedFrame(std::string fixedFrame)
 
   this->tfTree.clear();
   this->fixedFrame = fixedFrame;
+
+  // Send fixed frame changed event
+  if (ignition::gui::App()) {
+    ignition::gui::App()->sendEvent(
+      ignition::gui::App()->findChild<ignition::gui::MainWindow *>(),
+      new events::FixedFrameChanged());
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
