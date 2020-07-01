@@ -18,6 +18,7 @@ import QtQuick 2.9
 import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.3
 import QtQuick.Controls.Material 2.1
+import QtQuick.Dialogs 1.0
 
 Item {
   Layout.minimumWidth: 280
@@ -27,7 +28,7 @@ Item {
 
   ColumnLayout {
     width: parent.width
-    spacing: 6
+    spacing: 20
 
     RowLayout {
       width: parent.width
@@ -56,5 +57,47 @@ Item {
         }
       }
     }
+
+    RowLayout {
+      width: parent.width
+      spacing: 10
+
+      // Horizontal spacing
+      Item {
+        width: 2
+      }
+
+      Label {
+        text: "Background Color"
+        font.pointSize: 11
+      }
+
+      Button {
+        Layout.preferredWidth: 20
+        Layout.preferredHeight: 20
+        onClicked: colorDialog.open()
+        background: Rectangle {
+          width: 20
+          height: 20
+          id: "bgColor"
+          color: "#303030"
+          border.color: "#000000"
+          border.width: 2
+        }
+      }
+    }
+  }
+
+  ColorDialog {
+    id: colorDialog
+    title: "Select scene background color"
+    onAccepted: {
+      bgColor.color = colorDialog.color
+      GlobalOptions.setSceneBackground(colorDialog.color);
+    }
+    onRejected: {
+      console.log("Canceled")
+    }
+    Component.onCompleted: visible = false
   }
 }

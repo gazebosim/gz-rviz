@@ -14,6 +14,7 @@
 
 #include <ignition/plugin/Register.hh>
 #include <ignition/gui/Application.hh>
+#include <ignition/gui/GuiEvents.hh>
 
 #include <algorithm>
 #include <memory>
@@ -30,10 +31,31 @@ namespace rviz
 namespace plugins
 {
 ////////////////////////////////////////////////////////////////////////////////
+GlobalOptions::GlobalOptions()
+: dirty(false)
+{
+  // TODO(Sarathkrishnan Ramesh)
+  // Add support to select render engine using config file
+  this->engine = rendering::engine("ogre");
+  if (!this->engine) {
+    igndbg << "Engine '" << "ogre" << "' is not supported" << std::endl;
+    return;
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////
 void GlobalOptions::setFrame(const QString & frame)
 {
   std::lock_guard(this->lock);
   this->frameManager->setFixedFrame(frame.toStdString());
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void GlobalOptions::setSceneBackground(const QColor & color)
+{
+  std::lock_guard(this->lock);
+  this->color = color;
+  this->dirty = true;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -46,6 +68,25 @@ void GlobalOptions::setFrameManager(std::shared_ptr<common::FrameManager> frameM
   // Update frame list
   this->onRefresh();
 }
+
+////////////////////////////////////////////////////////////////////////////////
+bool GlobalOptions::eventFilter(QObject * object, QEvent * event)
+{
+  if (event->type() == gui::events::Render::kType) {
+    std::lock_guard(this->lock);
+    // Update background color
+    if (dirty) {
+      if (this->scene == nullptr) {
+        this->scene = this->engine->SceneByName("scene");
+      }
+      this->scene->SetBackgroundColor(math::Color(color.redF(), color.greenF(), color.blue()));
+      this->dirty = false;
+    }
+  }
+
+  return QObject::eventFilter(object, event);
+}
+
 
 ////////////////////////////////////////////////////////////////////////////////
 void GlobalOptions::setFrameList(const QStringList & _frameList)

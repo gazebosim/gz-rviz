@@ -20,6 +20,9 @@
   #include <ignition/gui/Plugin.hh>
 #endif
 
+#include <ignition/rendering.hh>
+#include <ignition/math/Color.hh>
+#include <QColor>
 #include <string>
 #include <memory>
 #include <utility>
@@ -50,7 +53,7 @@ class GlobalOptions : public MessageDisplayBase
 
 public:
   // Constructor
-  GlobalOptions() {}
+  GlobalOptions();
 
   // Destructor
   ~GlobalOptions() {}
@@ -61,16 +64,22 @@ public:
   // Documentation Inherited
   void setFrameManager(std::shared_ptr<common::FrameManager> frameManager);
 
-  // /**
-  //  * @brief Qt eventFilters. Original documentation can be found
-  //  * <a href="https://doc.qt.io/qt-5/qobject.html#eventFilter">here</a>
-  //  */
-  // bool eventFilter(QObject *, QEvent *) {}
+  /**
+   * @brief Qt eventFilters. Original documentation can be found
+   * <a href="https://doc.qt.io/qt-5/qobject.html#eventFilter">here</a>
+   */
+  bool eventFilter(QObject *, QEvent *);
 
   /**
    * @brief Set axis frame
    */
   Q_INVOKABLE void setFrame(const QString &);
+
+  /**
+   * @brief Set scene background color
+   * @param color[in] Background color
+   */
+  Q_INVOKABLE void setSceneBackground(const QColor &);
 
   /**
    * @brief Get the frame list as a string
@@ -100,6 +109,10 @@ private:
   void setScale();
   std::mutex lock;
   QStringList frameList;
+  rendering::RenderEngine * engine;
+  rendering::ScenePtr scene;
+  bool dirty;
+  QColor color;
 };
 
 }  // namespace plugins

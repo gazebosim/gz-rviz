@@ -80,6 +80,8 @@ add_library(GlobalOptions SHARED ${headers_MOC}
 ament_target_dependencies(GlobalOptions
   tf2_ros
   ignition-gui4
+  ignition-math6
+  ignition-rendering4
   ign_rviz_common
 )
 
