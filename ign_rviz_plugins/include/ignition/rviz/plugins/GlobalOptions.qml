@@ -85,6 +85,20 @@ Item {
           border.width: 2
         }
       }
+
+      TextField {
+        id: "bgColorHex"
+        text: "#303030"
+        Layout.fillWidth: true
+        validator: RegExpValidator {
+          regExp: /#([\da-f]{3}){1,2}/ig
+        }
+        onEditingFinished: {
+          colorDialog.color = text
+          bgColor.color = text
+          GlobalOptions.setSceneBackground(text);
+        }
+      }
     }
   }
 
@@ -93,6 +107,7 @@ Item {
     title: "Select scene background color"
     onAccepted: {
       bgColor.color = colorDialog.color
+      bgColorHex.text = colorDialog.color
       GlobalOptions.setSceneBackground(colorDialog.color);
     }
     onRejected: {
