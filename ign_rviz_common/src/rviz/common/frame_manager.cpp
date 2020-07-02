@@ -35,7 +35,7 @@ namespace common
  * Creates a tf subscription and binds callback to it.
  */
 FrameManager::FrameManager(rclcpp::Node::SharedPtr node)
-: QObject()
+: QObject(), frameCount(0)
 {
   this->node = std::move(node);
 
@@ -88,6 +88,17 @@ void FrameManager::tf_callback(tf2_msgs::msg::TFMessage::SharedPtr msg)
 
   std::vector<std::string> frame_ids;
   tfBuffer->_getFrameStrings(frame_ids);
+
+  if (frame_ids.size() != this->frameCount) {
+    // Send fixed list changed event
+    if (ignition::gui::App()) {
+      ignition::gui::App()->sendEvent(
+        ignition::gui::App()->findChild<ignition::gui::MainWindow *>(),
+        new events::FrameListChanged());
+    }
+
+    this->frameCount = frame_ids.size();
+  }
 
   builtin_interfaces::msg::Time timeStamp = msg->transforms[0].header.stamp;
   timePoint =

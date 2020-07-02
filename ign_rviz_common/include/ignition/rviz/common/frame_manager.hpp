@@ -98,6 +98,7 @@ private:
   rclcpp::Subscription<tf2_msgs::msg::TFMessage>::SharedPtr subscriber;
   std::unordered_map<std::string, ignition::math::Pose3d> tfTree;
   tf2::TimePoint timePoint;
+  unsigned int frameCount;
 };
 }  // namespace common
 }  // namespace rviz

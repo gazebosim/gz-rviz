@@ -22,6 +22,7 @@
 #include <utility>
 #include <vector>
 
+#include "ignition/rviz/common/rviz_events.hpp"
 #include "ignition/rviz/plugins/GlobalOptions.hpp"
 
 namespace ignition
@@ -82,6 +83,11 @@ bool GlobalOptions::eventFilter(QObject * object, QEvent * event)
       this->scene->SetBackgroundColor(math::Color(color.redF(), color.greenF(), color.blue()));
       this->dirty = false;
     }
+  }
+
+  // Update combo-box on frame list change
+  if (event->type() == rviz::events::FrameListChanged::kType) {
+    this->onRefresh();
   }
 
   return QObject::eventFilter(object, event);
