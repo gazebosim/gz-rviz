@@ -37,10 +37,7 @@ include_directories(SYSTEM
   ${IGNITION-MATH_INCLUDE_DIRS}
 )
 
-qt5_add_resources(resources_RCC
-  include/ignition/rviz/plugins/AxesDisplay.qrc
-  include/ignition/rviz/plugins/GlobalOptions.qrc
-)
+qt5_add_resources(resources_RCC res/Plugins.qrc)
 
 ########################################################################
 
