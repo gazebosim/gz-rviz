@@ -66,20 +66,17 @@ public:
    */
   Q_INVOKABLE void addTFDisplay()
   {
-    try {
-      // Create new instance of plugin
-      DisplayPlugin<tf2_msgs::msg::TFMessage> tf_plugin =
-        std::dynamic_pointer_cast<plugins::MessageDisplay<tf2_msgs::msg::TFMessage>>(
-        plugin_loader.createSharedInstance(
-          "ignition/rviz/plugins/TFDisplay"));
-      tf_plugin->initialize(this->node);
-      tf_plugin->setFrameManager(this->frameManager);
-      tf_plugin->installEventFilter(ignition::gui::App()->findChild<ignition::gui::MainWindow *>());
+    // Load plugin
+    if (ignition::gui::App()->LoadPlugin("TFDisplay")) {
+      auto tfDisplayPlugins =
+        ignition::gui::App()->findChildren<plugins::MessageDisplay<tf2_msgs::msg::TFMessage> *>();
+      int tfDisplayCount = tfDisplayPlugins.size() - 1;
 
-      // Add the new plugin to the list
-      tf_plugins.push_back(tf_plugin);
-    } catch (pluginlib::PluginlibException & ex) {
-      std::cout << ex.what() << std::endl;
+      // Set frame manager and install event filter for recently added plugin
+      tfDisplayPlugins[tfDisplayCount]->initialize(this->node);
+      tfDisplayPlugins[tfDisplayCount]->setFrameManager(this->frameManager);
+      ignition::gui::App()->findChild<ignition::gui::MainWindow *>()->installEventFilter(
+        tfDisplayPlugins[tfDisplayCount]);
     }
   }
 

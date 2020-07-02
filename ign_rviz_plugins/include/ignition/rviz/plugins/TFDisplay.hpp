@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef IGNITION__RVIZ__PLUGINS__TF_DISPLAY_HPP_
-#define IGNITION__RVIZ__PLUGINS__TF_DISPLAY_HPP_
+#ifndef IGNITION__RVIZ__PLUGINS__TFDISPLAY_HPP_
+#define IGNITION__RVIZ__PLUGINS__TFDISPLAY_HPP_
 
 #include <ignition/rendering.hh>
 #include <tf2_msgs/msg/tf_message.hpp>
@@ -41,7 +41,11 @@ public:
    */
   TFDisplay();
 
+  // Destructor
   ~TFDisplay();
+
+  // Documentation inherited
+  void LoadConfig(const tinyxml2::XMLElement * /*_pluginElem*/);
 
   // Documentation Inherited
   void initialize(rclcpp::Node::SharedPtr);
@@ -50,16 +54,13 @@ public:
   void callback(const tf2_msgs::msg::TFMessage::SharedPtr) {}
 
   // Documentation inherited
-  void setTopic(std::string);
+  void setTopic(std::string) {}
 
   /**
    * @brief Qt eventFilters. Original documentation can be found
    * <a href="https://doc.qt.io/qt-5/qobject.html#eventFilter">here</a>
    */
   bool eventFilter(QObject *, QEvent *);
-
-  // Documentation inherited
-  void installEventFilter(ignition::gui::MainWindow *);
 
   // Documentation inherited
   void setFrameManager(std::shared_ptr<common::FrameManager>);
@@ -90,7 +91,9 @@ private:
   std::mutex lock;
   ignition::rendering::VisualPtr tfRootVisual;
 };
+
 }  // namespace plugins
 }  // namespace rviz
 }  // namespace ignition
-#endif  // IGNITION__RVIZ__PLUGINS__TF_DISPLAY_HPP_
+
+#endif  // IGNITION__RVIZ__PLUGINS__TFDISPLAY_HPP_

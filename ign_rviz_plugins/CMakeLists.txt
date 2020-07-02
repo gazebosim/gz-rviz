@@ -40,7 +40,6 @@ include_directories(SYSTEM
 qt5_add_resources(resources_RCC res/Plugins.qrc)
 
 ########################################################################
-
 add_library(AxesDisplay SHARED ${headers_MOC}
   include/ignition/rviz/plugins/AxesDisplay.hpp
   include/ignition/rviz/plugins/message_display_base.hpp
@@ -67,7 +66,6 @@ target_include_directories(AxesDisplay
 )
 
 ########################################################################
-
 add_library(GlobalOptions SHARED ${headers_MOC}
   include/ignition/rviz/plugins/GlobalOptions.hpp
   src/rviz/plugins/GlobalOptions.cpp
@@ -93,16 +91,40 @@ target_include_directories(GlobalOptions
 )
 
 ########################################################################
+add_library(TFDisplay SHARED ${headers_MOC}
+  include/ignition/rviz/plugins/TFDisplay.hpp
+  include/ignition/rviz/plugins/message_display_base.hpp
+  src/rviz/plugins/TFDisplay.cpp
+  ${resources_RCC}
+)
+
+ament_target_dependencies(TFDisplay
+  tf2_ros
+  ignition-gui4
+  ignition-math6
+  ignition-rendering4
+  ign_rviz_common
+)
+
+target_link_libraries(TFDisplay Qt5::Core Qt5::Qml Qt5::Quick Qt5::QuickControls2)
+
+target_include_directories(TFDisplay
+  PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>
+  ${Qt5Widgets_INCLUDE_DIRS}
+  ${IGNITION-GUI_INCLUDE_DIRS}
+)
 
 set(ign_rviz_plugins_headers_to_moc
   "include/ignition/rviz/plugins/message_display_base.hpp"
-  "include/ignition/rviz/plugins/tf_display.hpp"
   "include/ignition/rviz/plugins/laser_scan_display.hpp"
 )
 
+########################################################################
+
 add_library(ign_rviz_plugins SHARED
   ${ign_rviz_plugins_headers_to_moc}
-  src/rviz/plugins/tf_display.cpp
   src/rviz/plugins/laser_scan_display.cpp
 )
 
@@ -159,6 +181,16 @@ ament_export_libraries(GlobalOptions)
 
 install(
   TARGETS GlobalOptions
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION bin
+  INCLUDES DESTINATION include
+)
+
+ament_export_libraries(TFDisplay)
+
+install(
+  TARGETS TFDisplay
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin

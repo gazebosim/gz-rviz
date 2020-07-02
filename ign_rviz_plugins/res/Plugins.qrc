@@ -6,4 +6,8 @@
   <qresource prefix="AxesDisplay/">
     <file alias="AxesDisplay.qml">qml/AxesDisplay.qml</file>
   </qresource>
+
+  <qresource prefix="TFDisplay/">
+    <file alias="TFDisplay.qml">qml/TFDisplay.qml</file>
+  </qresource>
 </RCC>

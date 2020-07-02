@@ -12,11 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "ignition/rviz/plugins/tf_display.hpp"
+#include "ignition/rviz/plugins/TFDisplay.hpp"
 
-#include <pluginlib/class_list_macros.hpp>
 #include <ignition/math.hh>
 #include <ignition/math/Color.hh>
+#include <ignition/plugin/Register.hh>
+#include <ignition/gui/Application.hh>
 #include <ignition/gui/GuiEvents.hh>
 
 #include <string>
@@ -68,18 +69,9 @@ TFDisplay::~TFDisplay()
 {}
 
 ////////////////////////////////////////////////////////////////////////////////
-void TFDisplay::initialize(rclcpp::Node::SharedPtr node)
+void TFDisplay::initialize(rclcpp::Node::SharedPtr _node)
 {
-  this->node = std::move(node);
-}
-
-////////////////////////////////////////////////////////////////////////////////
-void TFDisplay::setTopic(std::string topic_name)
-{
-  this->topic_name = topic_name;
-  this->subscriber = this->node->create_subscription<tf2_msgs::msg::TFMessage>(
-    this->topic_name, 10,
-    std::bind(&TFDisplay::callback, this, std::placeholders::_1));
+  this->node = std::move(_node);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -137,9 +129,9 @@ rendering::VisualPtr TFDisplay::createVisualFrame()
 /**
  * Update tf visualization only when ign::gui render event is received
  */
-bool TFDisplay::eventFilter(QObject * object, QEvent * event)
+bool TFDisplay::eventFilter(QObject * _object, QEvent * _event)
 {
-  if (event->type() == gui::events::Render::kType) {
+  if (_event->type() == gui::events::Render::kType) {
     // Create a default visual frame
     if ((static_cast<int>(this->tfRootVisual->ChildCount()) == 0) && this->frameManager) {
       rendering::VisualPtr visualFrame = this->createVisualFrame();
@@ -155,7 +147,7 @@ bool TFDisplay::eventFilter(QObject * object, QEvent * event)
     updateTF();
   }
 
-  return QObject::eventFilter(object, event);
+  return QObject::eventFilter(_object, _event);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -222,21 +214,23 @@ void TFDisplay::updateTF()
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void TFDisplay::installEventFilter(ignition::gui::MainWindow * window)
+void TFDisplay::setFrameManager(std::shared_ptr<common::FrameManager> _frameManager)
 {
-  window->installEventFilter(this);
+  this->frameManager = std::move(_frameManager);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void TFDisplay::setFrameManager(std::shared_ptr<common::FrameManager> frameManager)
+void TFDisplay::LoadConfig(const tinyxml2::XMLElement * /*_pluginElem*/)
 {
-  this->frameManager = std::move(frameManager);
+  if (this->title.empty()) {
+    this->title = "TF";
+  }
 }
 
 }  // namespace plugins
 }  // namespace rviz
 }  // namespace ignition
 
-PLUGINLIB_EXPORT_CLASS(
+IGNITION_ADD_PLUGIN(
   ignition::rviz::plugins::TFDisplay,
-  ignition::rviz::plugins::MessageDisplayBase)
+  ignition::gui::Plugin)
