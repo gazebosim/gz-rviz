@@ -32,8 +32,6 @@
 
 #include <memory>
 #include <vector>
-#include <chrono>
-#include <thread>
 
 namespace ignition
 {
@@ -109,20 +107,22 @@ public:
     }
   }
 
+  /**
+   * @brief Loads Axes Visualization Plugin
+   */
   Q_INVOKABLE void addAxesDisplay()
   {
     // Load plugin
-    ignition::gui::App()->LoadPlugin("AxesDisplay");
+    if (ignition::gui::App()->LoadPlugin("AxesDisplay")) {
+      auto axes_plugins =
+        ignition::gui::App()->findChildren<ignition::rviz::plugins::MessageDisplayBase *>();
+      int axes_plugin_count = axes_plugins.size() - 1;
 
-    auto axes_plugins =
-      ignition::gui::App()->findChildren<ignition::rviz::plugins::MessageDisplayBase *>();
-    int axes_plugin_count = axes_plugins.size() - 1;
-
-    // Set frame manager and install event filter for recently added plugin
-    axes_plugins[axes_plugin_count]->setFrameManager(this->frameManager);
-    ignition::gui::App()->findChild<ignition::gui::MainWindow *>()->installEventFilter(
-      axes_plugins[
-        axes_plugin_count]);
+      // Set frame manager and install event filter for recently added plugin
+      axes_plugins[axes_plugin_count]->setFrameManager(this->frameManager);
+      ignition::gui::App()->findChild<ignition::gui::MainWindow *>()->installEventFilter(
+        axes_plugins[axes_plugin_count]);
+    }
   }
 
   /**
@@ -135,22 +135,18 @@ public:
     this->frameManager = std::make_shared<common::FrameManager>(this->node);
     this->frameManager->setFixedFrame("world");
 
-    // TODO(Sarathkrishnan Ramesh): Add splash screen to hide this delay
-
-    // Small delay for tfBuffer to get populated
-    std::this_thread::sleep_for(std::chrono::milliseconds(800));
-
     // Load Global Options plugin
-    ignition::gui::App()->LoadPlugin("GlobalOptions");
-    auto globalOptionsPlugin =
-      ignition::gui::App()->findChild<ignition::rviz::plugins::MessageDisplayBase *>();
+    if (ignition::gui::App()->LoadPlugin("GlobalOptions")) {
+      auto globalOptionsPlugin =
+        ignition::gui::App()->findChild<ignition::rviz::plugins::MessageDisplayBase *>();
 
-    // Install event filter
-    ignition::gui::App()->findChild<ignition::gui::MainWindow *>()->installEventFilter(
-      globalOptionsPlugin);
+      // Install event filter
+      ignition::gui::App()->findChild<ignition::gui::MainWindow *>()->installEventFilter(
+        globalOptionsPlugin);
 
-    // Set frame manager and install
-    globalOptionsPlugin->setFrameManager(this->frameManager);
+      // Set frame manager and install
+      globalOptionsPlugin->setFrameManager(this->frameManager);
+    }
   }
 
   /**
