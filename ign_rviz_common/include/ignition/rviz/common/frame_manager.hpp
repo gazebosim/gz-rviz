@@ -50,29 +50,29 @@ public:
 
   /**
    * @brief Sets fixed frame for frame tranformations
-   * @param[in] fixedFrame: Fixed frame
+   * @param[in] _fixedFrame: Fixed frame
    */
   void setFixedFrame(std::string);
 
   /**
    * @brief Get frame pose (position and orientation)
-   * @param[in] frame: Frame name
-   * @param[out] pose: Frame pose
+   * @param[in] _frame: Frame name
+   * @param[out] _pose: Frame pose
    * @return Pose validity (true if pose is valid, else false)
    */
   bool getFramePose(std::string &, ignition::math::Pose3d &);
 
   /**
    * @brief Get parent frame pose (position and orientation)
-   * @param[in] frame: Child frame name
-   * @param[out] pose: Parent frame pose
+   * @param[in] _child: Child frame name
+   * @param[out] _pose: Parent frame pose
    * @return Pose validity (true if pose is valid, else false)
    */
   bool getParentPose(std::string & /*child*/, ignition::math::Pose3d &);
 
   /**
    * @brief Get available tf frames
-   * @param[out] frames: List of available frames
+   * @param[out] _frames: List of available frames
    */
   void getFrames(std::vector<std::string> &);
 
@@ -85,7 +85,7 @@ public:
 protected:
   /**
    * @brief Callback function to received transform messages
-   * @param[in] msg: Transform message
+   * @param[in] _msg: Transform message
    */
   void tf_callback(const tf2_msgs::msg::TFMessage::SharedPtr);
 

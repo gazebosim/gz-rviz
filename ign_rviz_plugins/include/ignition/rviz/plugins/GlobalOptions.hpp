@@ -62,7 +62,7 @@ public:
   void LoadConfig(const tinyxml2::XMLElement * /*_pluginElem*/);
 
   // Documentation Inherited
-  void setFrameManager(std::shared_ptr<common::FrameManager> frameManager);
+  void setFrameManager(std::shared_ptr<common::FrameManager>);
 
   /**
    * @brief Qt eventFilters. Original documentation can be found
@@ -77,7 +77,7 @@ public:
 
   /**
    * @brief Set scene background color
-   * @param color[in] Background color
+   * @param _color[in] Background color
    */
   Q_INVOKABLE void setSceneBackground(const QColor &);
 

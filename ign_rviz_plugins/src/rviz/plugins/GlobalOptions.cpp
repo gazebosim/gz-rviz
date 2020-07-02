@@ -45,25 +45,25 @@ GlobalOptions::GlobalOptions()
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void GlobalOptions::setFrame(const QString & frame)
+void GlobalOptions::setFrame(const QString & _frame)
 {
   std::lock_guard(this->lock);
-  this->frameManager->setFixedFrame(frame.toStdString());
+  this->frameManager->setFixedFrame(_frame.toStdString());
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void GlobalOptions::setSceneBackground(const QColor & color)
+void GlobalOptions::setSceneBackground(const QColor & _color)
 {
   std::lock_guard(this->lock);
-  this->color = color;
+  this->color = _color;
   this->dirty = true;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void GlobalOptions::setFrameManager(std::shared_ptr<common::FrameManager> frameManager)
+void GlobalOptions::setFrameManager(std::shared_ptr<common::FrameManager> _frameManager)
 {
   std::lock_guard(this->lock);
-  this->frameManager = std::move(frameManager);
+  this->frameManager = std::move(_frameManager);
   this->frameList.clear();
 
   // Update frame list
@@ -71,9 +71,9 @@ void GlobalOptions::setFrameManager(std::shared_ptr<common::FrameManager> frameM
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-bool GlobalOptions::eventFilter(QObject * object, QEvent * event)
+bool GlobalOptions::eventFilter(QObject * _object, QEvent * _event)
 {
-  if (event->type() == gui::events::Render::kType) {
+  if (_event->type() == gui::events::Render::kType) {
     std::lock_guard(this->lock);
     // Update background color
     if (dirty) {
@@ -86,11 +86,11 @@ bool GlobalOptions::eventFilter(QObject * object, QEvent * event)
   }
 
   // Update combo-box on frame list change
-  if (event->type() == rviz::events::FrameListChanged::kType) {
+  if (_event->type() == rviz::events::FrameListChanged::kType) {
     this->onRefresh();
   }
 
-  return QObject::eventFilter(object, event);
+  return QObject::eventFilter(_object, _event);
 }
 
 
