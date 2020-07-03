@@ -30,21 +30,21 @@ Item {
     spacing: 6
 
     CheckBox {
-      checked: false
+      checked: true
       text: "Show Names"
-      onClicked: {}//{ TFDisplay.showNames(checked) }
+      onClicked: { TFDisplay.showNames(checked) }
     }
 
     CheckBox {
-      checked: false
+      checked: true
       text: "Show Axes"
-      onClicked: {}//{ TFDisplay.showAxes(checked) }
+      onClicked: { TFDisplay.showAxes(checked) }
     }
 
     CheckBox {
-      checked: false
+      checked: true
       text: "Show Arrows"
-      onClicked: {}//{ TFDisplay.showAxes(checked) }
+      onClicked: { TFDisplay.showArrows(checked) }
     }
   }
 }

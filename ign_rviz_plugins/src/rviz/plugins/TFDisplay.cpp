@@ -35,7 +35,7 @@ namespace plugins
 
 ////////////////////////////////////////////////////////////////////////////////
 TFDisplay::TFDisplay()
-: MessageDisplay()
+: MessageDisplay(), axesVisible(true), arrowsVisible(true), namesVisible(true)
 {
   // Get reference to scene
   this->engine = ignition::rendering::engine("ogre");
@@ -179,6 +179,8 @@ void TFDisplay::updateTF()
       visualFrame->GeometryByIndex(0));
     frameName->SetTextString(frameIds[i]);
 
+    visualFrame->SetVisible(this->namesVisible);
+
     // Set frame position
     visualFrame->SetLocalPosition(pose.Pos());
 
@@ -186,21 +188,20 @@ void TFDisplay::updateTF()
     rendering::AxisVisualPtr axis = std::dynamic_pointer_cast<rendering::AxisVisual>(
       visualFrame->ChildByIndex(1));
     axis->SetLocalRotation(pose.Rot());
+    axis->SetVisible(this->axesVisible);
 
     // Get parent pose for tf links
     result = this->frameManager->getParentPose(frameIds[i], parentPose);
+    rendering::ArrowVisualPtr arrow = std::dynamic_pointer_cast<rendering::ArrowVisual>(
+      visualFrame->ChildByIndex(0));
     if (result) {
-      rendering::ArrowVisualPtr arrow = std::dynamic_pointer_cast<rendering::ArrowVisual>(
-        visualFrame->ChildByIndex(
-          0));
-
       // Get direction and distance from child to parent frame
       math::Vector3d dir = parentPose.Pos() - pose.Pos();
       double dist = dir.Length();
 
       if (dist >= MIN_FRAME_DISTANCE) {
         // Update tf arrow visual orientation to point fron child to parent frame
-        arrow->SetVisible(true);
+        arrow->SetVisible(this->arrowsVisible);
         math::Quaterniond quat;
         quat.From2Axes(-math::Vector3d::UnitZ, dir);
         quat *= math::Quaterniond::EulerToQuaternion(M_PI, 0, 0);
@@ -209,6 +210,8 @@ void TFDisplay::updateTF()
       } else {
         arrow->SetVisible(false);
       }
+    } else {
+      arrow->SetVisible(false);
     }
   }
 }
@@ -225,6 +228,24 @@ void TFDisplay::LoadConfig(const tinyxml2::XMLElement * /*_pluginElem*/)
   if (this->title.empty()) {
     this->title = "TF";
   }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void TFDisplay::showAxes(const bool & _visible)
+{
+  this->axesVisible = _visible;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void TFDisplay::showNames(const bool & _visible)
+{
+  this->namesVisible = _visible;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void TFDisplay::showArrows(const bool & _visible)
+{
+  this->arrowsVisible = _visible;
 }
 
 }  // namespace plugins

@@ -65,6 +65,21 @@ public:
   // Documentation inherited
   void setFrameManager(std::shared_ptr<common::FrameManager>);
 
+  /**
+   * @brief Set axis visibility
+   */
+  Q_INVOKABLE void showAxes(const bool & _visible);
+
+  /**
+   * @brief Set arrow visibility
+   */
+  Q_INVOKABLE void showArrows(const bool & _visible);
+
+  /**
+   * @brief Set frame name visibility
+   */
+  Q_INVOKABLE void showNames(const bool & _visible);
+
 protected:
   /**
    * @brief Create custom arrow visual for visualizing tf links
@@ -90,6 +105,9 @@ private:
   ignition::rendering::ScenePtr scene;
   std::mutex lock;
   ignition::rendering::VisualPtr tfRootVisual;
+  bool axesVisible;
+  bool arrowsVisible;
+  bool namesVisible;
 };
 
 }  // namespace plugins
