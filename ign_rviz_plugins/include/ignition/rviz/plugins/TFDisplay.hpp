@@ -80,6 +80,16 @@ public:
    */
   Q_INVOKABLE void showNames(const bool & _visible);
 
+  /**
+   * @brief Set axes arrow head visibility
+   */
+  Q_INVOKABLE void showAxesHead(const bool & _visible);
+
+  /**
+   * @brief Set marker scale
+   */
+  Q_INVOKABLE void setMarkerScale(const float & _scale);
+
 protected:
   /**
    * @brief Create custom arrow visual for visualizing tf links
@@ -108,6 +118,8 @@ private:
   bool axesVisible;
   bool arrowsVisible;
   bool namesVisible;
+  bool axesHeadVisible;
+  float markerScale;
 };
 
 }  // namespace plugins

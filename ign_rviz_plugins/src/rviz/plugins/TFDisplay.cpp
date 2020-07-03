@@ -35,7 +35,8 @@ namespace plugins
 
 ////////////////////////////////////////////////////////////////////////////////
 TFDisplay::TFDisplay()
-: MessageDisplay(), axesVisible(true), arrowsVisible(true), namesVisible(true)
+: MessageDisplay(), axesVisible(true), arrowsVisible(true), namesVisible(true),
+  axesHeadVisible(false), markerScale(0.4)
 {
   // Get reference to scene
   this->engine = ignition::rendering::engine("ogre");
@@ -66,7 +67,12 @@ TFDisplay::TFDisplay()
 
 ////////////////////////////////////////////////////////////////////////////////
 TFDisplay::~TFDisplay()
-{}
+{
+  std::lock_guard(this->lock);
+  // Delete visual
+  ignition::gui::App()->findChild<ignition::gui::MainWindow *>()->removeEventFilter(this);
+  this->scene->DestroyVisual(this->tfRootVisual);
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 void TFDisplay::initialize(rclcpp::Node::SharedPtr _node)
@@ -102,7 +108,7 @@ rendering::VisualPtr TFDisplay::createVisualFrame()
 
   // Add axis
   rendering::AxisVisualPtr axis = this->scene->CreateAxisVisual();
-  axis->SetLocalScale(0.5);
+  axis->SetLocalScale(this->markerScale);
   visualFrame->AddChild(axis);
 
   // Add arrow
@@ -188,7 +194,12 @@ void TFDisplay::updateTF()
     rendering::AxisVisualPtr axis = std::dynamic_pointer_cast<rendering::AxisVisual>(
       visualFrame->ChildByIndex(1));
     axis->SetLocalRotation(pose.Rot());
+    axis->SetLocalScale(this->markerScale);
     axis->SetVisible(this->axesVisible);
+    for (int i = 0; i < 3 && this->axesVisible; ++i) {
+      auto arrow = std::dynamic_pointer_cast<rendering::ArrowVisual>(axis->ChildByIndex(i));
+      arrow->ShowArrowHead(this->axesHeadVisible);
+    }
 
     // Get parent pose for tf links
     result = this->frameManager->getParentPose(frameIds[i], parentPose);
@@ -202,11 +213,12 @@ void TFDisplay::updateTF()
       if (dist >= MIN_FRAME_DISTANCE) {
         // Update tf arrow visual orientation to point fron child to parent frame
         arrow->SetVisible(this->arrowsVisible);
+
         math::Quaterniond quat;
         quat.From2Axes(-math::Vector3d::UnitZ, dir);
         quat *= math::Quaterniond::EulerToQuaternion(M_PI, 0, 0);
         arrow->SetLocalRotation(quat);
-        arrow->SetLocalScale(1, 1, dist);
+        arrow->SetLocalScale(this->markerScale, this->markerScale, dist);
       } else {
         arrow->SetVisible(false);
       }
@@ -246,6 +258,18 @@ void TFDisplay::showNames(const bool & _visible)
 void TFDisplay::showArrows(const bool & _visible)
 {
   this->arrowsVisible = _visible;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void TFDisplay::showAxesHead(const bool & _visible)
+{
+  this->axesHeadVisible = _visible;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void TFDisplay::setMarkerScale(const float & _scale)
+{
+  this->markerScale = _scale * 0.4;
 }
 
 }  // namespace plugins
