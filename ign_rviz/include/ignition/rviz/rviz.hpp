@@ -140,12 +140,12 @@ public:
       auto globalOptionsPlugin =
         ignition::gui::App()->findChild<ignition::rviz::plugins::MessageDisplayBase *>();
 
+      // Set frame manager and install
+      globalOptionsPlugin->setFrameManager(this->frameManager);
+
       // Install event filter
       ignition::gui::App()->findChild<ignition::gui::MainWindow *>()->installEventFilter(
         globalOptionsPlugin);
-
-      // Set frame manager and install
-      globalOptionsPlugin->setFrameManager(this->frameManager);
     }
   }
 

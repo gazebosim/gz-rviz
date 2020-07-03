@@ -99,6 +99,12 @@ signals:
    */
   void frameListChanged();
 
+signals:
+  /**
+   * @brief Set combo box index
+   */
+  void setCurrentIndex(const int index);
+
 public slots:
   /**
    * @brief Callback when refresh button is pressed.
@@ -112,6 +118,7 @@ private:
   rendering::RenderEngine * engine;
   rendering::ScenePtr scene;
   bool dirty;
+  bool populated;
   QColor color;
 };
 

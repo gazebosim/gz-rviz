@@ -33,7 +33,7 @@ namespace plugins
 {
 ////////////////////////////////////////////////////////////////////////////////
 GlobalOptions::GlobalOptions()
-: dirty(false)
+: dirty(false), populated(false)
 {
   // TODO(Sarathkrishnan Ramesh)
   // Add support to select render engine using config file
@@ -42,6 +42,8 @@ GlobalOptions::GlobalOptions()
     igndbg << "Engine '" << "ogre" << "' is not supported" << std::endl;
     return;
   }
+
+  this->frameList.push_back("world");
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -109,19 +111,33 @@ QStringList GlobalOptions::getFrameList() const
 ////////////////////////////////////////////////////////////////////////////////
 void GlobalOptions::onRefresh()
 {
-  // Clear
-  this->frameList.clear();
-
   // Get updated list
   std::vector<std::string> allFrames;
   this->frameManager->getFrames(allFrames);
-  std::sort(allFrames.begin(), allFrames.end());
 
-  for (const auto frame : allFrames) {
-    this->frameList.push_back(QString::fromStdString(frame));
+  if (allFrames.size() != 0) {
+    // Clear
+    this->frameList.clear();
+
+    std::sort(allFrames.begin(), allFrames.end());
+
+    int index = 0;
+    std::string fixedFrame = this->frameManager->getFixedFrame();
+
+    for (int i = 0; i < static_cast<int>(allFrames.size()); ++i) {
+      if (allFrames[i] == fixedFrame) {
+        index = i;
+      }
+      this->frameList.push_back(QString::fromStdString(allFrames[i]));
+    }
+
+    this->frameListChanged();
+
+    if (!populated) {
+      emit setCurrentIndex(index);
+      populated = false;
+    }
   }
-
-  this->frameListChanged();
 }
 
 ////////////////////////////////////////////////////////////////////////////////

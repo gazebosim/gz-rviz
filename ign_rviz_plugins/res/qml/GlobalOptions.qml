@@ -44,7 +44,7 @@ Item {
         id: combo
         Layout.fillWidth: true
         model: GlobalOptions.frameList
-        currentIndex: -1
+        currentIndex: 0
         editable: true
         editText: currentText
         displayText: currentText
@@ -55,17 +55,21 @@ Item {
 
           GlobalOptions.setFrame(textAt(currentIndex));
         }
+
+        Connections {
+          target: GlobalOptions
+          onSetCurrentIndex: {
+            combo.currentIndex = index
+            combo.editText = "world"
+            combo.displayText = "world"
+          }
+        }
       }
     }
 
     RowLayout {
       width: parent.width
       spacing: 10
-
-      // Horizontal spacing
-      Item {
-        width: 2
-      }
 
       Label {
         text: "Background Color"
