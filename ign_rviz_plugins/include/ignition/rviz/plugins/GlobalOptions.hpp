@@ -59,27 +59,28 @@ public:
   ~GlobalOptions() {}
 
   // Documentation Inherited
-  void LoadConfig(const tinyxml2::XMLElement * /*_pluginElem*/);
+  void LoadConfig(const tinyxml2::XMLElement * _pluginElem);
 
   // Documentation Inherited
-  void setFrameManager(std::shared_ptr<common::FrameManager>);
+  void setFrameManager(std::shared_ptr<common::FrameManager> _frameManager);
 
   /**
    * @brief Qt eventFilters. Original documentation can be found
    * <a href="https://doc.qt.io/qt-5/qobject.html#eventFilter">here</a>
    */
-  bool eventFilter(QObject *, QEvent *);
+  bool eventFilter(QObject * _object, QEvent * _event);
 
   /**
-   * @brief Set axis frame
+   * @brief Set fixed frame
+   * @param _frame[in] Fixed frame name
    */
-  Q_INVOKABLE void setFrame(const QString &);
+  Q_INVOKABLE void setFrame(const QString & _frame);
 
   /**
    * @brief Set scene background color
    * @param _color[in] Background color
    */
-  Q_INVOKABLE void setSceneBackground(const QColor &);
+  Q_INVOKABLE void setSceneBackground(const QColor & _color);
 
   /**
    * @brief Get the frame list as a string
@@ -91,7 +92,7 @@ public:
    * @brief Set the frame list from a string
    * @param[in] _frameList List of frames
    */
-  Q_INVOKABLE void setFrameList(const QStringList &);
+  Q_INVOKABLE void setFrameList(const QStringList & _frameList);
 
 signals:
   /**
@@ -102,6 +103,7 @@ signals:
 signals:
   /**
    * @brief Set combo box index
+   * @param index Combo box index
    */
   void setCurrentIndex(const int index);
 
@@ -112,7 +114,6 @@ public slots:
   void onRefresh();
 
 private:
-  void setScale();
   std::mutex lock;
   QStringList frameList;
   rendering::RenderEngine * engine;

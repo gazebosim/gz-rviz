@@ -44,15 +44,15 @@ class FrameManager : public QObject
 public:
   /**
    * @brief Constructor for FrameManager
-   * @param[in] node: ROS Node shared pointer
+   * @param[in] _node: ROS Node shared pointer
    */
-  explicit FrameManager(rclcpp::Node::SharedPtr);
+  explicit FrameManager(rclcpp::Node::SharedPtr _node);
 
   /**
    * @brief Sets fixed frame for frame tranformations
    * @param[in] _fixedFrame: Fixed frame
    */
-  void setFixedFrame(std::string);
+  void setFixedFrame(std::string _fixedFrame);
 
   /**
    * @brief Get frame pose (position and orientation)
@@ -60,7 +60,7 @@ public:
    * @param[out] _pose: Frame pose
    * @return Pose validity (true if pose is valid, else false)
    */
-  bool getFramePose(std::string &, ignition::math::Pose3d &);
+  bool getFramePose(std::string & _frame, ignition::math::Pose3d & _pose);
 
   /**
    * @brief Get parent frame pose (position and orientation)
@@ -68,13 +68,13 @@ public:
    * @param[out] _pose: Parent frame pose
    * @return Pose validity (true if pose is valid, else false)
    */
-  bool getParentPose(std::string & /*child*/, ignition::math::Pose3d &);
+  bool getParentPose(std::string & _child, ignition::math::Pose3d & _pose);
 
   /**
    * @brief Get available tf frames
    * @param[out] _frames: List of available frames
    */
-  void getFrames(std::vector<std::string> &);
+  void getFrames(std::vector<std::string> & _frames);
 
   /**
    *  @brief Get fixed frame
@@ -87,7 +87,7 @@ protected:
    * @brief Callback function to received transform messages
    * @param[in] _msg: Transform message
    */
-  void tf_callback(const tf2_msgs::msg::TFMessage::SharedPtr);
+  void tf_callback(const tf2_msgs::msg::TFMessage::SharedPtr _msg);
 
 private:
   rclcpp::Node::SharedPtr node;
