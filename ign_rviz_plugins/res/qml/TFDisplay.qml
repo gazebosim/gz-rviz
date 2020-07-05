@@ -142,6 +142,14 @@ Item {
 
     TableViewColumn {
       role: "name"
+      delegate: CheckDelegate {
+        text: model.name
+        checked: model.checked
+        onClicked: {
+          model.checked = checked;
+          TFDisplay.setFrameVisibility(model.name, model.checked);
+        }
+      }
     }
 
     // Delegates

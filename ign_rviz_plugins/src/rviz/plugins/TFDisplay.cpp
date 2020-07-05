@@ -36,8 +36,8 @@ namespace plugins
 {
 #define MIN_FRAME_DISTANCE 0.25
 ////////////////////////////////////////////////////////////////////////////////
-FrameModel::FrameModel(QObject * parent)
-: QStandardItemModel(parent)
+FrameModel::FrameModel(QObject * _parent)
+: QStandardItemModel(_parent)
 {}
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -45,6 +45,7 @@ void FrameModel::addFrame(const QString & _name, QStandardItem * _parentItem)
 {
   QStandardItem * frameRow = new QStandardItem();
   frameRow->setData(_name, NameRole);
+  frameRow->setCheckState(Qt::CheckState::Checked);
   _parentItem->appendRow(frameRow);
 }
 
@@ -53,6 +54,7 @@ QStandardItem * FrameModel::addParentRow(const QString & _name)
 {
   QStandardItem * entry = new QStandardItem();
   entry->setData(_name, NameRole);
+  entry->setCheckState(Qt::CheckState::Checked);
   appendRow(entry);
   return entry;
 }
@@ -66,6 +68,10 @@ QVariant FrameModel::data(const QModelIndex & _index, int _role) const
     return myItem->data(NameRole);
   }
 
+  if (_role == Qt::CheckStateRole) {
+    return myItem->data(Qt::CheckStateRole);
+  }
+
   return QVariant();
 }
 
@@ -74,6 +80,7 @@ QHash<int, QByteArray> FrameModel::roleNames() const
 {
   QHash<int, QByteArray> roles;
   roles[NameRole] = "name";
+  roles[Qt::CheckStateRole] = "checked";
 
   return roles;
 }
@@ -110,7 +117,6 @@ TFDisplay::TFDisplay()
   this->scene->RootVisual()->AddChild(tfRootVisual);
 
   this->model = new FrameModel();
-
   parentRow = this->model->addParentRow(QString::fromStdString("Frames"));
 
   ignition::gui::App()->Engine()->rootContext()->setContextProperty("FrameModel", this->model);
@@ -217,34 +223,40 @@ void TFDisplay::updateTF()
 {
   std::lock_guard<std::mutex>(this->lock);
 
-  // Get available tf frames
-  std::vector<std::string> frameIds;
-  frameManager->getFrames(frameIds);
-
   // Create tf visual frames
-  for (int i = tfRootVisual->ChildCount(); i < static_cast<int>(frameIds.size()); ++i) {
+  for (int i = tfRootVisual->ChildCount(); i < static_cast<int>(frameInfo.size()); ++i) {
     rendering::VisualPtr visualFrame = this->createVisualFrame();
     this->tfRootVisual->AddChild(visualFrame);
   }
 
+  int i = -1;
   // Update tf visual frames
-  for (int i = 0; i < static_cast<int>(frameIds.size()); ++i) {
+  for (auto frame : frameInfo) {
+    i++;
     ignition::math::Pose3d pose, parentPose;
 
     rendering::VisualPtr visualFrame = std::dynamic_pointer_cast<rendering::Visual>(
       this->tfRootVisual->ChildByIndex(i));
 
-    bool result = this->frameManager->getFramePose(frameIds[i], pose);
+    // Set frame visibility
+    visualFrame->SetVisible(frame.second);
+
+    // Skip processing if frame not visible
+    if (!frame.second) {
+      continue;
+    }
 
     // Set frame text
     rendering::TextPtr frameName = std::dynamic_pointer_cast<rendering::Text>(
       visualFrame->GeometryByIndex(0));
-    frameName->SetTextString(frameIds[i]);
+    frameName->SetTextString(frame.first);
 
     visualFrame->SetVisible(this->namesVisible);
 
     // Set frame position
-    visualFrame->SetLocalPosition(pose.Pos());
+    if (this->frameManager->getFramePose(frame.first, pose)) {
+      visualFrame->SetLocalPosition(pose.Pos());
+    }
 
     // Set axis orientation
     rendering::AxisVisualPtr axis = std::dynamic_pointer_cast<rendering::AxisVisual>(
@@ -258,7 +270,7 @@ void TFDisplay::updateTF()
     }
 
     // Get parent pose for tf links
-    result = this->frameManager->getParentPose(frameIds[i], parentPose);
+    bool result = this->frameManager->getParentPose(frame.first, parentPose);
     rendering::ArrowVisualPtr arrow = std::dynamic_pointer_cast<rendering::ArrowVisual>(
       visualFrame->ChildByIndex(0));
     if (result) {
@@ -302,13 +314,15 @@ void TFDisplay::refresh()
   this->frameManager->getFrames(frames);
 
   if (frames.size() > 0) {
-    std::sort(frames.begin(), frames.end());
+    for (const auto frame : frames) {
+      this->frameInfo.insert({frame, true});
+    }
 
+    // Clear rows
     parentRow->removeRows(0, parentRow->rowCount());
 
-    // Add frames to tree
-    for (const auto frame : frames) {
-      this->model->addFrame(QString::fromStdString(frame), parentRow);
+    for (auto frame : frameInfo) {
+      this->model->addFrame(QString::fromStdString(frame.first), parentRow);
     }
   }
 }
@@ -324,31 +338,46 @@ void TFDisplay::LoadConfig(const tinyxml2::XMLElement * /*_pluginElem*/)
 ////////////////////////////////////////////////////////////////////////////////
 void TFDisplay::showAxes(const bool & _visible)
 {
+  std::lock_guard<std::mutex>(this->lock);
   this->axesVisible = _visible;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void TFDisplay::showNames(const bool & _visible)
 {
+  std::lock_guard<std::mutex>(this->lock);
   this->namesVisible = _visible;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void TFDisplay::showArrows(const bool & _visible)
 {
+  std::lock_guard<std::mutex>(this->lock);
   this->arrowsVisible = _visible;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void TFDisplay::showAxesHead(const bool & _visible)
 {
+  std::lock_guard<std::mutex>(this->lock);
   this->axesHeadVisible = _visible;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void TFDisplay::setMarkerScale(const float & _scale)
 {
+  std::lock_guard<std::mutex>(this->lock);
   this->markerScale = _scale * 0.4;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void TFDisplay::setFrameVisibility(const QString & _frame, const bool & _visible)
+{
+  std::lock_guard<std::mutex>(this->lock);
+  auto it = frameInfo.find(_frame.toStdString());
+  if (it != frameInfo.end()) {
+    it->second = _visible;
+  }
 }
 
 }  // namespace plugins

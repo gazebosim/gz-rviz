@@ -20,9 +20,10 @@
 
 #include <QStandardItem>
 
-#include <string>
-#include <mutex>
+#include <map>
 #include <memory>
+#include <mutex>
+#include <string>
 #include <vector>
 
 #include "ignition/rviz/plugins/message_display_base.hpp"
@@ -39,12 +40,14 @@ class FrameModel : public QStandardItemModel
   Q_OBJECT
 
 public:
+  // Roles for tree view frames
   enum FrameRoles
   {
     NameRole = Qt::UserRole + 1
   };
 
-  explicit FrameModel(QObject * parent = 0);
+  // Constructor
+  explicit FrameModel(QObject * _parent = 0);
 
   Q_INVOKABLE void addFrame(const QString & _name, QStandardItem * _parentItem);
   Q_INVOKABLE QStandardItem * addParentRow(const QString & _name);
@@ -88,32 +91,44 @@ public:
   bool eventFilter(QObject *, QEvent *);
 
   // Documentation inherited
-  void setFrameManager(std::shared_ptr<common::FrameManager>);
+  void setFrameManager(std::shared_ptr<common::FrameManager> _frameManager);
 
   /**
    * @brief Set axis visibility
+   * @param[in] _visible Axes visibility
    */
   Q_INVOKABLE void showAxes(const bool & _visible);
 
   /**
    * @brief Set arrow visibility
+   * @param[in] _visible Arrow visibility
    */
   Q_INVOKABLE void showArrows(const bool & _visible);
 
   /**
    * @brief Set frame name visibility
+   * @param[in] _visible Frame name visibility
    */
   Q_INVOKABLE void showNames(const bool & _visible);
 
   /**
    * @brief Set axes arrow head visibility
+   * @param[in] _visible Axes arrow head visibility
    */
   Q_INVOKABLE void showAxesHead(const bool & _visible);
 
   /**
    * @brief Set marker scale
+   * @param _scale TF visual marker scale
    */
   Q_INVOKABLE void setMarkerScale(const float & _scale);
+
+  /**
+   * @brief Set frame visibility
+   * @param[in] _frame Frame name
+   * @param[in] _visible Frame visibility
+   */
+  Q_INVOKABLE void setFrameVisibility(const QString & _frame, const bool & _visible);
 
 protected:
   /**
@@ -134,23 +149,28 @@ protected:
    */
   rendering::VisualPtr createVisualFrame();
 
+  /**
+   * @brief Update tree view and local frame list
+   */
   void refresh();
+
+public:
+  // Tree view frame model
+  FrameModel * model;
 
 private:
   ignition::rendering::AxisVisualPtr axis;
   ignition::rendering::RenderEngine * engine;
   ignition::rendering::ScenePtr scene;
-  std::mutex lock;
   ignition::rendering::VisualPtr tfRootVisual;
+  std::mutex lock;
   bool axesVisible;
   bool arrowsVisible;
   bool namesVisible;
   bool axesHeadVisible;
   float markerScale;
   QStandardItem * parentRow;
-
-public:
-  FrameModel * model;
+  std::map<std::string, bool> frameInfo;
 };
 
 }  // namespace plugins

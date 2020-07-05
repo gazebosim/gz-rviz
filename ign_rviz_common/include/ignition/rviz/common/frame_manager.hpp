@@ -60,7 +60,7 @@ public:
    * @param[out] _pose: Frame pose
    * @return Pose validity (true if pose is valid, else false)
    */
-  bool getFramePose(std::string & _frame, ignition::math::Pose3d & _pose);
+  bool getFramePose(const std::string & _frame, ignition::math::Pose3d & _pose);
 
   /**
    * @brief Get parent frame pose (position and orientation)
@@ -68,7 +68,7 @@ public:
    * @param[out] _pose: Parent frame pose
    * @return Pose validity (true if pose is valid, else false)
    */
-  bool getParentPose(std::string & _child, ignition::math::Pose3d & _pose);
+  bool getParentPose(const std::string & _child, ignition::math::Pose3d & _pose);
 
   /**
    * @brief Get available tf frames
