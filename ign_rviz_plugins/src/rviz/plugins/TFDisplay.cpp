@@ -20,10 +20,13 @@
 #include <ignition/gui/Application.hh>
 #include <ignition/gui/GuiEvents.hh>
 
+#include <algorithm>
+#include <memory>
 #include <string>
 #include <utility>
-#include <memory>
 #include <vector>
+
+#include "ignition/rviz/common/rviz_events.hpp"
 
 namespace ignition
 {
@@ -32,6 +35,48 @@ namespace rviz
 namespace plugins
 {
 #define MIN_FRAME_DISTANCE 0.25
+////////////////////////////////////////////////////////////////////////////////
+FrameModel::FrameModel(QObject * parent)
+: QStandardItemModel(parent)
+{}
+
+////////////////////////////////////////////////////////////////////////////////
+void FrameModel::addFrame(const QString & _name, QStandardItem * _parentItem)
+{
+  QStandardItem * frameRow = new QStandardItem();
+  frameRow->setData(_name, NameRole);
+  _parentItem->appendRow(frameRow);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+QStandardItem * FrameModel::addParentRow(const QString & _name)
+{
+  QStandardItem * entry = new QStandardItem();
+  entry->setData(_name, NameRole);
+  appendRow(entry);
+  return entry;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+QVariant FrameModel::data(const QModelIndex & _index, int _role) const
+{
+  QStandardItem * myItem = itemFromIndex(_index);
+
+  if (_role == NameRole) {
+    return myItem->data(NameRole);
+  }
+
+  return QVariant();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+QHash<int, QByteArray> FrameModel::roleNames() const
+{
+  QHash<int, QByteArray> roles;
+  roles[NameRole] = "name";
+
+  return roles;
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 TFDisplay::TFDisplay()
@@ -63,12 +108,18 @@ TFDisplay::TFDisplay()
   // Create a root visual for tf visualization
   this->tfRootVisual = this->scene->CreateVisual();
   this->scene->RootVisual()->AddChild(tfRootVisual);
+
+  this->model = new FrameModel();
+
+  parentRow = this->model->addParentRow(QString::fromStdString("Frames"));
+
+  ignition::gui::App()->Engine()->rootContext()->setContextProperty("FrameModel", this->model);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 TFDisplay::~TFDisplay()
 {
-  std::lock_guard(this->lock);
+  std::lock_guard<std::mutex>(this->lock);
   // Delete visual
   ignition::gui::App()->findChild<ignition::gui::MainWindow *>()->removeEventFilter(this);
   this->scene->DestroyVisual(this->tfRootVisual);
@@ -153,6 +204,11 @@ bool TFDisplay::eventFilter(QObject * _object, QEvent * _event)
     updateTF();
   }
 
+  if (_event->type() == rviz::events::FrameListChanged::kType) {
+    // Refresh Tree View
+    this->refresh();
+  }
+
   return QObject::eventFilter(_object, _event);
 }
 
@@ -232,6 +288,29 @@ void TFDisplay::updateTF()
 void TFDisplay::setFrameManager(std::shared_ptr<common::FrameManager> _frameManager)
 {
   this->frameManager = std::move(_frameManager);
+
+  // Refresh Tree View
+  this->refresh();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void TFDisplay::refresh()
+{
+  std::lock_guard<std::mutex>(this->lock);
+
+  std::vector<std::string> frames;
+  this->frameManager->getFrames(frames);
+
+  if (frames.size() > 0) {
+    std::sort(frames.begin(), frames.end());
+
+    parentRow->removeRows(0, parentRow->rowCount());
+
+    // Add frames to tree
+    for (const auto frame : frames) {
+      this->model->addFrame(QString::fromStdString(frame), parentRow);
+    }
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////

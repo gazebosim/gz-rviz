@@ -18,6 +18,8 @@
 #include <ignition/rendering.hh>
 #include <tf2_msgs/msg/tf_message.hpp>
 
+#include <QStandardItem>
+
 #include <string>
 #include <mutex>
 #include <memory>
@@ -31,6 +33,29 @@ namespace rviz
 {
 namespace plugins
 {
+////////////////////////////////////////////////////////////////////////////////
+class FrameModel : public QStandardItemModel
+{
+  Q_OBJECT
+
+public:
+  enum FrameRoles
+  {
+    NameRole = Qt::UserRole + 1
+  };
+
+  explicit FrameModel(QObject * parent = 0);
+
+  Q_INVOKABLE void addFrame(const QString & _name, QStandardItem * _parentItem);
+  Q_INVOKABLE QStandardItem * addParentRow(const QString & _name);
+
+  QVariant data(const QModelIndex & _index, int _role = Qt::DisplayRole) const;
+
+protected:
+  QHash<int, QByteArray> roleNames() const;
+};
+
+////////////////////////////////////////////////////////////////////////////////
 class TFDisplay : public MessageDisplay<tf2_msgs::msg::TFMessage>
 {
   Q_OBJECT
@@ -109,6 +134,8 @@ protected:
    */
   rendering::VisualPtr createVisualFrame();
 
+  void refresh();
+
 private:
   ignition::rendering::AxisVisualPtr axis;
   ignition::rendering::RenderEngine * engine;
@@ -120,6 +147,10 @@ private:
   bool namesVisible;
   bool axesHeadVisible;
   float markerScale;
+  QStandardItem * parentRow;
+
+public:
+  FrameModel * model;
 };
 
 }  // namespace plugins
