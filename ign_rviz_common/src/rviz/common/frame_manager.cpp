@@ -138,7 +138,7 @@ void FrameManager::tf_callback(tf2_msgs::msg::TFMessage::SharedPtr _msg)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-bool FrameManager::getFramePose(std::string & _frame, ignition::math::Pose3d & _pose)
+bool FrameManager::getFramePose(const std::string & _frame, ignition::math::Pose3d & _pose)
 {
   std::lock_guard<std::mutex>(this->tf_mutex_);
 
@@ -153,7 +153,7 @@ bool FrameManager::getFramePose(std::string & _frame, ignition::math::Pose3d & _
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-bool FrameManager::getParentPose(std::string & _child, ignition::math::Pose3d & _pose)
+bool FrameManager::getParentPose(const std::string & _child, ignition::math::Pose3d & _pose)
 {
   std::lock_guard<std::mutex>(this->tf_mutex_);
 

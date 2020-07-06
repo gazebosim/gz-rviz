@@ -99,7 +99,9 @@ protected:
   rclcpp::Node::SharedPtr node;
   std::string topic_name;
 };
+
 }  // namespace plugins
 }  // namespace rviz
 }  // namespace ignition
+
 #endif  // IGNITION__RVIZ__PLUGINS__MESSAGE_DISPLAY_BASE_HPP_
