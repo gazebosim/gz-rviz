@@ -117,7 +117,7 @@ TFDisplay::TFDisplay()
   this->scene->RootVisual()->AddChild(tfRootVisual);
 
   this->model = new FrameModel();
-  parentRow = this->model->addParentRow(QString::fromStdString("Frames"));
+  parentRow = this->model->addParentRow(QString::fromStdString("All Frames"));
 
   ignition::gui::App()->Engine()->rootContext()->setContextProperty("FrameModel", this->model);
 }
@@ -231,7 +231,7 @@ void TFDisplay::updateTF()
 
   int i = -1;
   // Update tf visual frames
-  for (auto frame : frameInfo) {
+  for (const auto & frame : frameInfo) {
     i++;
     ignition::math::Pose3d pose, parentPose;
 
@@ -374,10 +374,31 @@ void TFDisplay::setMarkerScale(const float & _scale)
 void TFDisplay::setFrameVisibility(const QString & _frame, const bool & _visible)
 {
   std::lock_guard<std::mutex>(this->lock);
-  auto it = frameInfo.find(_frame.toStdString());
-  if (it != frameInfo.end()) {
-    it->second = _visible;
+
+  if (_frame == "All Frames") {
+    // Update frame GUI checkboxes
+    for (int i = 0; i < parentRow->rowCount(); ++i) {
+      parentRow->child(i)->setData(_visible, Qt::CheckStateRole);
+    }
+    // Update frame visibility info
+    for (auto & frame : frameInfo) {
+      frame.second = _visible;
+    }
+
+    return;
   }
+
+  // Update frame visibility
+  bool frameStatus = true;
+  for (auto & frame : frameInfo) {
+    if (frame.first == _frame.toStdString()) {
+      frame.second = _visible;
+    }
+    frameStatus &= frame.second;
+  }
+
+  // All Frames checkbox checked if all child frames are visible
+  parentRow->setData(frameStatus, Qt::CheckStateRole);
 }
 
 }  // namespace plugins
