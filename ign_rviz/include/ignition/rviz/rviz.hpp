@@ -107,20 +107,22 @@ public:
     }
   }
 
+  /**
+   * @brief Loads Axes Visualization Plugin
+   */
   Q_INVOKABLE void addAxesDisplay()
   {
     // Load plugin
-    ignition::gui::App()->LoadPlugin("AxesDisplay");
+    if (ignition::gui::App()->LoadPlugin("AxesDisplay")) {
+      auto axes_plugins =
+        ignition::gui::App()->findChildren<ignition::rviz::plugins::MessageDisplayBase *>();
+      int axes_plugin_count = axes_plugins.size() - 1;
 
-    auto axes_plugins =
-      ignition::gui::App()->findChildren<ignition::rviz::plugins::MessageDisplayBase *>();
-    int axes_plugin_count = axes_plugins.size() - 1;
-
-    // Set frame manager and install event filter for recently added plugin
-    axes_plugins[axes_plugin_count]->setFrameManager(this->frameManager);
-    ignition::gui::App()->findChild<ignition::gui::MainWindow *>()->installEventFilter(
-      axes_plugins[
-        axes_plugin_count]);
+      // Set frame manager and install event filter for recently added plugin
+      axes_plugins[axes_plugin_count]->setFrameManager(this->frameManager);
+      ignition::gui::App()->findChild<ignition::gui::MainWindow *>()->installEventFilter(
+        axes_plugins[axes_plugin_count]);
+    }
   }
 
   /**
@@ -132,6 +134,19 @@ public:
     this->node = std::make_shared<rclcpp::Node>("ignition_rviz");
     this->frameManager = std::make_shared<common::FrameManager>(this->node);
     this->frameManager->setFixedFrame("world");
+
+    // Load Global Options plugin
+    if (ignition::gui::App()->LoadPlugin("GlobalOptions")) {
+      auto globalOptionsPlugin =
+        ignition::gui::App()->findChild<ignition::rviz::plugins::MessageDisplayBase *>();
+
+      // Set frame manager and install
+      globalOptionsPlugin->setFrameManager(this->frameManager);
+
+      // Install event filter
+      ignition::gui::App()->findChild<ignition::gui::MainWindow *>()->installEventFilter(
+        globalOptionsPlugin);
+    }
   }
 
   /**

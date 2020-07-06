@@ -23,6 +23,8 @@
 #include <vector>
 #include <string>
 
+#include "ignition/rviz/common/rviz_events.hpp"
+
 namespace ignition
 {
 namespace rviz
@@ -67,8 +69,13 @@ bool AxesDisplay::eventFilter(QObject * object, QEvent * event)
     // Update pose
     {
       std::lock_guard(this->lock);
+
+      // Origin pose. Fixed Frame always at origin.
       math::Pose3d pose;
-      if (this->frameManager->getFramePose(frame, pose)) {
+
+      if (frame == "<Fixed Frame>") {
+        rootVisual->SetLocalPose(pose);
+      } else if (this->frameManager->getFramePose(frame, pose)) {
         rootVisual->SetLocalPose(pose);
       }
 
@@ -79,9 +86,10 @@ bool AxesDisplay::eventFilter(QObject * object, QEvent * event)
     }
   }
 
-  // TODO(Sarathkrishnan Ramesh): Add rviz events for
-  // 1. Updating fixed frame changes
-  // 2. Updating combo-box when tf frames change
+  // Update combo-box on frame list change
+  if (event->type() == rviz::events::FrameListChanged::kType) {
+    this->onRefresh();
+  }
 
   return QObject::eventFilter(object, event);
 }
@@ -90,12 +98,7 @@ bool AxesDisplay::eventFilter(QObject * object, QEvent * event)
 void AxesDisplay::setFrame(const QString & frame)
 {
   std::lock_guard(this->lock);
-
-  if (frame.toStdString() == "<Fixed Frame>") {
-    this->frame = this->frameManager->getFixedFrame();
-  } else {
-    this->frame = frame.toStdString();
-  }
+  this->frame = frame.toStdString();
 }
 
 ////////////////////////////////////////////////////////////////////////////////

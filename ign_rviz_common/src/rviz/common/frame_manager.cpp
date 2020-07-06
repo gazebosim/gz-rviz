@@ -12,12 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "ignition/rviz/common/frame_manager.hpp"
+#include <ignition/gui/Application.hh>
+#include <ignition/gui/MainWindow.hh>
 
 #include <string>
 #include <utility>
 #include <memory>
 #include <vector>
+
+#include "ignition/rviz/common/rviz_events.hpp"
+#include "ignition/rviz/common/frame_manager.hpp"
 
 namespace ignition
 {
@@ -30,9 +34,10 @@ namespace common
  * Creates a tfBuffer and tfListener.
  * Creates a tf subscription and binds callback to it.
  */
-FrameManager::FrameManager(rclcpp::Node::SharedPtr node)
+FrameManager::FrameManager(rclcpp::Node::SharedPtr _node)
+: QObject(), frameCount(0)
 {
-  this->node = std::move(node);
+  this->node = std::move(_node);
 
   tfBuffer = std::make_shared<tf2_ros::Buffer>(this->node->get_clock());
   tfListener = std::make_shared<tf2_ros::TransformListener>(*tfBuffer);
@@ -43,25 +48,36 @@ FrameManager::FrameManager(rclcpp::Node::SharedPtr node)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void FrameManager::setFixedFrame(std::string fixedFrame)
+void FrameManager::setFixedFrame(std::string _fixedFrame)
 {
-  this->fixedFrame = fixedFrame;
+  std::lock_guard<std::mutex>(this->tf_mutex_);
+
+  this->tfTree.clear();
+  this->fixedFrame = _fixedFrame;
+
+  // Send fixed frame changed event
+  if (ignition::gui::App()) {
+    ignition::gui::App()->sendEvent(
+      ignition::gui::App()->findChild<ignition::gui::MainWindow *>(),
+      new events::FixedFrameChanged());
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 std::string FrameManager::getFixedFrame()
 {
+  std::lock_guard<std::mutex>(this->tf_mutex_);
   return this->fixedFrame;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void FrameManager::getFrames(std::vector<std::string> & frames)
+void FrameManager::getFrames(std::vector<std::string> & _frames)
 {
-  tfBuffer->_getFrameStrings(frames);
+  tfBuffer->_getFrameStrings(_frames);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void FrameManager::tf_callback(tf2_msgs::msg::TFMessage::SharedPtr msg)
+void FrameManager::tf_callback(tf2_msgs::msg::TFMessage::SharedPtr _msg)
 {
   std::lock_guard<std::mutex>(this->tf_mutex_);
 
@@ -73,7 +89,18 @@ void FrameManager::tf_callback(tf2_msgs::msg::TFMessage::SharedPtr msg)
   std::vector<std::string> frame_ids;
   tfBuffer->_getFrameStrings(frame_ids);
 
-  builtin_interfaces::msg::Time timeStamp = msg->transforms[0].header.stamp;
+  if (frame_ids.size() != this->frameCount) {
+    // Send frame list changed event
+    if (ignition::gui::App()) {
+      ignition::gui::App()->sendEvent(
+        ignition::gui::App()->findChild<ignition::gui::MainWindow *>(),
+        new events::FrameListChanged());
+    }
+
+    this->frameCount = frame_ids.size();
+  }
+
+  builtin_interfaces::msg::Time timeStamp = _msg->transforms[0].header.stamp;
   timePoint =
     tf2::TimePoint(
     std::chrono::seconds(timeStamp.sec) +
@@ -111,33 +138,33 @@ void FrameManager::tf_callback(tf2_msgs::msg::TFMessage::SharedPtr msg)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-bool FrameManager::getFramePose(std::string & frame, ignition::math::Pose3d & pose)
+bool FrameManager::getFramePose(std::string & _frame, ignition::math::Pose3d & _pose)
 {
   std::lock_guard<std::mutex>(this->tf_mutex_);
 
-  pose = math::Pose3d::Zero;
+  _pose = math::Pose3d::Zero;
 
-  auto it = this->tfTree.find(frame);
+  auto it = this->tfTree.find(_frame);
   if (it != tfTree.end()) {
-    pose = it->second;
+    _pose = it->second;
     return true;
   }
   return false;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-bool FrameManager::getParentPose(std::string & child, ignition::math::Pose3d & pose)
+bool FrameManager::getParentPose(std::string & _child, ignition::math::Pose3d & _pose)
 {
   std::lock_guard<std::mutex>(this->tf_mutex_);
 
   std::string parent;
-  bool parentAvailable = tfBuffer->_getParent(child, this->timePoint, parent);
+  bool parentAvailable = tfBuffer->_getParent(_child, this->timePoint, parent);
 
   if (!parentAvailable) {
     return false;
   }
 
-  return this->getFramePose(parent, pose);
+  return this->getFramePose(parent, _pose);
 }
 
 }  // namespace common

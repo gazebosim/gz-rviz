@@ -37,7 +37,9 @@ include_directories(SYSTEM
   ${IGNITION-MATH_INCLUDE_DIRS}
 )
 
-qt5_add_resources(resources_RCC include/ignition/rviz/plugins/AxesDisplay.qrc)
+qt5_add_resources(resources_RCC res/Plugins.qrc)
+
+########################################################################
 
 add_library(AxesDisplay SHARED ${headers_MOC}
   include/ignition/rviz/plugins/AxesDisplay.hpp
@@ -63,6 +65,34 @@ target_include_directories(AxesDisplay
   ${Qt5Widgets_INCLUDE_DIRS}
   ${IGNITION-GUI_INCLUDE_DIRS}
 )
+
+########################################################################
+
+add_library(GlobalOptions SHARED ${headers_MOC}
+  include/ignition/rviz/plugins/GlobalOptions.hpp
+  src/rviz/plugins/GlobalOptions.cpp
+  ${resources_RCC}
+)
+
+ament_target_dependencies(GlobalOptions
+  tf2_ros
+  ignition-gui4
+  ignition-math6
+  ignition-rendering4
+  ign_rviz_common
+)
+
+target_link_libraries(GlobalOptions Qt5::Core Qt5::Qml Qt5::Quick Qt5::QuickControls2)
+
+target_include_directories(GlobalOptions
+  PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>
+  ${Qt5Widgets_INCLUDE_DIRS}
+  ${IGNITION-GUI_INCLUDE_DIRS}
+)
+
+########################################################################
 
 set(ign_rviz_plugins_headers_to_moc
   "include/ignition/rviz/plugins/message_display_base.hpp"
@@ -119,6 +149,16 @@ ament_export_libraries(AxesDisplay)
 
 install(
   TARGETS AxesDisplay
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION bin
+  INCLUDES DESTINATION include
+)
+
+ament_export_libraries(GlobalOptions)
+
+install(
+  TARGETS GlobalOptions
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin

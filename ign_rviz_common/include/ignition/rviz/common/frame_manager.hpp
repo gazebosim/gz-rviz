@@ -17,6 +17,8 @@
 
 #include <ignition/math/Pose3.hh>
 
+#include <QObject>
+
 #include <tf2_ros/buffer.h>
 #include <tf2_ros/transform_listener.h>
 #include <tf2_msgs/msg/tf_message.hpp>
@@ -35,42 +37,44 @@ namespace rviz
 {
 namespace common
 {
-class FrameManager
+class FrameManager : public QObject
 {
+  Q_OBJECT
+
 public:
   /**
    * @brief Constructor for FrameManager
-   * @param[in] node: ROS Node shared pointer
+   * @param[in] _node: ROS Node shared pointer
    */
-  explicit FrameManager(rclcpp::Node::SharedPtr);
+  explicit FrameManager(rclcpp::Node::SharedPtr _node);
 
   /**
    * @brief Sets fixed frame for frame tranformations
-   * @param[in] fixedFrame: Fixed frame
+   * @param[in] _fixedFrame: Fixed frame
    */
-  void setFixedFrame(std::string);
+  void setFixedFrame(std::string _fixedFrame);
 
   /**
    * @brief Get frame pose (position and orientation)
-   * @param[in] frame: Frame name
-   * @param[out] pose: Frame pose
+   * @param[in] _frame: Frame name
+   * @param[out] _pose: Frame pose
    * @return Pose validity (true if pose is valid, else false)
    */
-  bool getFramePose(std::string &, ignition::math::Pose3d &);
+  bool getFramePose(std::string & _frame, ignition::math::Pose3d & _pose);
 
   /**
    * @brief Get parent frame pose (position and orientation)
-   * @param[in] frame: Child frame name
-   * @param[out] pose: Parent frame pose
+   * @param[in] _child: Child frame name
+   * @param[out] _pose: Parent frame pose
    * @return Pose validity (true if pose is valid, else false)
    */
-  bool getParentPose(std::string & /*child*/, ignition::math::Pose3d &);
+  bool getParentPose(std::string & _child, ignition::math::Pose3d & _pose);
 
   /**
    * @brief Get available tf frames
-   * @param[out] frames: List of available frames
+   * @param[out] _frames: List of available frames
    */
-  void getFrames(std::vector<std::string> &);
+  void getFrames(std::vector<std::string> & _frames);
 
   /**
    *  @brief Get fixed frame
@@ -81,9 +85,9 @@ public:
 protected:
   /**
    * @brief Callback function to received transform messages
-   * @param[in] msg: Transform message
+   * @param[in] _msg: Transform message
    */
-  void tf_callback(const tf2_msgs::msg::TFMessage::SharedPtr);
+  void tf_callback(const tf2_msgs::msg::TFMessage::SharedPtr _msg);
 
 private:
   rclcpp::Node::SharedPtr node;
@@ -94,6 +98,7 @@ private:
   rclcpp::Subscription<tf2_msgs::msg::TFMessage>::SharedPtr subscriber;
   std::unordered_map<std::string, ignition::math::Pose3d> tfTree;
   tf2::TimePoint timePoint;
+  unsigned int frameCount;
 };
 }  // namespace common
 }  // namespace rviz

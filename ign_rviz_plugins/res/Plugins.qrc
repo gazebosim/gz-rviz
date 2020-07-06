@@ -1,0 +1,9 @@
+<!DOCTYPE RCC><RCC version="1.0">
+  <qresource prefix="GlobalOptions/">
+    <file alias="GlobalOptions.qml">qml/GlobalOptions.qml</file>
+  </qresource>
+
+  <qresource prefix="AxesDisplay/">
+    <file alias="AxesDisplay.qml">qml/AxesDisplay.qml</file>
+  </qresource>
+</RCC>
