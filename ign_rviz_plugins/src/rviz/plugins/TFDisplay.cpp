@@ -116,10 +116,8 @@ TFDisplay::TFDisplay()
   this->tfRootVisual = this->scene->CreateVisual();
   this->scene->RootVisual()->AddChild(tfRootVisual);
 
-  this->model = new FrameModel();
-  parentRow = this->model->addParentRow(QString::fromStdString("All Frames"));
-
-  ignition::gui::App()->Engine()->rootContext()->setContextProperty("FrameModel", this->model);
+  this->frameModel = new FrameModel();
+  parentRow = this->frameModel->addParentRow(QString::fromStdString("All Frames"));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -322,8 +320,10 @@ void TFDisplay::refresh()
     parentRow->removeRows(0, parentRow->rowCount());
 
     for (auto frame : frameInfo) {
-      this->model->addFrame(QString::fromStdString(frame.first), parentRow);
+      this->frameModel->addFrame(QString::fromStdString(frame.first), parentRow);
     }
+    // Notify model update
+    frameModelChanged();
   }
 }
 
@@ -399,6 +399,9 @@ void TFDisplay::setFrameVisibility(const QString & _frame, const bool & _visible
 
   // All Frames checkbox checked if all child frames are visible
   parentRow->setData(frameStatus, Qt::CheckStateRole);
+
+  // Notify model update
+  frameModelChanged();
 }
 
 }  // namespace plugins
