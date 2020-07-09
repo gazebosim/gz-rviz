@@ -10,4 +10,8 @@
   <qresource prefix="TFDisplay/">
     <file alias="TFDisplay.qml">qml/TFDisplay.qml</file>
   </qresource>
+
+  <qresource prefix="LaserScanDisplay/">
+    <file alias="LaserScanDisplay.qml">qml/LaserScanDisplay.qml</file>
+  </qresource>
 </RCC>

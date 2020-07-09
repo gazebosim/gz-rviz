@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef IGNITION__RVIZ__PLUGINS__LASER_SCAN_DISPLAY_HPP_
-#define IGNITION__RVIZ__PLUGINS__LASER_SCAN_DISPLAY_HPP_
+#ifndef IGNITION__RVIZ__PLUGINS__LASERSCANDISPLAY_HPP_
+#define IGNITION__RVIZ__PLUGINS__LASERSCANDISPLAY_HPP_
 
 #include <ignition/rendering.hh>
 
@@ -46,25 +46,25 @@ public:
   ~LaserScanDisplay();
 
   // Documentation Inherited
-  void initialize(rclcpp::Node::SharedPtr);
+  void LoadConfig(const tinyxml2::XMLElement * /*_pluginElem*/);
 
   // Documentation Inherited
-  void callback(const sensor_msgs::msg::LaserScan::SharedPtr);
+  void initialize(rclcpp::Node::SharedPtr _node);
+
+  // Documentation Inherited
+  void callback(const sensor_msgs::msg::LaserScan::SharedPtr _msg);
 
   // Documentation inherited
-  void setTopic(std::string);
+  void setTopic(std::string topic_name);
 
   /**
    * @brief Qt eventFilters. Original documentation can be found
    * <a href="https://doc.qt.io/qt-5/qobject.html#eventFilter">here</a>
    */
-  bool eventFilter(QObject *, QEvent *);
+  bool eventFilter(QObject * _object, QEvent * _event);
 
   // Documentation inherited
-  void installEventFilter(ignition::gui::MainWindow *);
-
-  // Documentation inherited
-  void setFrameManager(std::shared_ptr<common::FrameManager>);
+  void setFrameManager(std::shared_ptr<common::FrameManager> _frameManager);
 
 protected:
   /**
@@ -81,7 +81,9 @@ private:
   std::string fixedFrame;
   sensor_msgs::msg::LaserScan::SharedPtr msg;
 };
+
 }  // namespace plugins
 }  // namespace rviz
 }  // namespace ignition
-#endif  // IGNITION__RVIZ__PLUGINS__LASER_SCAN_DISPLAY_HPP_
+
+#endif  // IGNITION__RVIZ__PLUGINS__LASERSCANDISPLAY_HPP_

@@ -96,7 +96,7 @@ public:
    * @brief Set the frame list from a string
    * @param[in] _frameList List of frames
    */
-  Q_INVOKABLE void setFrameList(const QStringList & _frameList);
+  Q_INVOKABLE void setFrameList(const QStringList & /*_frameList*/) {}
 
 signals:
   /**

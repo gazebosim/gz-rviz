@@ -27,7 +27,7 @@ find_package(tf2_geometry_msgs REQUIRED)
 find_package(tf2_msgs REQUIRED)
 find_package(tf2_ros REQUIRED)
 find_package(sensor_msgs REQUIRED)
-find_package(pluginlib REQUIRED)
+find_package(ament_index_cpp REQUIRED)
 find_package(ign_rviz_plugins REQUIRED)
 find_package(ign_rviz_common REQUIRED)
 
@@ -61,7 +61,7 @@ add_executable(ign_rviz src/rviz/rviz.cpp include/ignition/rviz/rviz.hpp ${resou
 ament_target_dependencies(ign_rviz
   ignition-gui4
   rclcpp
-  pluginlib
+  ament_index_cpp
   geometry_msgs
   tf2_msgs
   tf2_ros

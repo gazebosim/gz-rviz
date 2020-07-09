@@ -85,12 +85,6 @@ public:
    */
   virtual void setTopic(std::string) {}
 
-  /**
-   * @brief Install an event filter on ths object
-   * @param[in] window: Application main window
-   */
-  virtual void installEventFilter(ignition::gui::MainWindow *) {}
-
   // Documentation Inherited
   virtual void setFrameManager(std::shared_ptr<common::FrameManager>) {}
 

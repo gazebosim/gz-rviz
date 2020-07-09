@@ -13,6 +13,7 @@
 // limitations under the License.
 
 #include <ament_index_cpp/get_package_share_directory.hpp>
+#include <ament_index_cpp/get_package_prefix.hpp>
 #include <ignition/common/Console.hh>
 #include <string>
 

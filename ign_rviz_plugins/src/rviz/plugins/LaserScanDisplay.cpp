@@ -12,11 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "ignition/rviz/plugins/laser_scan_display.hpp"
+#include "ignition/rviz/plugins/LaserScanDisplay.hpp"
 
-#include <pluginlib/class_list_macros.hpp>
 #include <ignition/math.hh>
 #include <ignition/math/Color.hh>
+#include <ignition/plugin/Register.hh>
+#include <ignition/gui/Application.hh>
 #include <ignition/gui/GuiEvents.hh>
 
 #include <string>
@@ -48,7 +49,12 @@ LaserScanDisplay::LaserScanDisplay()
 
 ////////////////////////////////////////////////////////////////////////////////
 LaserScanDisplay::~LaserScanDisplay()
-{}
+{
+  std::lock_guard<std::mutex>(this->lock);
+  // Delete visual
+  ignition::gui::App()->findChild<ignition::gui::MainWindow *>()->removeEventFilter(this);
+  this->scene->DestroyVisual(this->rootVisual, true);
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 void LaserScanDisplay::initialize(rclcpp::Node::SharedPtr node)
@@ -67,32 +73,32 @@ void LaserScanDisplay::setTopic(std::string topic_name)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void LaserScanDisplay::callback(const sensor_msgs::msg::LaserScan::SharedPtr msg)
+void LaserScanDisplay::callback(const sensor_msgs::msg::LaserScan::SharedPtr _msg)
 {
   std::lock_guard<std::mutex>(this->lock);
-  this->msg = std::move(msg);
+  this->msg = std::move(_msg);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 /**
  * Update laser scan visualization only when ign::gui render event is received
  */
-bool LaserScanDisplay::eventFilter(QObject * object, QEvent * event)
+bool LaserScanDisplay::eventFilter(QObject * _object, QEvent * _event)
 {
-  if (event->type() == gui::events::Render::kType) {
+  if (_event->type() == gui::events::Render::kType) {
     // Attach a point geometry to root visual
     if (static_cast<int>(this->rootVisual->GeometryCount()) == 0) {
       rendering::MarkerPtr marker = this->scene->CreateMarker();
       marker->SetType(rendering::MarkerType::MT_POINTS);
 
       this->rootVisual->AddGeometry(marker);
-      this->rootVisual->SetGeometryMaterial(this->scene->Material("Default/White"), false);
+      this->rootVisual->SetGeometryMaterial(this->scene->Material("Default/White"), true);
     }
 
     update();
   }
 
-  return QObject::eventFilter(object, event);
+  return QObject::eventFilter(_object, _event);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -127,22 +133,24 @@ void LaserScanDisplay::update()
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void LaserScanDisplay::installEventFilter(ignition::gui::MainWindow * window)
+void LaserScanDisplay::setFrameManager(std::shared_ptr<common::FrameManager> _frameManager)
 {
-  window->installEventFilter(this);
+  this->frameManager = std::move(_frameManager);
+  this->fixedFrame = this->frameManager->getFixedFrame();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void LaserScanDisplay::setFrameManager(std::shared_ptr<common::FrameManager> frameManager)
+void LaserScanDisplay::LoadConfig(const tinyxml2::XMLElement * /*_pluginElem*/)
 {
-  this->frameManager = std::move(frameManager);
-  this->fixedFrame = this->frameManager->getFixedFrame();
+  if (this->title.empty()) {
+    this->title = "Laser Scan";
+  }
 }
 
 }  // namespace plugins
 }  // namespace rviz
 }  // namespace ignition
 
-PLUGINLIB_EXPORT_CLASS(
+IGNITION_ADD_PLUGIN(
   ignition::rviz::plugins::LaserScanDisplay,
-  ignition::rviz::plugins::MessageDisplayBase)
+  ignition::gui::Plugin)
