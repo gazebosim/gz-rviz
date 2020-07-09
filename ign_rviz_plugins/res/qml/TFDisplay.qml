@@ -105,7 +105,7 @@ Item {
 
   TreeView {
     id: tree
-    model: FrameModel
+    model: TFDisplay.frameModel
     anchors.left: parent.left
     anchors.right: parent.right
     anchors.bottom: tfDisplay.bottom

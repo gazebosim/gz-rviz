@@ -63,6 +63,12 @@ class TFDisplay : public MessageDisplay<tf2_msgs::msg::TFMessage>
 {
   Q_OBJECT
 
+  Q_PROPERTY(
+    FrameModel * frameModel
+    READ getFrameModel
+    NOTIFY frameModelChanged
+  )
+
 public:
   /**
    * Constructor for tf visualization plugin
@@ -130,6 +136,21 @@ public:
    */
   Q_INVOKABLE void setFrameVisibility(const QString & _frame, const bool & _visible);
 
+  /**
+   * @brief Get the tree view model
+   * @return Tree view model
+   */
+  Q_INVOKABLE FrameModel * getFrameModel() const
+  {
+    return this->frameModel;
+  }
+
+signals:
+  /**
+   * @brief Notify that tree view has changed
+   */
+  void frameModelChanged();
+
 protected:
   /**
    * @brief Create custom arrow visual for visualizing tf links
@@ -156,7 +177,7 @@ protected:
 
 public:
   // Tree view frame model
-  FrameModel * model;
+  FrameModel * frameModel;
 
 private:
   ignition::rendering::AxisVisualPtr axis;
