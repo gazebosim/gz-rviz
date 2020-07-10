@@ -36,6 +36,15 @@ class LaserScanDisplay : public MessageDisplay<sensor_msgs::msg::LaserScan>
 {
   Q_OBJECT
 
+  /**
+   *  @brief Topic List
+   */
+  Q_PROPERTY(
+    QStringList topicList
+    READ getTopicList
+    NOTIFY topicListChanged
+  )
+
 public:
   /**
    * Constructor for laser scan visualization plugin
@@ -58,6 +67,12 @@ public:
   void setTopic(std::string topic_name);
 
   /**
+   * @brief Set ROS Subscriber topic through GUI
+   * @param[in] topic_name ROS Topic Name
+   */
+  Q_INVOKABLE void setTopic(QString topic_name);
+
+  /**
    * @brief Qt eventFilters. Original documentation can be found
    * <a href="https://doc.qt.io/qt-5/qobject.html#eventFilter">here</a>
    */
@@ -65,6 +80,31 @@ public:
 
   // Documentation inherited
   void setFrameManager(std::shared_ptr<common::FrameManager> _frameManager);
+
+  /**
+   * @brief Get the frame list as a string
+   * @return List of frames
+   */
+  Q_INVOKABLE QStringList getTopicList() const;
+
+signals:
+  /**
+   * @brief Notify that topic list has changed
+   */
+  void topicListChanged();
+
+signals:
+  /**
+   * @brief Set combo box index
+   * @param index Combo box index
+   */
+  void setCurrentIndex(const int index);
+
+public slots:
+  /**
+   * @brief Callback when refresh button is pressed.
+   */
+  void onRefresh();
 
 protected:
   /**
@@ -80,6 +120,7 @@ private:
   std::mutex lock;
   std::string fixedFrame;
   sensor_msgs::msg::LaserScan::SharedPtr msg;
+  QStringList topicList;
 };
 
 }  // namespace plugins

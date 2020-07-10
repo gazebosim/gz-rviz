@@ -31,7 +31,6 @@ namespace rviz
 {
 namespace plugins
 {
-
 ////////////////////////////////////////////////////////////////////////////////
 LaserScanDisplay::LaserScanDisplay()
 : MessageDisplay()
@@ -57,15 +56,38 @@ LaserScanDisplay::~LaserScanDisplay()
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void LaserScanDisplay::initialize(rclcpp::Node::SharedPtr node)
+void LaserScanDisplay::initialize(rclcpp::Node::SharedPtr _node)
 {
-  this->node = std::move(node);
+  std::lock_guard<std::mutex>(this->lock);
+  this->node = std::move(_node);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void LaserScanDisplay::setTopic(std::string topic_name)
 {
+  std::lock_guard<std::mutex>(this->lock);
   this->topic_name = topic_name;
+  this->subscriber = this->node->create_subscription<sensor_msgs::msg::LaserScan>(
+    this->topic_name,
+    1,
+    std::bind(&LaserScanDisplay::callback, this, std::placeholders::_1));
+
+  // Refresh combo-box on plugin load
+  this->onRefresh();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void LaserScanDisplay::setTopic(QString topic_name)
+{
+  std::lock_guard<std::mutex>(this->lock);
+  this->topic_name = topic_name.toStdString();
+
+  // Destroy previous subscription
+  if (this->subscriber != nullptr) {
+    this->subscriber.reset();
+  }
+
+  // Create new subscription
   this->subscriber = this->node->create_subscription<sensor_msgs::msg::LaserScan>(
     this->topic_name,
     10,
@@ -86,6 +108,7 @@ void LaserScanDisplay::callback(const sensor_msgs::msg::LaserScan::SharedPtr _ms
 bool LaserScanDisplay::eventFilter(QObject * _object, QEvent * _event)
 {
   if (_event->type() == gui::events::Render::kType) {
+    std::lock_guard<std::mutex>(this->lock);
     // Attach a point geometry to root visual
     if (static_cast<int>(this->rootVisual->GeometryCount()) == 0) {
       rendering::MarkerPtr marker = this->scene->CreateMarker();
@@ -135,8 +158,44 @@ void LaserScanDisplay::update()
 ////////////////////////////////////////////////////////////////////////////////
 void LaserScanDisplay::setFrameManager(std::shared_ptr<common::FrameManager> _frameManager)
 {
+  std::lock_guard<std::mutex>(this->lock);
   this->frameManager = std::move(_frameManager);
   this->fixedFrame = this->frameManager->getFixedFrame();
+}
+
+
+////////////////////////////////////////////////////////////////////////////////
+QStringList LaserScanDisplay::getTopicList() const
+{
+  return this->topicList;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void LaserScanDisplay::onRefresh()
+{
+  std::lock_guard<std::mutex>(this->lock);
+
+  // Clear
+  this->topicList.clear();
+
+  int index = 0, position = 0;
+
+  // Get topic list
+  auto topics = this->node->get_topic_names_and_types();
+  for (const auto & topic : topics) {
+    for (const auto & topicType : topic.second) {
+      if (topicType == "sensor_msgs/msg/LaserScan") {
+        this->topicList.push_back(QString::fromStdString(topic.first));
+        if (topic.first == this->topic_name) {
+          position = index;
+        }
+        index++;
+      }
+    }
+  }
+  // Update combo-box
+  this->topicListChanged();
+  emit setCurrentIndex(position);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
