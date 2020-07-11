@@ -89,6 +89,32 @@ public:
   virtual void setFrameManager(std::shared_ptr<common::FrameManager>) {}
 
 protected:
+  /**
+   * @brief Create new ROS topic subscription
+   */
+  virtual void subscibe() {}
+
+  /**
+   * @brief Unsubscribe to topic
+   */
+  virtual void unsubscribe()
+  {
+    this->subscriber.reset();
+  }
+
+  /**
+   * @brief Reset visualization.
+   * Override this method and add visualization reset implementation
+   */
+  virtual void reset() {}
+
+  /**
+   * @brief Update visualization.
+   * Override this method and add visualization reset implementation
+   */
+  virtual void update() {}
+
+protected:
   typename rclcpp::Subscription<MessageType>::SharedPtr subscriber;
   rclcpp::Node::SharedPtr node;
   std::string topic_name;

@@ -66,6 +66,12 @@ public:
   // Documentation inherited
   void setTopic(std::string topic_name);
 
+  // Documentation inherited
+  void subscribe();
+
+  // Documentation inherited
+  void reset();
+
   /**
    * @brief Set ROS Subscriber topic through GUI
    * @param[in] topic_name ROS Topic Name

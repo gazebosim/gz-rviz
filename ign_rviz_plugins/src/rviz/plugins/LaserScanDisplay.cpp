@@ -63,14 +63,21 @@ void LaserScanDisplay::initialize(rclcpp::Node::SharedPtr _node)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+void LaserScanDisplay::subscribe()
+{
+  this->subscriber = this->node->create_subscription<sensor_msgs::msg::LaserScan>(
+    this->topic_name,
+    10,
+    std::bind(&LaserScanDisplay::callback, this, std::placeholders::_1));
+}
+
+////////////////////////////////////////////////////////////////////////////////
 void LaserScanDisplay::setTopic(std::string topic_name)
 {
   std::lock_guard<std::mutex>(this->lock);
   this->topic_name = topic_name;
-  this->subscriber = this->node->create_subscription<sensor_msgs::msg::LaserScan>(
-    this->topic_name,
-    1,
-    std::bind(&LaserScanDisplay::callback, this, std::placeholders::_1));
+
+  this->subscribe();
 
   // Refresh combo-box on plugin load
   this->onRefresh();
@@ -83,15 +90,11 @@ void LaserScanDisplay::setTopic(QString topic_name)
   this->topic_name = topic_name.toStdString();
 
   // Destroy previous subscription
-  if (this->subscriber != nullptr) {
-    this->subscriber.reset();
-  }
-
+  this->unsubscribe();
+  // Reset visualization
+  this->reset();
   // Create new subscription
-  this->subscriber = this->node->create_subscription<sensor_msgs::msg::LaserScan>(
-    this->topic_name,
-    10,
-    std::bind(&LaserScanDisplay::callback, this, std::placeholders::_1));
+  this->subscribe();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -122,6 +125,20 @@ bool LaserScanDisplay::eventFilter(QObject * _object, QEvent * _event)
   }
 
   return QObject::eventFilter(_object, _event);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void LaserScanDisplay::reset()
+{
+  if (this->rootVisual != nullptr) {
+    if (this->rootVisual->GeometryCount() > 0) {
+      rendering::MarkerPtr marker = std::dynamic_pointer_cast<rendering::Marker>(
+        this->rootVisual->GeometryByIndex(0));
+
+      // Clear all points
+      marker->ClearPoints();
+    }
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
