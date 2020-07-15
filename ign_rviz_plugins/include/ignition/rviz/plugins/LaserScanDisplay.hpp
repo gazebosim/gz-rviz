@@ -119,10 +119,9 @@ protected:
   void update();
 
 private:
-  ignition::rendering::AxisVisualPtr axis;
   ignition::rendering::RenderEngine * engine;
   ignition::rendering::ScenePtr scene;
-  ignition::rendering::VisualPtr rootVisual;
+  ignition::rendering::LidarVisualPtr rootVisual;
   std::mutex lock;
   std::string fixedFrame;
   sensor_msgs::msg::LaserScan::SharedPtr msg;

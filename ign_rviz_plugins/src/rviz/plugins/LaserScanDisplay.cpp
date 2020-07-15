@@ -40,7 +40,8 @@ LaserScanDisplay::LaserScanDisplay()
   this->scene = this->engine->SceneByName("scene");
 
   // Create root visual for laser scan
-  this->rootVisual = this->scene->CreateVisual();
+  this->rootVisual = this->scene->CreateLidarVisual();
+  this->rootVisual->SetType(rendering::LidarVisualType::LVT_POINTS);
 
   // Attach root visual to scene
   this->scene->RootVisual()->AddChild(this->rootVisual);
@@ -52,7 +53,7 @@ LaserScanDisplay::~LaserScanDisplay()
   std::lock_guard<std::mutex>(this->lock);
   // Delete visual
   ignition::gui::App()->findChild<ignition::gui::MainWindow *>()->removeEventFilter(this);
-  this->scene->DestroyVisual(this->rootVisual, true);
+  this->scene->DestroyVisual(this->rootVisual);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -65,6 +66,7 @@ void LaserScanDisplay::initialize(rclcpp::Node::SharedPtr _node)
 ////////////////////////////////////////////////////////////////////////////////
 void LaserScanDisplay::subscribe()
 {
+  std::lock_guard<std::mutex>(this->lock);
   this->subscriber = this->node->create_subscription<sensor_msgs::msg::LaserScan>(
     this->topic_name,
     10,
@@ -111,16 +113,6 @@ void LaserScanDisplay::callback(const sensor_msgs::msg::LaserScan::SharedPtr _ms
 bool LaserScanDisplay::eventFilter(QObject * _object, QEvent * _event)
 {
   if (_event->type() == gui::events::Render::kType) {
-    std::lock_guard<std::mutex>(this->lock);
-    // Attach a point geometry to root visual
-    if (static_cast<int>(this->rootVisual->GeometryCount()) == 0) {
-      rendering::MarkerPtr marker = this->scene->CreateMarker();
-      marker->SetType(rendering::MarkerType::MT_POINTS);
-
-      this->rootVisual->AddGeometry(marker);
-      this->rootVisual->SetGeometryMaterial(this->scene->Material("Default/White"), true);
-    }
-
     update();
   }
 
@@ -131,13 +123,7 @@ bool LaserScanDisplay::eventFilter(QObject * _object, QEvent * _event)
 void LaserScanDisplay::reset()
 {
   if (this->rootVisual != nullptr) {
-    if (this->rootVisual->GeometryCount() > 0) {
-      rendering::MarkerPtr marker = std::dynamic_pointer_cast<rendering::Marker>(
-        this->rootVisual->GeometryByIndex(0));
-
-      // Clear all points
-      marker->ClearPoints();
-    }
+    this->rootVisual->ClearPoints();
   }
 }
 
@@ -149,20 +135,19 @@ void LaserScanDisplay::update()
     return;
   }
 
-  rendering::MarkerPtr marker = std::dynamic_pointer_cast<rendering::Marker>(
-    this->rootVisual->GeometryByIndex(0));
+  // Update data
+  this->rootVisual->SetMinHorizontalAngle(this->msg->angle_min);
+  this->rootVisual->SetMaxHorizontalAngle(this->msg->angle_max);
+  this->rootVisual->SetMaxRange(this->msg->range_max);
+  this->rootVisual->SetMinRange(this->msg->range_min);
+  this->rootVisual->SetHorizontalRayCount(this->msg->ranges.size());
+  this->rootVisual->SetPoints(
+    std::vector<double>(
+      this->msg->ranges.begin(),
+      this->msg->ranges.end()));
 
-  // Clear all points
-  marker->ClearPoints();
-
-  // Iterate through laser scan ranges and add points
-  for (int i = 0; i < static_cast<int>(this->msg->ranges.size()); ++i) {
-    float angle = this->msg->angle_min + (i * this->msg->angle_increment);
-    marker->AddPoint(
-      (this->msg->range_min + this->msg->ranges[i]) * std::cos(angle),
-      (this->msg->range_min + this->msg->ranges[i]) * std::sin(angle),
-      0, ignition::math::Color::White);
-  }
+  // Update visualization
+  this->rootVisual->Update();
 
   // Set position and orientation of the frame link
   math::Pose3d pose;
