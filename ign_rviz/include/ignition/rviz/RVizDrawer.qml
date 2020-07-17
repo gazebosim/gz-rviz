@@ -20,6 +20,9 @@ Rectangle {
             case "addAxesDisplay":
                 RViz.addAxesDisplay();
                 break;
+            case "addImageDisplay":
+                RViz.addImageDisplay();
+                break;
             default:
                 parent.onAction(action);
                 break;
@@ -47,6 +50,11 @@ Rectangle {
         ListElement {
             title: "Axes"
             actionElement: "addAxesDisplay"
+        }
+
+        ListElement {
+            title: "Image"
+            actionElement: "addImageDisplay"
         }
 
         ListElement {

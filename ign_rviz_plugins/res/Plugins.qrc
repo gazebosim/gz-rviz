@@ -14,4 +14,8 @@
   <qresource prefix="LaserScanDisplay/">
     <file alias="LaserScanDisplay.qml">qml/LaserScanDisplay.qml</file>
   </qresource>
+
+  <qresource prefix="ImageDisplay/">
+    <file alias="ImageDisplay.qml">qml/ImageDisplay.qml</file>
+  </qresource>
 </RCC>
