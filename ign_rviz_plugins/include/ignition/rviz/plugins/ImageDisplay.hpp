@@ -95,7 +95,9 @@ public:
   // Documentation inherited
   void reset();
 
-  // Notify that a new image has been received
+  /**
+   * @brief  Notify that a new image has been received
+   */
 
 signals:
   void newImage();
@@ -106,6 +108,9 @@ private:
 
   // Handle image with bgr8 encoding
   void updateFromBGR8();
+
+  // Handle image with mono8 encoding
+  void updateFromMONO8();
 
 public:
   ImageProvider * provider{nullptr};

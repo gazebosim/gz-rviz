@@ -68,6 +68,8 @@ void ImageDisplay::callback(const sensor_msgs::msg::Image::SharedPtr _msg)
     updateFromBGR8();
   } else if (_msg->encoding == "rgb8") {
     updateFromRGB8();
+  } else if (_msg->encoding == "mono8") {
+    updateFromMONO8();
   } else {
     RCLCPP_ERROR(
       this->node->get_logger(), "Unsupported image encoding: %s",
@@ -88,6 +90,13 @@ void ImageDisplay::updateFromBGR8()
 void ImageDisplay::updateFromRGB8()
 {
   QImage image(&msg->data[0], msg->width, msg->height, msg->step, QImage::Format_RGB888);
+  this->provider->SetImage(image);
+  this->newImage();
+}
+
+void ImageDisplay::updateFromMONO8()
+{
+  QImage image(&msg->data[0], msg->width, msg->height, msg->step, QImage::Format_Grayscale8);
   this->provider->SetImage(image);
   this->newImage();
 }
