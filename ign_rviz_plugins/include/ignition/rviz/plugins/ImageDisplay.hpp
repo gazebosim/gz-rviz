@@ -70,6 +70,15 @@ class ImageDisplay : public MessageDisplay<sensor_msgs::msg::Image>
 {
   Q_OBJECT
 
+  /**
+   *  @brief Topic List
+   */
+  Q_PROPERTY(
+    QStringList topicList
+    READ getTopicList
+    NOTIFY topicListChanged
+  )
+
 public:
   // Constructor
   ImageDisplay();
@@ -96,6 +105,37 @@ public:
   void reset();
 
   /**
+   * @brief Set ROS Subscriber topic through GUI
+   * @param[in] topic_name ROS Topic Name
+   */
+  Q_INVOKABLE void setTopic(QString topic_name);
+
+public slots:
+  /**
+   * @brief Callback when refresh button is pressed.
+   */
+  void onRefresh();
+
+  /**
+   * @brief Get the topic list as a string
+   * @return List of topics
+   */
+  Q_INVOKABLE QStringList getTopicList() const;
+
+signals:
+  /**
+   * @brief Notify that topic list has changed
+   */
+  void topicListChanged();
+
+signals:
+  /**
+   * @brief Set combo box index
+   * @param index Combo box index
+   */
+  void setCurrentIndex(const int index);
+
+  /**
    * @brief  Notify that a new image has been received
    */
 
@@ -118,6 +158,7 @@ public:
 private:
   std::recursive_mutex lock;
   sensor_msgs::msg::Image::SharedPtr msg;
+  QStringList topicList;
 };
 
 }  // namespace plugins

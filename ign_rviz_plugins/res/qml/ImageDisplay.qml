@@ -20,9 +20,13 @@ import QtQuick.Layouts 1.3
 import QtQuick.Controls.Material 2.1
 
 Item {
-  Layout.minimumWidth: 250
-  Layout.minimumHeight: 260
+  Layout.minimumWidth: 280
+  Layout.minimumHeight: 315
+  anchors.topMargin: 5
+  anchors.leftMargin: 5
+  anchors.rightMargin: 5
   anchors.fill: parent
+  id:imageDisplay
 
   property string uniqueName: ""
 
@@ -39,13 +43,68 @@ Item {
     onNewImage: image.reload();
   }
 
+  RowLayout {
+    width: parent.width
+    id: configRow
+
+    Layout.fillWidth: true
+    Layout.fillHeight: true
+
+    RoundButton {
+      text: "\u21bb"
+      Material.background: Material.primary
+      onClicked: {
+        ImageDisplay.onRefresh();
+      }
+    }
+
+    ComboBox {
+      id: combo
+      Layout.fillWidth: true
+      model: ImageDisplay.topicList
+      currentIndex: 0
+      editable: true
+      editText: currentText
+      displayText: currentText
+      onCurrentIndexChanged: {
+        if (currentIndex < 0) {
+          return;
+        }
+
+        ImageDisplay.setTopic(textAt(currentIndex));
+      }
+
+      Component.onCompleted: {
+        combo.editText = "/image"
+        combo.displayText = "/image"
+      }
+
+      Connections {
+        target: ImageDisplay
+        onSetCurrentIndex: {
+          combo.currentIndex = index
+        }
+      }
+    }
+  }
+
   Image {
     id: image
-    fillMode: Image.PreserveAspectFit
+    anchors.top: configRow.bottom
+    anchors.bottom: parent.bottom
+    anchors.left: parent.left
+    anchors.right: parent.right
+
+    anchors.topMargin: 2
+    anchors.leftMargin: -5
+    anchors.rightMargin: -5
+
     Layout.fillHeight: true
     Layout.fillWidth: true
-    width: parent.width
-    height: parent.height
+    // width: parent.width
+    // height: parent.height
+
+    fillMode: Image.PreserveAspectFit
     verticalAlignment: Image.AlignTop
     function reload() {
       // Force image request to C++

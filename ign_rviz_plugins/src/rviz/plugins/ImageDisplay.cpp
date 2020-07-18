@@ -56,6 +56,22 @@ void ImageDisplay::setTopic(std::string topic_name)
   this->topic_name = topic_name;
 
   this->subscribe();
+
+  // Refresh combo-box on plugin load
+  this->onRefresh();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void ImageDisplay::setTopic(QString topic_name)
+{
+  std::lock_guard<std::recursive_mutex>(this->lock);
+  this->topic_name = topic_name.toStdString();
+
+  // Destroy previous subscription
+  this->unsubscribe();
+
+  // Create new subscription
+  this->subscribe();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -103,6 +119,40 @@ void ImageDisplay::updateFromMONO8()
 
 ////////////////////////////////////////////////////////////////////////////////
 void ImageDisplay::reset() {}
+
+////////////////////////////////////////////////////////////////////////////////
+QStringList ImageDisplay::getTopicList() const
+{
+  return this->topicList;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void ImageDisplay::onRefresh()
+{
+  std::lock_guard<std::recursive_mutex>(this->lock);
+
+  // Clear
+  this->topicList.clear();
+
+  int index = 0, position = 0;
+
+  // Get topic list
+  auto topics = this->node->get_topic_names_and_types();
+  for (const auto & topic : topics) {
+    for (const auto & topicType : topic.second) {
+      if (topicType == "sensor_msgs/msg/Image") {
+        this->topicList.push_back(QString::fromStdString(topic.first));
+        if (topic.first == this->topic_name) {
+          position = index;
+        }
+        index++;
+      }
+    }
+  }
+  // Update combo-box
+  this->topicListChanged();
+  emit setCurrentIndex(position);
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 void ImageDisplay::LoadConfig(const tinyxml2::XMLElement * /*_pluginElem*/)
