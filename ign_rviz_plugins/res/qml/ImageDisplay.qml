@@ -101,8 +101,6 @@ Item {
 
     Layout.fillHeight: true
     Layout.fillWidth: true
-    // width: parent.width
-    // height: parent.height
 
     fillMode: Image.PreserveAspectFit
     verticalAlignment: Image.AlignTop

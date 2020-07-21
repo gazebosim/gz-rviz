@@ -98,12 +98,12 @@ add_library(ImageDisplay SHARED ${headers_MOC}
 )
 
 ament_target_dependencies(ImageDisplay
-  tf2_ros
-  sensor_msgs
+  ign_rviz_common
   ignition-gui4
   ignition-math6
   ignition-rendering4
-  ign_rviz_common
+  sensor_msgs
+  tf2_ros
 )
 
 target_link_libraries(ImageDisplay Qt5::Core Qt5::Qml Qt5::Quick Qt5::QuickControls2)

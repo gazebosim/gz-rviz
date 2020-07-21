@@ -135,11 +135,10 @@ signals:
    */
   void setCurrentIndex(const int index);
 
+signals:
   /**
    * @brief  Notify that a new image has been received
    */
-
-signals:
   void newImage();
 
 private:
