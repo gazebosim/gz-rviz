@@ -15,7 +15,6 @@
   <depend>tf2_msgs</depend>
   <depend>tf2_ros</depend>
   <depend>sensor_msgs</depend>
-  <depend>pluginlib</depend>
   <depend>ign_rviz_plugins</depend>
   <depend>ign_rviz_common</depend>
 
