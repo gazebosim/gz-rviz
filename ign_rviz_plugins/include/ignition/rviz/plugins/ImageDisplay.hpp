@@ -87,22 +87,22 @@ public:
   ~ImageDisplay();
 
   // Documentation Inherited
-  void LoadConfig(const tinyxml2::XMLElement * /*_pluginElem*/);
+  void LoadConfig(const tinyxml2::XMLElement * /*_pluginElem*/) override;
 
   // Documentation Inherited
-  void initialize(rclcpp::Node::SharedPtr _node);
+  void initialize(rclcpp::Node::SharedPtr _node) override;
 
   // Documentation Inherited
-  void callback(const sensor_msgs::msg::Image::SharedPtr _msg);
+  void callback(const sensor_msgs::msg::Image::SharedPtr _msg) override;
 
   // Documentation inherited
-  void setTopic(std::string topic_name);
+  void setTopic(std::string topic_name) override;
 
   // Documentation inherited
-  void subscribe();
+  void subscribe() override;
 
   // Documentation inherited
-  void reset();
+  void reset() override;
 
   /**
    * @brief Set ROS Subscriber topic through GUI
