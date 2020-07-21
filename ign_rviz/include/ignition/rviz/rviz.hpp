@@ -25,8 +25,8 @@
 #include <rclcpp/rclcpp.hpp>
 
 #include <geometry_msgs/msg/point_stamped.hpp>
-#include <tf2_msgs/msg/tf_message.hpp>
 #include <sensor_msgs/msg/laser_scan.hpp>
+#include <tf2_msgs/msg/tf_message.hpp>
 
 #include <ignition/rviz/plugins/message_display_base.hpp>
 

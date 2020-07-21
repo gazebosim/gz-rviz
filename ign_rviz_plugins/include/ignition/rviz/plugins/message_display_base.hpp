@@ -92,7 +92,7 @@ protected:
   /**
    * @brief Create new ROS topic subscription
    */
-  virtual void subscibe() {}
+  virtual void subscribe() {}
 
   /**
    * @brief Unsubscribe to topic
