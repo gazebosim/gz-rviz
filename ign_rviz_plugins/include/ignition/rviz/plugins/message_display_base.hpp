@@ -85,14 +85,34 @@ public:
    */
   virtual void setTopic(std::string) {}
 
-  /**
-   * @brief Install an event filter on ths object
-   * @param[in] window: Application main window
-   */
-  virtual void installEventFilter(ignition::gui::MainWindow *) {}
-
   // Documentation Inherited
   virtual void setFrameManager(std::shared_ptr<common::FrameManager>) {}
+
+protected:
+  /**
+   * @brief Create new ROS topic subscription
+   */
+  virtual void subscribe() {}
+
+  /**
+   * @brief Unsubscribe to topic
+   */
+  virtual void unsubscribe()
+  {
+    this->subscriber.reset();
+  }
+
+  /**
+   * @brief Reset visualization.
+   * Override this method and add visualization reset implementation
+   */
+  virtual void reset() {}
+
+  /**
+   * @brief Update visualization.
+   * Override this method and add visualization reset implementation
+   */
+  virtual void update() {}
 
 protected:
   typename rclcpp::Subscription<MessageType>::SharedPtr subscriber;

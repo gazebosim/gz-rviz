@@ -91,6 +91,32 @@ target_include_directories(GlobalOptions
 )
 
 ########################################################################
+add_library(LaserScanDisplay SHARED ${headers_MOC}
+  include/ignition/rviz/plugins/LaserScanDisplay.hpp
+  src/rviz/plugins/LaserScanDisplay.cpp
+  ${resources_RCC}
+)
+
+ament_target_dependencies(LaserScanDisplay
+  tf2_ros
+  sensor_msgs
+  ignition-gui4
+  ignition-math6
+  ignition-rendering4
+  ign_rviz_common
+)
+
+target_link_libraries(LaserScanDisplay Qt5::Core Qt5::Qml Qt5::Quick Qt5::QuickControls2)
+
+target_include_directories(LaserScanDisplay
+  PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>
+  ${Qt5Widgets_INCLUDE_DIRS}
+  ${IGNITION-GUI_INCLUDE_DIRS}
+)
+
+########################################################################
 add_library(TFDisplay SHARED ${headers_MOC}
   include/ignition/rviz/plugins/TFDisplay.hpp
   include/ignition/rviz/plugins/message_display_base.hpp
@@ -116,28 +142,15 @@ target_include_directories(TFDisplay
   ${IGNITION-GUI_INCLUDE_DIRS}
 )
 
-set(ign_rviz_plugins_headers_to_moc
-  "include/ignition/rviz/plugins/message_display_base.hpp"
-  "include/ignition/rviz/plugins/laser_scan_display.hpp"
-)
-
 ########################################################################
-
 add_library(ign_rviz_plugins SHARED
-  ${ign_rviz_plugins_headers_to_moc}
-  src/rviz/plugins/laser_scan_display.cpp
+  "include/ignition/rviz/plugins/message_display_base.hpp"
 )
 
 ament_target_dependencies(ign_rviz_plugins
-  ignition-rendering4
-  pluginlib
   rclcpp
-  geometry_msgs
-  tf2_msgs
   tf2_ros
-  sensor_msgs
   ignition-gui4
-  ignition-math6
   ign_rviz_common
 )
 
@@ -148,8 +161,6 @@ target_include_directories(ign_rviz_plugins
   ${Qt5Widgets_INCLUDE_DIRS}
   ${IGNITION-GUI_INCLUDE_DIRS}
 )
-
-pluginlib_export_plugin_description_file(ign_rviz_plugins ign_rviz_plugins.xml)
 
 install(
   DIRECTORY include/
@@ -196,6 +207,17 @@ install(
   RUNTIME DESTINATION bin
   INCLUDES DESTINATION include
 )
+
+ament_export_libraries(LaserScanDisplay)
+
+install(
+  TARGETS LaserScanDisplay
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION bin
+  INCLUDES DESTINATION include
+)
+
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)

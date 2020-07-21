@@ -14,7 +14,6 @@ This version of RViz is developed using Ignition Rendering Library.
 	- ign-gui4
 	- ign-rendering4
 	- ign-math6
-- pluginlib
 - Qt5
 
 ### Setup the repository

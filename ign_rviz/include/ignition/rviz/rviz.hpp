@@ -23,11 +23,11 @@
 #endif
 
 #include <rclcpp/rclcpp.hpp>
-#include <geometry_msgs/msg/point_stamped.hpp>
-#include <tf2_msgs/msg/tf_message.hpp>
-#include <sensor_msgs/msg/laser_scan.hpp>
 
-#include <pluginlib/class_loader.hpp>
+#include <geometry_msgs/msg/point_stamped.hpp>
+#include <sensor_msgs/msg/laser_scan.hpp>
+#include <tf2_msgs/msg/tf_message.hpp>
+
 #include <ignition/rviz/plugins/message_display_base.hpp>
 
 #include <memory>
@@ -39,19 +39,14 @@ namespace rviz
 {
 
 template<typename MessageType>
-using DisplayPlugin = std::shared_ptr<plugins::MessageDisplay<MessageType>>;
-
-template<typename MessageType>
-using DisplayPluginList = std::vector<DisplayPlugin<MessageType>>;
+using DisplayPlugin = plugins::MessageDisplay<MessageType>;
 
 class RViz : public QObject
 {
   Q_OBJECT
 
 public:
-  RViz()
-  : plugin_loader("ign_rviz_plugins", "ignition::rviz::plugins::MessageDisplayBase")
-  {}
+  RViz() {}
 
   /**
    * @brief Add Grid visual to Scene3D
@@ -69,7 +64,7 @@ public:
     // Load plugin
     if (ignition::gui::App()->LoadPlugin("TFDisplay")) {
       auto tfDisplayPlugins =
-        ignition::gui::App()->findChildren<plugins::MessageDisplay<tf2_msgs::msg::TFMessage> *>();
+        ignition::gui::App()->findChildren<DisplayPlugin<tf2_msgs::msg::TFMessage> *>();
       int tfDisplayCount = tfDisplayPlugins.size() - 1;
 
       // Set frame manager and install event filter for recently added plugin
@@ -85,22 +80,18 @@ public:
    */
   Q_INVOKABLE void addLaserScanDisplay()
   {
-    try {
-      // Create new instance of plugin
-      DisplayPlugin<sensor_msgs::msg::LaserScan> laser_scan_plugin =
-        std::dynamic_pointer_cast<plugins::MessageDisplay<sensor_msgs::msg::LaserScan>>(
-        plugin_loader.createSharedInstance(
-          "ignition/rviz/plugins/LaserScanDisplay"));
-      laser_scan_plugin->initialize(this->node);
-      laser_scan_plugin->setTopic("/scan");
-      laser_scan_plugin->setFrameManager(this->frameManager);
-      laser_scan_plugin->installEventFilter(
-        ignition::gui::App()->findChild<ignition::gui::MainWindow *>());
+    // Load plugin
+    if (ignition::gui::App()->LoadPlugin("LaserScanDisplay")) {
+      auto laserScanPlugin =
+        ignition::gui::App()->findChildren<DisplayPlugin<sensor_msgs::msg::LaserScan> *>();
+      int pluginCount = laserScanPlugin.size() - 1;
 
-      // Add the new plugin to the list
-      laser_scan_plugins.push_back(laser_scan_plugin);
-    } catch (pluginlib::PluginlibException & ex) {
-      std::cout << ex.what() << std::endl;
+      // Set frame manager and install event filter for recently added plugin
+      laserScanPlugin[pluginCount]->initialize(this->node);
+      laserScanPlugin[pluginCount]->setTopic("/scan");
+      laserScanPlugin[pluginCount]->setFrameManager(this->frameManager);
+      ignition::gui::App()->findChild<ignition::gui::MainWindow *>()->installEventFilter(
+        laserScanPlugin[pluginCount]);
     }
   }
 
@@ -159,15 +150,9 @@ private:
   // Data Members
   rclcpp::Node::SharedPtr node;
 
-  // Plugins list
-  DisplayPluginList<tf2_msgs::msg::TFMessage> tf_plugins;
-  DisplayPluginList<sensor_msgs::msg::LaserScan> laser_scan_plugins;
-
-  // Plugin Loader
-  pluginlib::ClassLoader<plugins::MessageDisplayBase> plugin_loader;
-
   std::shared_ptr<common::FrameManager> frameManager;
 };
+
 }  // namespace rviz
 }  // namespace ignition
 
