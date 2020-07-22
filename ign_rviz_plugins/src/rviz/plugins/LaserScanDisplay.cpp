@@ -33,7 +33,7 @@ namespace plugins
 {
 ////////////////////////////////////////////////////////////////////////////////
 LaserScanDisplay::LaserScanDisplay()
-: MessageDisplay()
+: MessageDisplay(), visualType(rendering::LidarVisualType::LVT_POINTS)
 {
   // Get reference to scene
   this->engine = ignition::rendering::engine("ogre");
@@ -41,7 +41,7 @@ LaserScanDisplay::LaserScanDisplay()
 
   // Create root visual for laser scan
   this->rootVisual = this->scene->CreateLidarVisual();
-  this->rootVisual->SetType(rendering::LidarVisualType::LVT_POINTS);
+  this->rootVisual->SetType(visualType);
 
   // Attach root visual to scene
   this->scene->RootVisual()->AddChild(this->rootVisual);
@@ -141,6 +141,7 @@ void LaserScanDisplay::update()
   this->rootVisual->SetMaxRange(this->msg->range_max);
   this->rootVisual->SetMinRange(this->msg->range_min);
   this->rootVisual->SetHorizontalRayCount(this->msg->ranges.size());
+  this->rootVisual->SetType(this->visualType);
   this->rootVisual->SetPoints(
     std::vector<double>(
       this->msg->ranges.begin(),
@@ -198,6 +199,22 @@ void LaserScanDisplay::onRefresh()
   // Update combo-box
   this->topicListChanged();
   emit setCurrentIndex(position);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void LaserScanDisplay::setVisualType(const int & _type)
+{
+  std::lock_guard<std::mutex>(this->lock);
+
+  // Set visual type
+  switch (_type) {
+    case 0: this->visualType = rendering::LidarVisualType::LVT_POINTS;
+      break;
+    case 1: this->visualType = rendering::LidarVisualType::LVT_RAY_LINES;
+      break;
+    case 2: this->visualType = rendering::LidarVisualType::LVT_TRIANGLE_STRIPS;
+      break;
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
