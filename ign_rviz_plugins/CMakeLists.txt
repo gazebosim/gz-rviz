@@ -90,6 +90,33 @@ target_include_directories(GlobalOptions
 )
 
 ########################################################################
+add_library(ImageDisplay SHARED ${headers_MOC}
+  include/ignition/rviz/plugins/ImageDisplay.hpp
+  include/ignition/rviz/plugins/message_display_base.hpp
+  src/rviz/plugins/ImageDisplay.cpp
+  ${resources_RCC}
+)
+
+ament_target_dependencies(ImageDisplay
+  ign_rviz_common
+  ignition-gui4
+  ignition-math6
+  ignition-rendering4
+  sensor_msgs
+  tf2_ros
+)
+
+target_link_libraries(ImageDisplay Qt5::Core Qt5::Qml Qt5::Quick Qt5::QuickControls2)
+
+target_include_directories(ImageDisplay
+  PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>
+  ${Qt5Widgets_INCLUDE_DIRS}
+  ${IGNITION-GUI_INCLUDE_DIRS}
+)
+
+########################################################################
 add_library(LaserScanDisplay SHARED ${headers_MOC}
   include/ignition/rviz/plugins/LaserScanDisplay.hpp
   src/rviz/plugins/LaserScanDisplay.cpp
@@ -217,6 +244,15 @@ install(
   INCLUDES DESTINATION include
 )
 
+ament_export_libraries(ImageDisplay)
+
+install(
+  TARGETS ImageDisplay
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION bin
+  INCLUDES DESTINATION include
+)
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)

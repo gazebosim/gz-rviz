@@ -66,3 +66,13 @@ doxygen rviz.doxyfile
 # View documentation
 firefox ./html/index.html
 ```
+
+### Instruction to use plugins
+- **ImageDisplay plugin**
+    1. Launch a `sensor_msgs/msg/Image` publisher. For example
+       ```bash
+       # Source ROS2
+       ros2 run image_tools cam2image
+       ```
+    2. Launch ign-rviz as mention above
+    3. Load an ImageDisplay plugin and select the published topic.

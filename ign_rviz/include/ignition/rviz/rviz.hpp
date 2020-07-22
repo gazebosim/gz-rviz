@@ -25,6 +25,7 @@
 #include <rclcpp/rclcpp.hpp>
 
 #include <geometry_msgs/msg/point_stamped.hpp>
+#include <sensor_msgs/msg/image.hpp>
 #include <sensor_msgs/msg/laser_scan.hpp>
 #include <tf2_msgs/msg/tf_message.hpp>
 
@@ -92,6 +93,23 @@ public:
       laserScanPlugin[pluginCount]->setFrameManager(this->frameManager);
       ignition::gui::App()->findChild<ignition::gui::MainWindow *>()->installEventFilter(
         laserScanPlugin[pluginCount]);
+    }
+  }
+
+  /**
+   * @brief Loads Image Display Plugin
+   */
+  Q_INVOKABLE void addImageDisplay()
+  {
+    // Load plugin
+    if (ignition::gui::App()->LoadPlugin("ImageDisplay")) {
+      auto imageDisplayPlugin =
+        ignition::gui::App()->findChildren<DisplayPlugin<sensor_msgs::msg::Image> *>();
+      int pluginCount = imageDisplayPlugin.size() - 1;
+
+      // Set frame manager and install event filter for recently added plugin
+      imageDisplayPlugin[pluginCount]->initialize(this->node);
+      imageDisplayPlugin[pluginCount]->setTopic("/image");
     }
   }
 
