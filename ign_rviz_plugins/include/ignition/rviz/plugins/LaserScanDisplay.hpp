@@ -79,6 +79,12 @@ public:
   Q_INVOKABLE void setTopic(QString topic_name);
 
   /**
+   * @brief Set visual type of LidarVisual
+   * @param[in] _type Index of selected visual type
+   */
+  Q_INVOKABLE void setVisualType(const int & _type);
+
+  /**
    * @brief Qt eventFilters. Original documentation can be found
    * <a href="https://doc.qt.io/qt-5/qobject.html#eventFilter">here</a>
    */
@@ -119,14 +125,14 @@ protected:
   void update();
 
 private:
-  ignition::rendering::AxisVisualPtr axis;
   ignition::rendering::RenderEngine * engine;
   ignition::rendering::ScenePtr scene;
-  ignition::rendering::VisualPtr rootVisual;
+  ignition::rendering::LidarVisualPtr rootVisual;
   std::mutex lock;
   std::string fixedFrame;
   sensor_msgs::msg::LaserScan::SharedPtr msg;
   QStringList topicList;
+  enum rendering::LidarVisualType visualType;
 };
 
 }  // namespace plugins

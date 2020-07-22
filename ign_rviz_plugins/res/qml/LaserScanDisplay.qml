@@ -21,45 +21,75 @@ import QtQuick.Controls.Material 2.1
 
 Item {
   Layout.minimumWidth: 250
-  Layout.minimumHeight: 150
+  Layout.minimumHeight: 180
   anchors.fill: parent
   anchors.margins: 10
-
-  RowLayout {
+  ColumnLayout {
     width: parent.width
-    RoundButton {
-      text: "\u21bb"
-      Material.background: Material.primary
-      onClicked: {
-        LaserScanDisplay.onRefresh();
+
+    RowLayout {
+      width: parent.width
+      RoundButton {
+        text: "\u21bb"
+        Material.background: Material.primary
+        onClicked: {
+          LaserScanDisplay.onRefresh();
+        }
+      }
+
+      ComboBox {
+        id: combo
+        Layout.fillWidth: true
+        model: LaserScanDisplay.topicList
+        currentIndex: 0
+        editable: true
+        editText: currentText
+        displayText: currentText
+        onCurrentIndexChanged: {
+          if (currentIndex < 0) {
+            return;
+          }
+
+          LaserScanDisplay.setTopic(textAt(currentIndex));
+        }
+
+        Component.onCompleted: {
+          combo.editText = "/scan"
+          combo.displayText = "/scan"
+        }
+
+        Connections {
+          target: LaserScanDisplay
+          onSetCurrentIndex: {
+            combo.currentIndex = index
+          }
+        }
       }
     }
 
-    ComboBox {
-      id: combo
-      Layout.fillWidth: true
-      model: LaserScanDisplay.topicList
-      currentIndex: 0
-      editable: true
-      editText: currentText
-      displayText: currentText
-      onCurrentIndexChanged: {
-        if (currentIndex < 0) {
-          return;
-        }
+    RowLayout {
+      width: parent.width
 
-        LaserScanDisplay.setTopic(textAt(currentIndex));
+      Text {
+        width: 50
+        Layout.minimumWidth: 50
+        anchors.left: parent.left
+        anchors.leftMargin: 2
+        text: "Type"
+        font.pointSize: 10.5
       }
 
-      Component.onCompleted: {
-        combo.editText = "/scan"
-        combo.displayText = "/scan"
-      }
+      ComboBox {
+        id: typeCombo
+        Layout.fillWidth: true
+        currentIndex: 0
+        model: [ "Points", "Rays", "Triangles" ]
+        onCurrentIndexChanged: {
+          if (currentIndex < 0) {
+            return;
+          }
 
-      Connections {
-        target: LaserScanDisplay
-        onSetCurrentIndex: {
-          combo.currentIndex = index
+          LaserScanDisplay.setVisualType(currentIndex);
         }
       }
     }
