@@ -37,6 +37,11 @@ namespace rviz
 {
 namespace plugins
 {
+/**
+ * @brief Configure global option of ignition rviz
+ *
+ * Provides methods to change fixed frame and scene background color
+ */
 class GlobalOptions : public MessageDisplayBase
 {
   Q_OBJECT
@@ -59,10 +64,10 @@ public:
   ~GlobalOptions() {}
 
   // Documentation Inherited
-  void LoadConfig(const tinyxml2::XMLElement * _pluginElem);
+  void LoadConfig(const tinyxml2::XMLElement * /*_pluginElem*/) override;
 
   // Documentation Inherited
-  void setFrameManager(std::shared_ptr<common::FrameManager> _frameManager);
+  void setFrameManager(std::shared_ptr<common::FrameManager> _frameManager) override;
 
   /**
    * @brief Qt eventFilters. Original documentation can be found
@@ -72,13 +77,13 @@ public:
 
   /**
    * @brief Set fixed frame
-   * @param _frame[in] Fixed frame name
+   * @param[in] _frame Fixed frame name
    */
   Q_INVOKABLE void setFrame(const QString & _frame);
 
   /**
    * @brief Set scene background color
-   * @param _color[in] Background color
+   * @param[in] _color Background color
    */
   Q_INVOKABLE void setSceneBackground(const QColor & _color);
 

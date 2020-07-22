@@ -205,7 +205,7 @@ bool TFDisplay::eventFilter(QObject * _object, QEvent * _event)
       tfRootVisual->AddChild(visualFrame);
     }
 
-    updateTF();
+    update();
   }
 
   if (_event->type() == rviz::events::FrameListChanged::kType) {
@@ -217,7 +217,7 @@ bool TFDisplay::eventFilter(QObject * _object, QEvent * _event)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void TFDisplay::updateTF()
+void TFDisplay::update()
 {
   std::lock_guard<std::mutex>(this->lock);
 

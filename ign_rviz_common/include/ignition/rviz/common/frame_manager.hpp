@@ -35,8 +35,16 @@ namespace ignition
 {
 namespace rviz
 {
+/**
+ * @brief Namespace for all common tools
+ */
 namespace common
 {
+/**
+ * @brief Manages and provides information about all the frames
+ *
+ * Subscribes to TF data to determine the location and orientation of frames
+ */
 class FrameManager : public QObject
 {
   Q_OBJECT
@@ -52,7 +60,7 @@ public:
    * @brief Sets fixed frame for frame tranformations
    * @param[in] _fixedFrame: Fixed frame
    */
-  void setFixedFrame(std::string _fixedFrame);
+  void setFixedFrame(const std::string & _fixedFrame);
 
   /**
    * @brief Get frame pose (position and orientation)

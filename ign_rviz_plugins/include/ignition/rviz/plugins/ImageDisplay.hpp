@@ -35,12 +35,16 @@ namespace rviz
 namespace plugins
 {
 ////////////////////////////////////////////////////////////////////////////////
+/**
+ * @brief Helper class to render image in window
+ */
 class ImageProvider : public QQuickImageProvider
 {
 public:
   ImageProvider()
   : QQuickImageProvider(QQuickImageProvider::Image) {}
 
+  // Documentation Inherited
   QImage requestImage(const QString &, QSize *, const QSize &) override
   {
     if (!this->img.isNull()) {
@@ -56,6 +60,10 @@ public:
   }
 
 public:
+  /**
+   * @brief Render new image in window
+   * @param[in] _image New image
+   */
   void SetImage(const QImage & _image)
   {
     this->img = _image;
@@ -66,6 +74,9 @@ private:
 };
 
 ////////////////////////////////////////////////////////////////////////////////
+/**
+ * @brief ImageDisplay plugin renders image received as ROS message
+ */
 class ImageDisplay : public MessageDisplay<sensor_msgs::msg::Image>
 {
   Q_OBJECT
@@ -96,7 +107,7 @@ public:
   void callback(const sensor_msgs::msg::Image::SharedPtr _msg) override;
 
   // Documentation inherited
-  void setTopic(std::string topic_name) override;
+  void setTopic(const std::string & topic_name) override;
 
   // Documentation inherited
   void subscribe() override;
@@ -108,7 +119,7 @@ public:
    * @brief Set ROS Subscriber topic through GUI
    * @param[in] topic_name ROS Topic Name
    */
-  Q_INVOKABLE void setTopic(QString topic_name);
+  Q_INVOKABLE void setTopic(const QString & topic_name);
 
 public slots:
   /**

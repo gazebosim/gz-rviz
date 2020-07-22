@@ -31,8 +31,14 @@ namespace ignition
 {
 namespace rviz
 {
+/**
+ * @brief Namespace for all plugins.
+ */
 namespace plugins
 {
+/**
+ * @brief Base class for all display plugins
+ */
 class MessageDisplayBase : public gui::Plugin
 {
   Q_OBJECT
@@ -43,21 +49,28 @@ public:
 
   /**
    * @brief Initialization function for visualization plugins
-   * @param[in] node: ROS Node shared pointer
+   * @param[in] _node: ROS Node shared pointer
    * @throws anything rclcpp::exceptions::throw_from_rcl_error can throw.
    */
   virtual void initialize(rclcpp::Node::SharedPtr) {}
 
   /**
    * @brief Store reference to FrameManager
-   * @param[in] frameManager: Shared pointer to FrameManager object
+   * @param[in] _frameManager: Shared pointer to FrameManager object
    */
   virtual void setFrameManager(std::shared_ptr<common::FrameManager>) {}
 
 protected:
+  /**
+   * @brief Reference to FrameManager
+   */
   std::shared_ptr<common::FrameManager> frameManager;
 };
 
+/**
+ * @brief Base class for all ROS visualization plugins
+ * @tparam MessageType ROS2 message type
+ */
 template<typename MessageType>
 class MessageDisplay : public MessageDisplayBase
 {
@@ -69,24 +82,18 @@ public:
 
   virtual ~MessageDisplay() {}
 
-  // Documentation Inherited
-  virtual void initialize(rclcpp::Node::SharedPtr) {}
-
   /**
    * @brief ROS subscriber callback function
-   * @param[in] msg: ROS message type shared pointer
+   * @param[in] _msg: ROS message type shared pointer
    * @throws anything rclcpp::exceptions::throw_from_rcl_error can throw.
    */
-  virtual void callback(typename MessageType::SharedPtr) {}
+  virtual void callback(const typename MessageType::SharedPtr) {}
 
   /**
    * @brief Set ROS subscriber topic
    * @param[in] topic_name: ROS topic name
    */
-  virtual void setTopic(std::string) {}
-
-  // Documentation Inherited
-  virtual void setFrameManager(std::shared_ptr<common::FrameManager>) {}
+  virtual void setTopic(const std::string &) {}
 
 protected:
   /**

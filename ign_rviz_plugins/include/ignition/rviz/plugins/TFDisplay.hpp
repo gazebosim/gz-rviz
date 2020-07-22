@@ -35,12 +35,17 @@ namespace rviz
 namespace plugins
 {
 ////////////////////////////////////////////////////////////////////////////////
+/**
+ * @brief Helper class to render TF tree view
+ */
 class FrameModel : public QStandardItemModel
 {
   Q_OBJECT
 
 public:
-  // Roles for tree view frames
+  /**
+   * @brief Roles for tree view frames
+   */
   enum FrameRoles
   {
     NameRole = Qt::UserRole + 1
@@ -49,20 +54,39 @@ public:
   // Constructor
   explicit FrameModel(QObject * _parent = 0);
 
+  /**
+   * @brief Add frame to tree view
+   * @param[in] _name Frame name
+   * @param[in] _parentItem Pointer to tree view parent item
+   */
   Q_INVOKABLE void addFrame(const QString & _name, QStandardItem * _parentItem);
+
+  /**
+   * @brief Add a parent item to tree view
+   * @param[in] _name Item name
+   * @return Pointer to tree view parent item
+   */
   Q_INVOKABLE QStandardItem * addParentRow(const QString & _name);
 
+  // Documentation inherited
   QVariant data(const QModelIndex & _index, int _role = Qt::DisplayRole) const;
 
 protected:
+  // Documentation inherited
   QHash<int, QByteArray> roleNames() const;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
+/**
+ * @brief Displays the TF transform hierarchy
+ */
 class TFDisplay : public MessageDisplay<tf2_msgs::msg::TFMessage>
 {
   Q_OBJECT
 
+  /**
+   * @brief TF frame tree model
+   */
   Q_PROPERTY(
     FrameModel * frameModel
     READ getFrameModel
@@ -79,25 +103,19 @@ public:
   ~TFDisplay();
 
   // Documentation inherited
-  void LoadConfig(const tinyxml2::XMLElement * /*_pluginElem*/);
+  void LoadConfig(const tinyxml2::XMLElement * /*_pluginElem*/) override;
 
   // Documentation Inherited
-  void initialize(rclcpp::Node::SharedPtr);
-
-  // Documentation Inherited
-  void callback(const tf2_msgs::msg::TFMessage::SharedPtr) {}
-
-  // Documentation inherited
-  void setTopic(std::string) {}
+  void initialize(rclcpp::Node::SharedPtr _node) override;
 
   /**
    * @brief Qt eventFilters. Original documentation can be found
    * <a href="https://doc.qt.io/qt-5/qobject.html#eventFilter">here</a>
    */
-  bool eventFilter(QObject *, QEvent *);
+  bool eventFilter(QObject * _object, QEvent * _event);
 
   // Documentation inherited
-  void setFrameManager(std::shared_ptr<common::FrameManager> _frameManager);
+  void setFrameManager(std::shared_ptr<common::FrameManager> _frameManager) override;
 
   /**
    * @brief Set axis visibility
@@ -161,7 +179,7 @@ protected:
   /**
    * @brief Update tf visualization
    */
-  void updateTF();
+  void update() override;
 
   /**
    * @brief Creates a frame visual which includes an axis

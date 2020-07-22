@@ -48,7 +48,7 @@ FrameManager::FrameManager(rclcpp::Node::SharedPtr _node)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void FrameManager::setFixedFrame(std::string _fixedFrame)
+void FrameManager::setFixedFrame(const std::string & _fixedFrame)
 {
   std::lock_guard<std::mutex>(this->tf_mutex_);
 
@@ -77,7 +77,7 @@ void FrameManager::getFrames(std::vector<std::string> & _frames)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void FrameManager::tf_callback(tf2_msgs::msg::TFMessage::SharedPtr _msg)
+void FrameManager::tf_callback(const tf2_msgs::msg::TFMessage::SharedPtr _msg)
 {
   std::lock_guard<std::mutex>(this->tf_mutex_);
 

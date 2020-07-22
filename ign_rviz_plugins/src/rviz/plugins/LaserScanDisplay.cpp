@@ -74,7 +74,7 @@ void LaserScanDisplay::subscribe()
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void LaserScanDisplay::setTopic(std::string topic_name)
+void LaserScanDisplay::setTopic(const std::string & topic_name)
 {
   std::lock_guard<std::mutex>(this->lock);
   this->topic_name = topic_name;
@@ -86,7 +86,7 @@ void LaserScanDisplay::setTopic(std::string topic_name)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void LaserScanDisplay::setTopic(QString topic_name)
+void LaserScanDisplay::setTopic(const QString & topic_name)
 {
   std::lock_guard<std::mutex>(this->lock);
   this->topic_name = topic_name.toStdString();
