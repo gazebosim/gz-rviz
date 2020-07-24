@@ -141,10 +141,10 @@ AxesDisplay::~AxesDisplay()
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void AxesDisplay::setFrameManager(std::shared_ptr<common::FrameManager> frameManager)
+void AxesDisplay::setFrameManager(std::shared_ptr<common::FrameManager> _frameManager)
 {
   std::lock_guard(this->lock);
-  this->frameManager = std::move(frameManager);
+  this->frameManager = std::move(_frameManager);
   this->frame = this->frameManager->getFixedFrame();
 
   // Update frame list

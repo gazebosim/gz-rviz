@@ -32,6 +32,10 @@ namespace rviz
 {
 namespace plugins
 {
+/**
+ * @brief Renders data from sensor_msgs::msg::LaserScanDisplay message as points in the world,
+ * drawn as points, rays and triangles.
+ */
 class LaserScanDisplay : public MessageDisplay<sensor_msgs::msg::LaserScan>
 {
   Q_OBJECT
@@ -64,7 +68,7 @@ public:
   void callback(const sensor_msgs::msg::LaserScan::SharedPtr _msg) override;
 
   // Documentation inherited
-  void setTopic(std::string topic_name) override;
+  void setTopic(const std::string & topic_name) override;
 
   // Documentation inherited
   void subscribe() override;
@@ -76,7 +80,7 @@ public:
    * @brief Set ROS Subscriber topic through GUI
    * @param[in] topic_name ROS Topic Name
    */
-  Q_INVOKABLE void setTopic(QString topic_name);
+  Q_INVOKABLE void setTopic(const QString & topic_name);
 
   /**
    * @brief Set visual type of LidarVisual
@@ -94,8 +98,8 @@ public:
   void setFrameManager(std::shared_ptr<common::FrameManager> _frameManager) override;
 
   /**
-   * @brief Get the frame list as a string
-   * @return List of frames
+   * @brief Get the topic list as a string
+   * @return List of topics
    */
   Q_INVOKABLE QStringList getTopicList() const;
 

@@ -33,6 +33,9 @@ namespace rviz
 {
 namespace plugins
 {
+/**
+ * @brief AxesDisplay plugin renders an axis at the Target Frame's origin
+ */
 class AxesDisplay : public MessageDisplayBase
 {
   Q_OBJECT
@@ -43,7 +46,6 @@ class AxesDisplay : public MessageDisplayBase
   Q_PROPERTY(
     QStringList frameList
     READ getFrameList
-    WRITE setFrameList
     NOTIFY frameListChanged
   )
 
@@ -55,10 +57,10 @@ public:
   ~AxesDisplay();
 
   // Documentation Inherited
-  void LoadConfig(const tinyxml2::XMLElement * /*_pluginElem*/);
+  void LoadConfig(const tinyxml2::XMLElement * /*_pluginElem*/) override;
 
   // Documentation Inherited
-  void setFrameManager(std::shared_ptr<common::FrameManager> frameManager);
+  void setFrameManager(std::shared_ptr<common::FrameManager> _frameManager) override;
 
   /**
    * @brief Qt eventFilters. Original documentation can be found
@@ -91,12 +93,6 @@ public:
    * @return List of frames
    */
   Q_INVOKABLE QStringList getFrameList() const;
-
-  /**
-   * @brief Set the frame list from a string
-   * @param[in] _frameList List of frames
-   */
-  Q_INVOKABLE void setFrameList(const QStringList & /*_frameList*/) {}
 
 signals:
   /**

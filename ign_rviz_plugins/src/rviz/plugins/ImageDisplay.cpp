@@ -50,7 +50,7 @@ void ImageDisplay::subscribe()
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void ImageDisplay::setTopic(std::string topic_name)
+void ImageDisplay::setTopic(const std::string & topic_name)
 {
   std::lock_guard<std::recursive_mutex>(this->lock);
   this->topic_name = topic_name;
@@ -62,7 +62,7 @@ void ImageDisplay::setTopic(std::string topic_name)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void ImageDisplay::setTopic(QString topic_name)
+void ImageDisplay::setTopic(const QString & topic_name)
 {
   std::lock_guard<std::recursive_mutex>(this->lock);
   this->topic_name = topic_name.toStdString();
