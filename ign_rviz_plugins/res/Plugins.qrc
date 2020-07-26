@@ -22,4 +22,8 @@
   <qresource prefix="ImageDisplay/">
     <file alias="ImageDisplay.qml">qml/ImageDisplay.qml</file>
   </qresource>
+
+  <qresource prefix="PointStampedDisplay/">
+    <file alias="PointStampedDisplay.qml">qml/PointStampedDisplay.qml</file>
+  </qresource>
 </RCC>

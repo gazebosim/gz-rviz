@@ -97,6 +97,26 @@ public:
   }
 
   /**
+   * @brief Loads PointStamped Visualization Plugin
+   */
+  Q_INVOKABLE void addPointStampedDisplay()
+  {
+    // Load plugin
+    if (ignition::gui::App()->LoadPlugin("PointStampedDisplay")) {
+      auto pointStampedPlugin =
+        ignition::gui::App()->findChildren<DisplayPlugin<geometry_msgs::msg::PointStamped> *>();
+      int pluginCount = pointStampedPlugin.size() - 1;
+
+      // Set frame manager and install event filter for recently added plugin
+      pointStampedPlugin[pluginCount]->initialize(this->node);
+      pointStampedPlugin[pluginCount]->setTopic("/point");
+      pointStampedPlugin[pluginCount]->setFrameManager(this->frameManager);
+      ignition::gui::App()->findChild<ignition::gui::MainWindow *>()->installEventFilter(
+        pointStampedPlugin[pluginCount]);
+    }
+  }
+
+  /**
    * @brief Loads Image Display Plugin
    */
   Q_INVOKABLE void addImageDisplay()
