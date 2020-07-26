@@ -89,6 +89,17 @@ public:
   Q_INVOKABLE void setVisualType(const int & _type);
 
   /**
+   * @brief Update subscription Quality of Service
+   * @param[in] _depth Queue size of keep last history policy
+   * @param[in] _history Index of history policy
+   * @param[in] _reliability Index of reliability policy
+   * @param[in] _durability Index of durability policy
+   */
+  Q_INVOKABLE void updateQoS(
+    const int & _depth, const int & _history, const int & _reliability,
+    const int & _durability);
+
+  /**
    * @brief Qt eventFilters. Original documentation can be found
    * <a href="https://doc.qt.io/qt-5/qobject.html#eventFilter">here</a>
    */

@@ -11,6 +11,10 @@
     <file alias="TFDisplay.qml">qml/TFDisplay.qml</file>
   </qresource>
 
+  <qresource prefix="QoSConfig/">
+    <file alias="QoSConfig.qml">qml/QoSConfig.qml</file>
+  </qresource>
+
   <qresource prefix="LaserScanDisplay/">
     <file alias="LaserScanDisplay.qml">qml/LaserScanDisplay.qml</file>
   </qresource>

@@ -16,6 +16,8 @@
 #define IGNITION__RVIZ__PLUGINS__MESSAGE_DISPLAY_BASE_HPP_
 
 #include <rclcpp/rclcpp.hpp>
+#include <rclcpp/qos.hpp>
+
 #include <string>
 #include <memory>
 
@@ -78,7 +80,12 @@ class MessageDisplay : public MessageDisplayBase
 
 public:
   MessageDisplay()
-  : MessageDisplayBase() {}
+  : MessageDisplayBase(), qos(5)
+  {
+    qos = qos.history(RMW_QOS_POLICY_HISTORY_KEEP_LAST);
+    qos = qos.reliability(RMW_QOS_POLICY_RELIABILITY_RELIABLE);
+    qos = qos.durability(RMW_QOS_POLICY_DURABILITY_VOLATILE);
+  }
 
   virtual ~MessageDisplay() {}
 
@@ -121,9 +128,51 @@ protected:
    */
   virtual void update() {}
 
+  void setHistoryDepth(const int & _depth)
+  {
+    this->qos.keep_last(_depth);
+  }
+
+  void setHistoryPolicy(const int & _historyPolicy)
+  {
+    switch (_historyPolicy) {
+      case 0: this->qos.history(RMW_QOS_POLICY_HISTORY_SYSTEM_DEFAULT);
+        break;
+      case 1: this->qos.history(RMW_QOS_POLICY_HISTORY_KEEP_LAST);
+        break;
+      case 2: this->qos.history(RMW_QOS_POLICY_HISTORY_KEEP_ALL);
+        break;
+    }
+  }
+
+  void setReliabilityPolicy(const int & _reliabilityPolicy)
+  {
+    switch (_reliabilityPolicy) {
+      case 0: this->qos.reliability(RMW_QOS_POLICY_RELIABILITY_SYSTEM_DEFAULT);
+        break;
+      case 1: this->qos.reliability(RMW_QOS_POLICY_RELIABILITY_RELIABLE);
+        break;
+      case 2: this->qos.reliability(RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT);
+        break;
+    }
+  }
+
+  void setDurabilityPolicy(const int & _durabilityPolicy)
+  {
+    switch (_durabilityPolicy) {
+      case 0: this->qos.durability(RMW_QOS_POLICY_DURABILITY_SYSTEM_DEFAULT);
+        break;
+      case 1: this->qos.durability(RMW_QOS_POLICY_DURABILITY_TRANSIENT_LOCAL);
+        break;
+      case 2: this->qos.durability(RMW_QOS_POLICY_DURABILITY_VOLATILE);
+        break;
+    }
+  }
+
 protected:
   typename rclcpp::Subscription<MessageType>::SharedPtr subscriber;
   rclcpp::Node::SharedPtr node;
+  rclcpp::QoS qos;
   std::string topic_name;
 };
 
