@@ -80,8 +80,6 @@ Item {
       Text {
         width: 75
         Layout.minimumWidth: 75
-        anchors.left: parent.left
-        anchors.leftMargin: 2
         text: "Type"
         font.pointSize: 10.5
       }

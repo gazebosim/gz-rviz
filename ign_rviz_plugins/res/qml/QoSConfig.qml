@@ -47,8 +47,6 @@ ColumnLayout {
       Text {
         width: 75
         Layout.minimumWidth: 75
-        anchors.left: parent.left
-        anchors.leftMargin: 2
         text: "Depth"
         font.pointSize: 10.5
       }
@@ -57,11 +55,11 @@ ColumnLayout {
         id: depthText
         Layout.fillWidth: true
         text: "5"
-        validator: RegExpValidator {
-          regExp: /[0-9]+/ig
+        validator: IntValidator {
+          bottom: 0
         }
         onEditingFinished: {
-          qosConfig.profileUpdate(5, historyCombo.currentIndex, reliabilityCombo.currentIndex, durabilityCombo.currentIndex)
+          qosConfig.profileUpdate(depthText.text, historyCombo.currentIndex, reliabilityCombo.currentIndex, durabilityCombo.currentIndex)
         }
       }
     }
@@ -72,8 +70,6 @@ ColumnLayout {
       Text {
         width: 75
         Layout.minimumWidth: 75
-        anchors.left: parent.left
-        anchors.leftMargin: 2
         text: "History"
         font.pointSize: 10.5
       }
@@ -87,7 +83,7 @@ ColumnLayout {
           if (currentIndex < 0) {
             return;
           }
-          qosConfig.profileUpdate(5, historyCombo.currentIndex, reliabilityCombo.currentIndex, durabilityCombo.currentIndex)
+          qosConfig.profileUpdate(depthText.text, historyCombo.currentIndex, reliabilityCombo.currentIndex, durabilityCombo.currentIndex)
         }
       }
     }
@@ -98,8 +94,6 @@ ColumnLayout {
       Text {
         width: 75
         Layout.minimumWidth: 75
-        anchors.left: parent.left
-        anchors.leftMargin: 2
         text: "Reliability"
         font.pointSize: 10.5
       }
@@ -113,7 +107,7 @@ ColumnLayout {
           if (currentIndex < 0) {
             return;
           }
-          qosConfig.profileUpdate(5, historyCombo.currentIndex, reliabilityCombo.currentIndex, durabilityCombo.currentIndex)
+          qosConfig.profileUpdate(depthText.text, historyCombo.currentIndex, reliabilityCombo.currentIndex, durabilityCombo.currentIndex)
         }
       }
     }
@@ -124,8 +118,6 @@ ColumnLayout {
       Text {
         width: 75
         Layout.minimumWidth: 75
-        anchors.left: parent.left
-        anchors.leftMargin: 2
         text: "Durability"
         font.pointSize: 10.5
       }
@@ -139,7 +131,7 @@ ColumnLayout {
           if (currentIndex < 0) {
             return;
           }
-          qosConfig.profileUpdate(5, historyCombo.currentIndex, reliabilityCombo.currentIndex, durabilityCombo.currentIndex)
+          qosConfig.profileUpdate(depthText.text, historyCombo.currentIndex, reliabilityCombo.currentIndex, durabilityCombo.currentIndex)
         }
       }
     }
