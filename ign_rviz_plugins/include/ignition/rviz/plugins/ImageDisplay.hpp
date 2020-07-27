@@ -121,6 +121,17 @@ public:
    */
   Q_INVOKABLE void setTopic(const QString & topic_name);
 
+  /**
+   * @brief Update subscription Quality of Service
+   * @param[in] _depth Queue size of keep last history policy
+   * @param[in] _history Index of history policy
+   * @param[in] _reliability Index of reliability policy
+   * @param[in] _durability Index of durability policy
+   */
+  Q_INVOKABLE void updateQoS(
+    const int & _depth, const int & _history, const int & _reliability,
+    const int & _durability);
+
 public slots:
   /**
    * @brief Callback when refresh button is pressed.

@@ -67,9 +67,10 @@ void LaserScanDisplay::initialize(rclcpp::Node::SharedPtr _node)
 void LaserScanDisplay::subscribe()
 {
   std::lock_guard<std::mutex>(this->lock);
+
   this->subscriber = this->node->create_subscription<sensor_msgs::msg::LaserScan>(
     this->topic_name,
-    10,
+    this->qos,
     std::bind(&LaserScanDisplay::callback, this, std::placeholders::_1));
 }
 
@@ -125,6 +126,7 @@ void LaserScanDisplay::reset()
   if (this->rootVisual != nullptr) {
     this->rootVisual->ClearPoints();
   }
+  this->msg.reset();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -215,6 +217,23 @@ void LaserScanDisplay::setVisualType(const int & _type)
     case 2: this->visualType = rendering::LidarVisualType::LVT_TRIANGLE_STRIPS;
       break;
   }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void LaserScanDisplay::updateQoS(
+  const int & _depth, const int & _history, const int & _reliability,
+  const int & _durability)
+{
+  std::lock_guard<std::mutex>(this->lock);
+  this->setHistoryDepth(_depth);
+  this->setHistoryPolicy(_history);
+  this->setReliabilityPolicy(_reliability);
+  this->setDurabilityPolicy(_durability);
+
+  // Resubscribe with updated QoS profile
+  this->unsubscribe();
+  this->reset();
+  this->subscribe();
 }
 
 ////////////////////////////////////////////////////////////////////////////////

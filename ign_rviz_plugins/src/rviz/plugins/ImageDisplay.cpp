@@ -45,7 +45,7 @@ void ImageDisplay::subscribe()
 {
   this->subscriber = this->node->create_subscription<sensor_msgs::msg::Image>(
     this->topic_name,
-    10,
+    this->qos,
     std::bind(&ImageDisplay::callback, this, std::placeholders::_1));
 }
 
@@ -78,6 +78,10 @@ void ImageDisplay::setTopic(const QString & topic_name)
 void ImageDisplay::callback(const sensor_msgs::msg::Image::SharedPtr _msg)
 {
   std::lock_guard<std::recursive_mutex>(this->lock);
+  if (!_msg) {
+    return;
+  }
+
   this->msg = std::move(_msg);
 
   if (_msg->encoding == "bgr8") {
@@ -152,6 +156,23 @@ void ImageDisplay::onRefresh()
   // Update combo-box
   this->topicListChanged();
   emit setCurrentIndex(position);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void ImageDisplay::updateQoS(
+  const int & _depth, const int & _history, const int & _reliability,
+  const int & _durability)
+{
+  std::lock_guard<std::recursive_mutex>(this->lock);
+  this->setHistoryDepth(_depth);
+  this->setHistoryPolicy(_history);
+  this->setReliabilityPolicy(_reliability);
+  this->setDurabilityPolicy(_durability);
+
+  // Resubscribe with updated QoS profile
+  this->unsubscribe();
+  this->reset();
+  this->subscribe();
 }
 
 ////////////////////////////////////////////////////////////////////////////////

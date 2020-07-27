@@ -18,13 +18,14 @@ import QtQuick 2.9
 import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.3
 import QtQuick.Controls.Material 2.1
+import "qrc:/QoSConfig"
 
 Item {
   Layout.minimumWidth: 250
-  Layout.minimumHeight: 180
+  Layout.minimumHeight: 395
   anchors.fill: parent
   anchors.margins: 10
-  ColumnLayout {
+  Column {
     width: parent.width
 
     RowLayout {
@@ -67,14 +68,18 @@ Item {
       }
     }
 
+    QoSConfig {
+      onProfileUpdate: {
+        LaserScanDisplay.updateQoS(depth, history, reliability, durability)
+      }
+    }
+
     RowLayout {
       width: parent.width
 
       Text {
-        width: 50
-        Layout.minimumWidth: 50
-        anchors.left: parent.left
-        anchors.leftMargin: 2
+        width: 75
+        Layout.minimumWidth: 75
         text: "Type"
         font.pointSize: 10.5
       }

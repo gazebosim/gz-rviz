@@ -18,10 +18,11 @@ import QtQuick 2.9
 import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.3
 import QtQuick.Controls.Material 2.1
+import "qrc:/QoSConfig"
 
 Item {
   Layout.minimumWidth: 280
-  Layout.minimumHeight: 315
+  Layout.minimumHeight: 345
   anchors.topMargin: 5
   anchors.leftMargin: 5
   anchors.rightMargin: 5
@@ -88,9 +89,17 @@ Item {
     }
   }
 
+  QoSConfig {
+    id: qos
+    anchors.top: configRow.bottom
+    onProfileUpdate: {
+      ImageDisplay.updateQoS(depth, history, reliability, durability)
+    }
+  }
+
   Image {
     id: image
-    anchors.top: configRow.bottom
+    anchors.top: qos.bottom
     anchors.bottom: parent.bottom
     anchors.left: parent.left
     anchors.right: parent.right
