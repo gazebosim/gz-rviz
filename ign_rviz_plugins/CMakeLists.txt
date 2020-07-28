@@ -143,6 +143,32 @@ target_include_directories(LaserScanDisplay
 )
 
 ########################################################################
+add_library(PointStampedDisplay SHARED ${headers_MOC}
+  include/ignition/rviz/plugins/PointStampedDisplay.hpp
+  src/rviz/plugins/PointStampedDisplay.cpp
+  ${resources_RCC}
+)
+
+ament_target_dependencies(PointStampedDisplay
+  geometry_msgs
+  ign_rviz_common
+  ignition-gui4
+  ignition-math6
+  ignition-rendering4
+  tf2_ros
+)
+
+target_link_libraries(PointStampedDisplay Qt5::Core Qt5::Qml Qt5::Quick Qt5::QuickControls2)
+
+target_include_directories(PointStampedDisplay
+  PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>
+  ${Qt5Widgets_INCLUDE_DIRS}
+  ${IGNITION-GUI_INCLUDE_DIRS}
+)
+
+########################################################################
 add_library(TFDisplay SHARED ${headers_MOC}
   include/ignition/rviz/plugins/TFDisplay.hpp
   include/ignition/rviz/plugins/message_display_base.hpp
@@ -248,6 +274,16 @@ ament_export_libraries(ImageDisplay)
 
 install(
   TARGETS ImageDisplay
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION bin
+  INCLUDES DESTINATION include
+)
+
+ament_export_libraries(PointStampedDisplay)
+
+install(
+  TARGETS PointStampedDisplay
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin
