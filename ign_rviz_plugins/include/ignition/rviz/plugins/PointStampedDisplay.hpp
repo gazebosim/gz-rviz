@@ -167,6 +167,7 @@ protected:
 private:
   ignition::rendering::RenderEngine * engine;
   ignition::rendering::ScenePtr scene;
+  ignition::rendering::VisualPtr rootVisual;
   ignition::rendering::MaterialPtr mat;
   std::deque<ignition::rendering::VisualPtr> visuals;
   std::mutex lock;

@@ -39,6 +39,9 @@ PointStampedDisplay::PointStampedDisplay()
   this->engine = ignition::rendering::engine("ogre");
   this->scene = this->engine->SceneByName("scene");
 
+  this->rootVisual = this->scene->CreateVisual();
+  this->scene->RootVisual()->AddChild(this->rootVisual);
+
   this->mat = this->scene->CreateMaterial();
   this->mat->SetAmbient(0.8, 0.161, 0.8);
   this->mat->SetDiffuse(0.8, 0.161, 0.8);
@@ -51,9 +54,7 @@ PointStampedDisplay::~PointStampedDisplay()
   std::lock_guard<std::mutex>(this->lock);
   // Delete visual
   ignition::gui::App()->findChild<ignition::gui::MainWindow *>()->removeEventFilter(this);
-  for (const auto & visual : this->visuals) {
-    this->scene->DestroyVisual(visual);
-  }
+  this->scene->DestroyVisual(this->rootVisual, true);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -136,6 +137,18 @@ void PointStampedDisplay::update()
     return;
   }
 
+  math::Pose3d pose;
+  bool poseAvailable = this->frameManager->getFramePose(this->msg->header.frame_id, pose);
+
+  if (!poseAvailable) {
+    RCLCPP_ERROR(
+      this->node->get_logger(), "Unable to get frame pose: %s",
+      this->msg->header.frame_id.c_str());
+    return;
+  }
+
+  this->rootVisual->SetLocalPose(pose);
+
   if (this->visuals.size() >= this->historyLength) {
     this->removeOldestPointVisual();
   }
@@ -159,7 +172,7 @@ void PointStampedDisplay::createNewPointVisual(
   visual->SetMaterial(mat);
 
   // Add visual
-  this->scene->RootVisual()->AddChild(visual);
+  this->rootVisual->AddChild(visual);
   this->visuals.push_back(visual);
 }
 
@@ -167,6 +180,7 @@ void PointStampedDisplay::createNewPointVisual(
 void PointStampedDisplay::removeOldestPointVisual()
 {
   auto visual = this->visuals.front();
+  this->rootVisual->RemoveChild(visual);
   this->scene->DestroyVisual(visual);
   this->visuals.pop_front();
 }

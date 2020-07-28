@@ -80,8 +80,8 @@ Item {
       spacing: 10
 
       Text {
-        width: 110
-        Layout.minimumWidth: 110
+        width: 75
+        Layout.minimumWidth: 75
         text: "Color"
         font.pointSize: 10.5
       }
@@ -193,6 +193,7 @@ Item {
     id: colorDialog
     title: "Select visual color"
     color: "#cc29cc"
+    showAlphaChannel: false
     onAccepted: {
       bgColor.color = colorDialog.color
       colorTextField.text = colorDialog.color
