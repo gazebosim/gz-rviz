@@ -107,7 +107,7 @@ Item {
         validator: RegExpValidator {
           regExp: /#([\da-f]{3}){1,2}/ig
         }
-        onEditingFinished: {
+        onAccepted: {
           colorDialog.color = text
           bgColor.color = text
           PointStampedDisplay.setColor(text);
@@ -129,11 +129,11 @@ Item {
         id: alphaTextField
         Layout.fillWidth: true
         text: "1.0"
-        validator: DoubleValidator {
-          bottom: 0
-          top: 1
+        validator: RegExpValidator {
+          // Integer and floating point numbers
+          regExp: /^([0-9]*\.[0-9]+|[0-9]+)$/g
         }
-        onEditingFinished: {
+        onAccepted: {
           colorDialog.color.a = alphaTextField.text;
           bgColor.color = colorDialog.color
           PointStampedDisplay.setColor(colorDialog.color);
@@ -155,10 +155,11 @@ Item {
         id: radiusTextField
         Layout.fillWidth: true
         text: "0.2"
-        validator: DoubleValidator {
-          bottom: 0
+        validator: RegExpValidator {
+          // Integer and floating point numbers
+          regExp: /^([0-9]*\.[0-9]+|[0-9]+)$/g
         }
-        onEditingFinished: {
+        onAccepted: {
           PointStampedDisplay.setRadius(radiusTextField.text);
         }
       }
@@ -182,7 +183,7 @@ Item {
           bottom: 1
           top: 1000 
         }
-        onEditingFinished: {
+        onAccepted: {
           PointStampedDisplay.setHistoryLength(historyTextField.text);
         }
       }
