@@ -19,6 +19,8 @@
 
 #include <geometry_msgs/msg/point_stamped.hpp>
 
+#include <QColor>
+
 #include <deque>
 #include <memory>
 #include <mutex>
@@ -114,6 +116,18 @@ public:
    */
   Q_INVOKABLE void setHistoryLength(const int & _length);
 
+  /**
+   * @brief Set point visual radius
+   * @param[in] _radius Size of point visual
+   */
+  Q_INVOKABLE void setRadius(const float & _radius);
+
+  /**
+   * @brief Set point visual color and transparency
+   * @param _color Color and transparency of point visual
+   */
+  Q_INVOKABLE void setColor(const QColor & _color);
+
 signals:
   /**
    * @brief Notify that topic list has changed
@@ -153,11 +167,13 @@ protected:
 private:
   ignition::rendering::RenderEngine * engine;
   ignition::rendering::ScenePtr scene;
+  ignition::rendering::MaterialPtr mat;
   std::deque<ignition::rendering::VisualPtr> visuals;
   std::mutex lock;
   geometry_msgs::msg::PointStamped::SharedPtr msg;
   QStringList topicList;
   std::size_t historyLength;
+  float radius;
 };
 
 }  // namespace plugins

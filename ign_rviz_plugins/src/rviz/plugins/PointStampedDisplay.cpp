@@ -33,11 +33,16 @@ namespace plugins
 {
 ////////////////////////////////////////////////////////////////////////////////
 PointStampedDisplay::PointStampedDisplay()
-: MessageDisplay(), historyLength(5)
+: MessageDisplay(), historyLength(5), radius(0.2)
 {
   // Get reference to scene
   this->engine = ignition::rendering::engine("ogre");
   this->scene = this->engine->SceneByName("scene");
+
+  this->mat = this->scene->CreateMaterial();
+  this->mat->SetAmbient(0.8, 0.161, 0.8);
+  this->mat->SetDiffuse(0.8, 0.161, 0.8);
+  this->mat->SetEmissive(0.8, 0.161, 0.8);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -150,6 +155,8 @@ void PointStampedDisplay::createNewPointVisual(
   auto visual = this->scene->CreateVisual();
   visual->AddGeometry(this->scene->CreateSphere());
   visual->SetLocalPosition(_msg->point.x, _msg->point.y, _msg->point.z);
+  visual->SetLocalScale(this->radius);
+  visual->SetMaterial(mat);
 
   // Add visual
   this->scene->RootVisual()->AddChild(visual);
@@ -180,6 +187,29 @@ void PointStampedDisplay::setHistoryLength(const int & _length)
   // Remove visuals exceeding history length
   while (this->visuals.size() > this->historyLength) {
     this->removeOldestPointVisual();
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void PointStampedDisplay::setRadius(const float & _radius)
+{
+  std::lock_guard<std::mutex>(this->lock);
+  for (const auto & visual : this->visuals) {
+    visual->SetLocalScale(_radius);
+  }
+  this->radius = _radius;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void PointStampedDisplay::setColor(const QColor & _color)
+{
+  std::lock_guard<std::mutex>(this->lock);
+  this->mat->SetAmbient(_color.redF(), _color.greenF(), _color.blueF(), _color.alphaF());
+  this->mat->SetDiffuse(_color.redF(), _color.greenF(), _color.blueF(), _color.alphaF());
+  this->mat->SetEmissive(_color.redF(), _color.greenF(), _color.blueF(), _color.alphaF());
+
+  for (const auto & visual : this->visuals) {
+    visual->SetMaterial(this->mat);
   }
 }
 

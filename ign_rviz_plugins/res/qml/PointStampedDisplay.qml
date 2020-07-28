@@ -18,6 +18,7 @@ import QtQuick 2.9
 import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.3
 import QtQuick.Controls.Material 2.1
+import QtQuick.Dialogs 1.0
 import "qrc:/QoSConfig"
 
 Item {
@@ -76,6 +77,95 @@ Item {
 
     RowLayout {
       width: parent.width
+      spacing: 10
+
+      Text {
+        width: 110
+        Layout.minimumWidth: 110
+        text: "Color"
+        font.pointSize: 10.5
+      }
+
+      Button {
+        Layout.preferredWidth: 20
+        Layout.preferredHeight: 20
+        onClicked: colorDialog.open()
+        background: Rectangle {
+          width: 20
+          height: 20
+          id: bgColor
+          color: "#cc29cc"
+          border.color: "#000000"
+          border.width: 2
+        }
+      }
+
+      TextField {
+        id: colorTextField
+        text: "#cc29cc"
+        Layout.fillWidth: true
+        validator: RegExpValidator {
+          regExp: /#([\da-f]{3}){1,2}/ig
+        }
+        onEditingFinished: {
+          colorDialog.color = text
+          bgColor.color = text
+          PointStampedDisplay.setColor(text);
+        }
+      }
+    }
+
+    RowLayout {
+      width: parent.width
+
+      Text {
+        width: 110
+        Layout.minimumWidth: 110
+        text: "Alpha"
+        font.pointSize: 10.5
+      }
+
+      TextField {
+        id: alphaTextField
+        Layout.fillWidth: true
+        text: "1.0"
+        validator: DoubleValidator {
+          bottom: 0
+          top: 1
+        }
+        onEditingFinished: {
+          colorDialog.color.a = alphaTextField.text;
+          bgColor.color = colorDialog.color
+          PointStampedDisplay.setColor(colorDialog.color);
+        }
+      }
+    }
+
+    RowLayout {
+      width: parent.width
+
+      Text {
+        width: 110
+        Layout.minimumWidth: 110
+        text: "Radius"
+        font.pointSize: 10.5
+      }
+
+      TextField {
+        id: radiusTextField
+        Layout.fillWidth: true
+        text: "0.2"
+        validator: DoubleValidator {
+          bottom: 0
+        }
+        onEditingFinished: {
+          PointStampedDisplay.setRadius(radiusTextField.text);
+        }
+      }
+    }
+
+    RowLayout {
+      width: parent.width
 
       Text {
         width: 110
@@ -97,5 +187,21 @@ Item {
         }
       }
     }
+  }
+
+  ColorDialog {
+    id: colorDialog
+    title: "Select visual color"
+    color: "#cc29cc"
+    onAccepted: {
+      bgColor.color = colorDialog.color
+      colorTextField.text = colorDialog.color
+      colorDialog.color.a = alphaTextField.text
+      PointStampedDisplay.setColor(colorDialog.color);
+    }
+    onRejected: {
+      console.log("Canceled")
+    }
+    Component.onCompleted: visible = false
   }
 }
