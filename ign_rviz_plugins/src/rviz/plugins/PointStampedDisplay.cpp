@@ -133,6 +133,11 @@ void PointStampedDisplay::update()
 {
   std::lock_guard<std::mutex>(this->lock);
 
+  // Remove visuals exceeding history length
+  while (this->visuals.size() > this->historyLength) {
+    this->removeOldestPointVisual();
+  }
+
   if (!this->msg) {
     return;
   }
@@ -198,10 +203,6 @@ void PointStampedDisplay::setHistoryLength(const int & _length)
   std::lock_guard<std::mutex>(this->lock);
   // Update history length
   this->historyLength = _length;
-  // Remove visuals exceeding history length
-  while (this->visuals.size() > this->historyLength) {
-    this->removeOldestPointVisual();
-  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
