@@ -36,6 +36,29 @@ namespace rviz
 namespace plugins
 {
 /**
+ * @brief Helper for visualization PoseStamped data as Axis
+ */
+struct AxisVisualPrivate
+{
+  /**
+   * @brief Update the axis visual length, radius and head visibility
+   */
+  void updateVisual()
+  {
+    for (int i = 0; i < 3; ++i) {
+      auto arrow = std::dynamic_pointer_cast<rendering::ArrowVisual>(visual->ChildByIndex(i));
+      arrow->SetLocalScale(radius * 20, radius * 20, length * 2);
+    }
+    visual->ShowAxisHead(this->headVisible);
+  }
+
+  ignition::rendering::AxisVisualPtr visual;
+  float length = 1.0;
+  float radius = 0.1;
+  bool headVisible = false;
+};
+
+/**
  * @brief Renders data from geometry_msgs::msg::PoseStamped message as arrows or axes
  */
 class PoseDisplay : public MessageDisplay<geometry_msgs::msg::PoseStamped>
@@ -116,6 +139,23 @@ public:
    */
   Q_INVOKABLE void setShape(const bool & _shape);
 
+  /**
+   * @brief Set axis arrow head visibility
+   */
+  Q_INVOKABLE void setAxisHeadVisibility(const bool & _visible);
+
+  /**
+   * @brief Set axis length
+   * @param _length Axis length
+   */
+  Q_INVOKABLE void setAxisLength(const float & _length);
+
+  /**
+   * @brief Set axis radius
+   * @param _radius Axis radius
+   */
+  Q_INVOKABLE void setAxisRadius(const float & _radius);
+
 signals:
   /**
    * @brief Notify that topic list has changed
@@ -145,13 +185,14 @@ private:
   ignition::rendering::RenderEngine * engine;
   ignition::rendering::ScenePtr scene;
   ignition::rendering::VisualPtr rootVisual;
-  ignition::rendering::AxisVisualPtr axis;
   ignition::rendering::ArrowVisualPtr arrow;
   ignition::rendering::MaterialPtr mat;
   std::mutex lock;
   geometry_msgs::msg::PoseStamped::SharedPtr msg;
   QStringList topicList;
+  AxisVisualPrivate axis;
   bool visualShape;  // True: Arrow; False: Axis
+  bool dirty;
 };
 
 }  // namespace plugins

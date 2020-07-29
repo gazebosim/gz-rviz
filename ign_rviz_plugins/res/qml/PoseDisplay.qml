@@ -102,6 +102,7 @@ Item {
     ColumnLayout {
       id: arrowConfig
       visible: shapeCombo.currentIndex === 0
+      width: parent.width
       Layout.fillWidth: true
       Text {
         Layout.fillWidth: true
@@ -112,8 +113,65 @@ Item {
     ColumnLayout {
       id: axisConfig
       visible: shapeCombo.currentIndex === 1
-      Text {
-        text: "axis config"
+      width: parent.width
+      Layout.fillWidth: true
+
+      RowLayout {
+        Layout.fillWidth: true
+        spacing: 10
+
+        Text {
+          width: 75
+          Layout.minimumWidth: 75
+          text: "Length"
+          font.pointSize: 10.5
+        }
+
+        TextField {
+          id: axisLengthField
+          Layout.fillWidth: true
+          width: 150
+          placeholderText: "1.0"
+          validator: RegExpValidator {
+            // Integer and floating point numbers
+            regExp: /^([0-9]*\.[0-9]+|[0-9]+)$/g
+          }
+          onAccepted: {
+            PoseDisplay.setAxisLength(axisLengthField.text)
+          }
+        }
+      }
+
+      RowLayout {
+        Layout.fillWidth: true
+        spacing: 10
+
+        Text {
+          width: 75
+          Layout.minimumWidth: 75
+          text: "Radius"
+          font.pointSize: 10.5
+        }
+
+        TextField {
+          id: axisRadiusField
+          Layout.fillWidth: true
+          width: 150
+          placeholderText: "0.1"
+          validator: RegExpValidator {
+            // Integer and floating point numbers
+            regExp: /^([0-9]*\.[0-9]+|[0-9]+)$/g
+          }
+          onAccepted: {
+            PoseDisplay.setAxisRadius(axisRadiusField.text)
+          }
+        }
+      }
+
+      CheckBox {
+        checked: false
+        text: qsTr("Show axis head")
+        onClicked: { PoseDisplay.setAxisHeadVisibility(checked) }
       }
     }
   }

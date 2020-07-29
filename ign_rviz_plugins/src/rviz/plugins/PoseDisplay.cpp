@@ -33,7 +33,7 @@ namespace plugins
 {
 ////////////////////////////////////////////////////////////////////////////////
 PoseDisplay::PoseDisplay()
-: MessageDisplay(), visualShape(true)
+: MessageDisplay(), visualShape(true), dirty(true)
 {
   // Get reference to scene
   this->engine = ignition::rendering::engine("ogre");
@@ -119,7 +119,7 @@ bool PoseDisplay::eventFilter(QObject * _object, QEvent * _event)
 void PoseDisplay::reset()
 {
   this->arrow->SetLocalPose(math::Pose3d::Zero);
-  this->axis->SetLocalPose(math::Pose3d::Zero);
+  this->axis.visual->SetLocalPose(math::Pose3d::Zero);
   this->msg.reset();
 }
 
@@ -128,18 +128,27 @@ void PoseDisplay::update()
 {
   std::lock_guard<std::mutex>(this->lock);
   // Create axis
-  if (this->axis == nullptr) {
-    this->axis = this->scene->CreateAxisVisual();
-    this->axis->SetVisible(!this->visualShape);
-    this->rootVisual->AddChild(this->axis);
+  if (this->axis.visual == nullptr) {
+    this->axis.visual = this->scene->CreateAxisVisual();
+    this->rootVisual->AddChild(this->axis.visual);
   }
 
   // Create arrow
   if (this->arrow == nullptr) {
     this->arrow = this->scene->CreateArrowVisual();
-    this->arrow->SetVisible(this->visualShape);
     this->arrow->SetMaterial(this->mat);
     this->rootVisual->AddChild(this->arrow);
+  }
+
+  if (this->dirty) {
+    // Update Arrow
+    this->arrow->SetVisible(this->visualShape);
+
+    // Update Axis
+    this->axis.visual->SetVisible(!this->visualShape);
+    this->axis.updateVisual();
+
+    this->dirty = false;
   }
 
   if (!this->msg) {
@@ -162,21 +171,42 @@ void PoseDisplay::update()
     this->msg->pose.position.z, this->msg->pose.orientation.w, this->msg->pose.orientation.x,
     this->msg->pose.orientation.y, this->msg->pose.orientation.z);
 
-  this->axis->SetLocalPose(localPose);
+  this->axis.visual->SetLocalPose(localPose);
 
   this->arrow->SetLocalPosition(localPose.Pos());
   this->arrow->SetLocalRotation(localPose.Rot() * math::Quaterniond(0, 1.57, 0));
-
-  this->arrow->SetVisible(this->visualShape);
-  this->axis->SetVisible(!this->visualShape);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void PoseDisplay::setShape(const bool & _shape)
 {
   this->visualShape = _shape;
+  this->dirty = true;
 }
 
+////////////////////////////////////////////////////////////////////////////////
+void PoseDisplay::setAxisHeadVisibility(const bool & _visible)
+{
+  std::lock_guard(this->lock);
+  this->axis.headVisible = _visible;
+  this->dirty = true;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void PoseDisplay::setAxisLength(const float & _length)
+{
+  std::lock_guard(this->lock);
+  this->axis.length = _length;
+  this->dirty = true;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void PoseDisplay::setAxisRadius(const float & _radius)
+{
+  std::lock_guard(this->lock);
+  this->axis.radius = _radius;
+  this->dirty = true;
+}
 ////////////////////////////////////////////////////////////////////////////////
 void PoseDisplay::setFrameManager(std::shared_ptr<common::FrameManager> _frameManager)
 {
