@@ -184,6 +184,12 @@ public:
     const float & _shaftLength, const float & _shaftRadius,
     const float & _headLength, const float & _headRadius);
 
+  /**
+   * @brief Set visual color and transparency
+   * @param _color Color and transparency of visual
+   */
+  Q_INVOKABLE void setColor(const QColor & _color);
+
 signals:
   /**
    * @brief Notify that topic list has changed

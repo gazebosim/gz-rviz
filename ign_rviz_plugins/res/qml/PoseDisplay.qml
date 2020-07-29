@@ -23,7 +23,7 @@ import "qrc:/QoSConfig"
 
 Item {
   Layout.minimumWidth: 250
-  Layout.minimumHeight: 395
+  Layout.minimumHeight: 475
   anchors.fill: parent
   anchors.margins: 10
   Column {
@@ -104,6 +104,72 @@ Item {
       visible: shapeCombo.currentIndex === 0
       width: parent.width
       Layout.fillWidth: true
+
+      RowLayout {
+        Layout.fillWidth: true
+        spacing: 10
+
+        Text {
+          width: 80
+          Layout.minimumWidth: 80
+          text: "Color"
+          font.pointSize: 10.5
+        }
+
+        Button {
+          Layout.preferredWidth: 20
+          Layout.preferredHeight: 20
+          onClicked: colorDialog.open()
+          background: Rectangle {
+            width: 20
+            height: 20
+            id: bgColor
+            color: "#ff1900"
+            border.color: "#000000"
+            border.width: 2
+          }
+        }
+
+        TextField {
+          id: colorTextField
+          text: "#ff1900"
+          Layout.fillWidth: true
+          validator: RegExpValidator {
+            regExp: /#([\da-f]{3}){1,2}/ig
+          }
+          onAccepted: {
+            colorDialog.color = text
+            bgColor.color = text
+            PoseDisplay.setColor(text);
+          }
+        }
+      }
+
+      RowLayout {
+        Layout.fillWidth: true
+        spacing: 10
+        Text {
+          width: 110
+          Layout.minimumWidth: 110
+          text: "Alpha"
+          font.pointSize: 10.5
+        }
+
+        TextField {
+          id: alphaTextField
+          Layout.fillWidth: true
+          text: "1.0"
+          validator: RegExpValidator {
+            // Integer and floating point numbers
+            regExp: /^([0-9]*\.[0-9]+|[0-9]+)$/g
+          }
+          onAccepted: {
+            colorDialog.color.a = alphaTextField.text;
+            bgColor.color = colorDialog.color
+            PoseDisplay.setColor(colorDialog.color);
+          }
+        }
+      }
 
       RowLayout {
         Layout.fillWidth: true
@@ -274,5 +340,22 @@ Item {
         onClicked: { PoseDisplay.setAxisHeadVisibility(checked) }
       }
     }
+  }
+
+  ColorDialog {
+    id: colorDialog
+    title: "Select arrow visual color"
+    color: "#ff1900"
+    showAlphaChannel: false
+    onAccepted: {
+      bgColor.color = colorDialog.color
+      colorTextField.text = colorDialog.color
+      colorDialog.color.a = alphaTextField.text
+      PoseDisplay.setColor(colorDialog.color);
+    }
+    onRejected: {
+      console.log("Canceled")
+    }
+    Component.onCompleted: visible = false
   }
 }

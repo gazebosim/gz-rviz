@@ -42,7 +42,10 @@ PoseDisplay::PoseDisplay()
   this->rootVisual = this->scene->CreateVisual();
   this->scene->RootVisual()->AddChild(this->rootVisual);
 
-  this->arrow.mat = this->scene->Material("Default/TransRed");
+  this->arrow.mat = this->scene->CreateMaterial();
+  this->arrow.mat->SetAmbient(1.0, 0.098, 0.0);
+  this->arrow.mat->SetDiffuse(1.0, 0.098, 0.0);
+  this->arrow.mat->SetEmissive(1.0, 0.098, 0.0);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -218,6 +221,17 @@ void PoseDisplay::setArrowDimentions(
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+void PoseDisplay::setColor(const QColor & _color)
+{
+  std::lock_guard<std::mutex>(this->lock);
+  this->arrow.mat->SetAmbient(_color.redF(), _color.greenF(), _color.blueF(), _color.alphaF());
+  this->arrow.mat->SetDiffuse(_color.redF(), _color.greenF(), _color.blueF(), _color.alphaF());
+  this->arrow.mat->SetEmissive(_color.redF(), _color.greenF(), _color.blueF(), _color.alphaF());
+
+  this->arrow.visual->SetMaterial(this->arrow.mat);
+}
+
+////////////////////////////////////////////////////////////////////////////////
 void PoseDisplay::setFrameManager(std::shared_ptr<common::FrameManager> _frameManager)
 {
   std::lock_guard<std::mutex>(this->lock);
@@ -279,7 +293,7 @@ void PoseDisplay::updateQoS(
 void PoseDisplay::LoadConfig(const tinyxml2::XMLElement * /*_pluginElem*/)
 {
   if (this->title.empty()) {
-    this->title = "Point";
+    this->title = "Pose";
   }
 }
 
