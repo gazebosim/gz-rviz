@@ -256,7 +256,7 @@ Item {
         Text {
           width: 110
           Layout.minimumWidth: 110
-          text: "Radius"
+          text: "Head Radius"
           font.pointSize: 10.5
         }
 

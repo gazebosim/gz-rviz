@@ -41,7 +41,7 @@ namespace plugins
 struct ArrowVisualPrivate
 {
   /**
-   * @brief Update the arrow shaft and head visual length, radius
+   * @brief Update the arrow shaft and head visual length and radius
    */
   void updateVisual()
   {
@@ -64,7 +64,7 @@ struct ArrowVisualPrivate
 struct AxisVisualPrivate
 {
   /**
-   * @brief Update the axis visual length, radius
+   * @brief Update the axis visual length and radius
    */
   void updateVisual()
   {
