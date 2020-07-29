@@ -36,12 +36,35 @@ namespace rviz
 namespace plugins
 {
 /**
+ * @brief Helper for visualization PoseStamped data as Arrow
+ */
+struct ArrowVisualPrivate
+{
+  /**
+   * @brief Update the arrow shaft and head visual length, radius
+   */
+  void updateVisual()
+  {
+    visual->Shaft()->SetLocalScale(shaftRadius * 2.0, shaftRadius * 2.0, shaftLength);
+    visual->SetOrigin(0, 0, -shaftLength);
+    visual->Head()->SetLocalScale(headRadius * 2.0, headRadius * 2.0, headLength * 2.0);
+  }
+
+  ignition::rendering::ArrowVisualPtr visual;
+  ignition::rendering::MaterialPtr mat;
+  float shaftLength = 1.0;
+  float shaftRadius = 0.05;
+  float headLength = 0.25;
+  float headRadius = 0.1;
+};
+
+/**
  * @brief Helper for visualization PoseStamped data as Axis
  */
 struct AxisVisualPrivate
 {
   /**
-   * @brief Update the axis visual length, radius and head visibility
+   * @brief Update the axis visual length, radius
    */
   void updateVisual()
   {
@@ -49,7 +72,6 @@ struct AxisVisualPrivate
       auto arrow = std::dynamic_pointer_cast<rendering::ArrowVisual>(visual->ChildByIndex(i));
       arrow->SetLocalScale(radius * 20, radius * 20, length * 2);
     }
-    visual->ShowAxisHead(this->headVisible);
   }
 
   ignition::rendering::AxisVisualPtr visual;
@@ -147,14 +169,20 @@ public:
   /**
    * @brief Set axis length
    * @param _length Axis length
-   */
-  Q_INVOKABLE void setAxisLength(const float & _length);
-
-  /**
-   * @brief Set axis radius
    * @param _radius Axis radius
    */
-  Q_INVOKABLE void setAxisRadius(const float & _radius);
+  Q_INVOKABLE void setAxisDimentions(const float & _length, const float & _radius);
+
+  /**
+   * @brief Set arrow dimentions
+   * @param _shaftLength Arrow shaft length
+   * @param _shaftRadius Arrow shaft radius
+   * @param _headLength Arrow head length
+   * @param _headRadius Arrow head radius
+   */
+  Q_INVOKABLE void setArrowDimentions(
+    const float & _shaftLength, const float & _shaftRadius,
+    const float & _headLength, const float & _headRadius);
 
 signals:
   /**
@@ -185,12 +213,11 @@ private:
   ignition::rendering::RenderEngine * engine;
   ignition::rendering::ScenePtr scene;
   ignition::rendering::VisualPtr rootVisual;
-  ignition::rendering::ArrowVisualPtr arrow;
-  ignition::rendering::MaterialPtr mat;
   std::mutex lock;
   geometry_msgs::msg::PoseStamped::SharedPtr msg;
   QStringList topicList;
   AxisVisualPrivate axis;
+  ArrowVisualPrivate arrow;
   bool visualShape;  // True: Arrow; False: Axis
   bool dirty;
 };

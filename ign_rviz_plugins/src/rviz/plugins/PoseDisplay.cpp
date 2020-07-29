@@ -42,7 +42,7 @@ PoseDisplay::PoseDisplay()
   this->rootVisual = this->scene->CreateVisual();
   this->scene->RootVisual()->AddChild(this->rootVisual);
 
-  this->mat = this->scene->Material("Default/TransRed");
+  this->arrow.mat = this->scene->Material("Default/TransRed");
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -118,7 +118,7 @@ bool PoseDisplay::eventFilter(QObject * _object, QEvent * _event)
 ////////////////////////////////////////////////////////////////////////////////
 void PoseDisplay::reset()
 {
-  this->arrow->SetLocalPose(math::Pose3d::Zero);
+  this->arrow.visual->SetLocalPose(math::Pose3d::Zero);
   this->axis.visual->SetLocalPose(math::Pose3d::Zero);
   this->msg.reset();
 }
@@ -134,18 +134,20 @@ void PoseDisplay::update()
   }
 
   // Create arrow
-  if (this->arrow == nullptr) {
-    this->arrow = this->scene->CreateArrowVisual();
-    this->arrow->SetMaterial(this->mat);
-    this->rootVisual->AddChild(this->arrow);
+  if (this->arrow.visual == nullptr) {
+    this->arrow.visual = this->scene->CreateArrowVisual();
+    this->arrow.visual->SetMaterial(this->arrow.mat);
+    this->rootVisual->AddChild(this->arrow.visual);
   }
 
   if (this->dirty) {
     // Update Arrow
-    this->arrow->SetVisible(this->visualShape);
+    this->arrow.visual->SetVisible(this->visualShape);
+    this->arrow.updateVisual();
 
     // Update Axis
     this->axis.visual->SetVisible(!this->visualShape);
+    this->axis.visual->ShowAxisHead(!this->visualShape && this->axis.headVisible);
     this->axis.updateVisual();
 
     this->dirty = false;
@@ -173,13 +175,14 @@ void PoseDisplay::update()
 
   this->axis.visual->SetLocalPose(localPose);
 
-  this->arrow->SetLocalPosition(localPose.Pos());
-  this->arrow->SetLocalRotation(localPose.Rot() * math::Quaterniond(0, 1.57, 0));
+  this->arrow.visual->SetLocalPosition(localPose.Pos());
+  this->arrow.visual->SetLocalRotation(localPose.Rot() * math::Quaterniond(0, 1.57, 0));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void PoseDisplay::setShape(const bool & _shape)
 {
+  std::lock_guard<std::mutex>(this->lock);
   this->visualShape = _shape;
   this->dirty = true;
 }
@@ -187,26 +190,33 @@ void PoseDisplay::setShape(const bool & _shape)
 ////////////////////////////////////////////////////////////////////////////////
 void PoseDisplay::setAxisHeadVisibility(const bool & _visible)
 {
-  std::lock_guard(this->lock);
+  std::lock_guard<std::mutex>(this->lock);
   this->axis.headVisible = _visible;
   this->dirty = true;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void PoseDisplay::setAxisLength(const float & _length)
+void PoseDisplay::setAxisDimentions(const float & _length, const float & _radius)
 {
-  std::lock_guard(this->lock);
+  std::lock_guard<std::mutex>(this->lock);
   this->axis.length = _length;
+  this->axis.radius = _radius;
   this->dirty = true;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void PoseDisplay::setAxisRadius(const float & _radius)
+void PoseDisplay::setArrowDimentions(
+  const float & _shaftLength, const float & _shaftRadius,
+  const float & _headLength, const float & _headRadius)
 {
-  std::lock_guard(this->lock);
-  this->axis.radius = _radius;
+  std::lock_guard<std::mutex>(this->lock);
+  this->arrow.shaftLength = _shaftLength;
+  this->arrow.shaftRadius = _shaftRadius;
+  this->arrow.headLength = _headLength;
+  this->arrow.headRadius = _headRadius;
   this->dirty = true;
 }
+
 ////////////////////////////////////////////////////////////////////////////////
 void PoseDisplay::setFrameManager(std::shared_ptr<common::FrameManager> _frameManager)
 {

@@ -79,8 +79,8 @@ Item {
       width: parent.width
 
       Text {
-        width: 75
-        Layout.minimumWidth: 75
+        width: 110
+        Layout.minimumWidth: 110
         text: "Shape"
         font.pointSize: 10.5
       }
@@ -104,9 +104,109 @@ Item {
       visible: shapeCombo.currentIndex === 0
       width: parent.width
       Layout.fillWidth: true
-      Text {
+
+      RowLayout {
         Layout.fillWidth: true
-        text: "arrow config"
+        spacing: 10
+
+        Text {
+          width: 110
+          Layout.minimumWidth: 110
+          text: "Shaft Length"
+          font.pointSize: 10.5
+        }
+
+        TextField {
+          id: shaftLength
+          Layout.fillWidth: true
+          width: 150
+          text: "1.0"
+          validator: RegExpValidator {
+            // Integer and floating point numbers
+            regExp: /^([0-9]*\.[0-9]+|[0-9]+)$/g
+          }
+          onAccepted: {
+            PoseDisplay.setArrowDimentions(shaftLength.text, shaftRadius.text, headLength.text, headRadius.text)
+          }
+        }
+      }
+
+      RowLayout {
+        Layout.fillWidth: true
+        spacing: 10
+
+        Text {
+          width: 110
+          Layout.minimumWidth: 110
+          text: "Shaft Radius"
+          font.pointSize: 10.5
+        }
+
+        TextField {
+          id: shaftRadius
+          Layout.fillWidth: true
+          width: 150
+          text: "0.05"
+          validator: RegExpValidator {
+            // Integer and floating point numbers
+            regExp: /^([0-9]*\.[0-9]+|[0-9]+)$/g
+          }
+          onAccepted: {
+            PoseDisplay.setArrowDimentions(shaftLength.text, shaftRadius.text, headLength.text, headRadius.text)
+          }
+        }
+      }
+
+      RowLayout {
+        Layout.fillWidth: true
+        spacing: 10
+
+        Text {
+          width: 110
+          Layout.minimumWidth: 110
+          text: "Head Length"
+          font.pointSize: 10.5
+        }
+
+        TextField {
+          id: headLength
+          Layout.fillWidth: true
+          width: 150
+          text: "0.25"
+          validator: RegExpValidator {
+            // Integer and floating point numbers
+            regExp: /^([0-9]*\.[0-9]+|[0-9]+)$/g
+          }
+          onAccepted: {
+            PoseDisplay.setArrowDimentions(shaftLength.text, shaftRadius.text, headLength.text, headRadius.text)
+          }
+        }
+      }
+
+      RowLayout {
+        Layout.fillWidth: true
+        spacing: 10
+
+        Text {
+          width: 110
+          Layout.minimumWidth: 110
+          text: "Radius"
+          font.pointSize: 10.5
+        }
+
+        TextField {
+          id: headRadius
+          Layout.fillWidth: true
+          width: 150
+          text: "0.1"
+          validator: RegExpValidator {
+            // Integer and floating point numbers
+            regExp: /^([0-9]*\.[0-9]+|[0-9]+)$/g
+          }
+          onAccepted: {
+            PoseDisplay.setArrowDimentions(shaftLength.text, shaftRadius.text, headLength.text, headRadius.text)
+          }
+        }
       }
     }
 
@@ -121,8 +221,8 @@ Item {
         spacing: 10
 
         Text {
-          width: 75
-          Layout.minimumWidth: 75
+          width: 110
+          Layout.minimumWidth: 110
           text: "Length"
           font.pointSize: 10.5
         }
@@ -131,13 +231,13 @@ Item {
           id: axisLengthField
           Layout.fillWidth: true
           width: 150
-          placeholderText: "1.0"
+          text: "1.0"
           validator: RegExpValidator {
             // Integer and floating point numbers
             regExp: /^([0-9]*\.[0-9]+|[0-9]+)$/g
           }
           onAccepted: {
-            PoseDisplay.setAxisLength(axisLengthField.text)
+            PoseDisplay.setAxisDimentions(axisLengthField.text, axisRadiusField.text)
           }
         }
       }
@@ -147,8 +247,8 @@ Item {
         spacing: 10
 
         Text {
-          width: 75
-          Layout.minimumWidth: 75
+          width: 110
+          Layout.minimumWidth: 110
           text: "Radius"
           font.pointSize: 10.5
         }
@@ -157,13 +257,13 @@ Item {
           id: axisRadiusField
           Layout.fillWidth: true
           width: 150
-          placeholderText: "0.1"
+          text: "0.1"
           validator: RegExpValidator {
             // Integer and floating point numbers
             regExp: /^([0-9]*\.[0-9]+|[0-9]+)$/g
           }
           onAccepted: {
-            PoseDisplay.setAxisRadius(axisRadiusField.text)
+            PoseDisplay.setAxisDimentions(axisLengthField.text, axisRadiusField.text)
           }
         }
       }
