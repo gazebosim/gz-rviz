@@ -25,6 +25,7 @@
 #include <rclcpp/rclcpp.hpp>
 
 #include <geometry_msgs/msg/point_stamped.hpp>
+#include <geometry_msgs/msg/pose_stamped.hpp>
 #include <sensor_msgs/msg/image.hpp>
 #include <sensor_msgs/msg/laser_scan.hpp>
 #include <tf2_msgs/msg/tf_message.hpp>
@@ -113,6 +114,26 @@ public:
       pointStampedPlugin[pluginCount]->setFrameManager(this->frameManager);
       ignition::gui::App()->findChild<ignition::gui::MainWindow *>()->installEventFilter(
         pointStampedPlugin[pluginCount]);
+    }
+  }
+
+  /**
+   * @brief Loads Pose Visualization Plugin
+   */
+  Q_INVOKABLE void addPoseDisplay()
+  {
+    // Load plugin
+    if (ignition::gui::App()->LoadPlugin("PoseDisplay")) {
+      auto posePlugin =
+        ignition::gui::App()->findChildren<DisplayPlugin<geometry_msgs::msg::PoseStamped> *>();
+      int pluginCount = posePlugin.size() - 1;
+
+      // Set frame manager and install event filter for recently added plugin
+      posePlugin[pluginCount]->initialize(this->node);
+      posePlugin[pluginCount]->setTopic("/pose");
+      posePlugin[pluginCount]->setFrameManager(this->frameManager);
+      ignition::gui::App()->findChild<ignition::gui::MainWindow *>()->installEventFilter(
+        posePlugin[pluginCount]);
     }
   }
 

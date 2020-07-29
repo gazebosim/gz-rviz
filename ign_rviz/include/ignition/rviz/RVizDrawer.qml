@@ -26,6 +26,9 @@ Rectangle {
             case "addPointStampedDisplay":
                 RViz.addPointStampedDisplay();
                 break;
+            case "addPoseDisplay":
+                RViz.addPoseDisplay();
+                break;
             default:
                 parent.onAction(action);
                 break;
@@ -63,6 +66,11 @@ Rectangle {
         ListElement {
             title: "PointStamped"
             actionElement: "addPointStampedDisplay"
+        }
+
+        ListElement {
+            title: "Pose"
+            actionElement: "addPoseDisplay"
         }
 
         ListElement {
