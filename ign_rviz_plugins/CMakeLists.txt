@@ -169,6 +169,32 @@ target_include_directories(PointStampedDisplay
 )
 
 ########################################################################
+add_library(PoseDisplay SHARED ${headers_MOC}
+  include/ignition/rviz/plugins/PoseDisplay.hpp
+  src/rviz/plugins/PoseDisplay.cpp
+  ${resources_RCC}
+)
+
+ament_target_dependencies(PoseDisplay
+  geometry_msgs
+  ign_rviz_common
+  ignition-gui4
+  ignition-math6
+  ignition-rendering4
+  tf2_ros
+)
+
+target_link_libraries(PoseDisplay Qt5::Core Qt5::Qml Qt5::Quick Qt5::QuickControls2)
+
+target_include_directories(PoseDisplay
+  PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>
+  ${Qt5Widgets_INCLUDE_DIRS}
+  ${IGNITION-GUI_INCLUDE_DIRS}
+)
+
+########################################################################
 add_library(TFDisplay SHARED ${headers_MOC}
   include/ignition/rviz/plugins/TFDisplay.hpp
   include/ignition/rviz/plugins/message_display_base.hpp
@@ -289,6 +315,17 @@ install(
   RUNTIME DESTINATION bin
   INCLUDES DESTINATION include
 )
+
+ament_export_libraries(PoseDisplay)
+
+install(
+  TARGETS PoseDisplay
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION bin
+  INCLUDES DESTINATION include
+)
+
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
