@@ -30,4 +30,8 @@
   <qresource prefix="PoseDisplay/">
     <file alias="PoseDisplay.qml">qml/PoseDisplay.qml</file>
   </qresource>
+
+  <qresource prefix="RobotModelDisplay/">
+    <file alias="RobotModelDisplay.qml">qml/RobotModelDisplay.qml</file>
+  </qresource>
 </RCC>

@@ -13,11 +13,14 @@ endif()
 
 # ROS2 packages
 find_package(ament_cmake REQUIRED)
-find_package(rclcpp REQUIRED)
 find_package(geometry_msgs REQUIRED)
+find_package(rclcpp REQUIRED)
+find_package(resource_retriever REQUIRED)
+find_package(std_msgs REQUIRED)
+find_package(sensor_msgs REQUIRED)
 find_package(tf2_msgs REQUIRED)
 find_package(tf2_ros REQUIRED)
-find_package(sensor_msgs REQUIRED)
+find_package(urdf REQUIRED)
 
 # Ignition libraries
 find_package(ignition-common3 REQUIRED)
@@ -195,6 +198,34 @@ target_include_directories(PoseDisplay
 )
 
 ########################################################################
+add_library(RobotModelDisplay SHARED ${headers_MOC}
+  include/ignition/rviz/plugins/RobotModelDisplay.hpp
+  src/rviz/plugins/RobotModelDisplay.cpp
+  ${resources_RCC}
+)
+
+ament_target_dependencies(RobotModelDisplay
+  ign_rviz_common
+  ignition-gui4
+  ignition-math6
+  ignition-rendering4
+  std_msgs
+  resource_retriever
+  tf2_ros
+  urdf
+)
+
+target_link_libraries(RobotModelDisplay Qt5::Core Qt5::Qml Qt5::Quick Qt5::QuickControls2)
+
+target_include_directories(RobotModelDisplay
+  PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>
+  ${Qt5Widgets_INCLUDE_DIRS}
+  ${IGNITION-GUI_INCLUDE_DIRS}
+)
+
+########################################################################
 add_library(TFDisplay SHARED ${headers_MOC}
   include/ignition/rviz/plugins/TFDisplay.hpp
   include/ignition/rviz/plugins/message_display_base.hpp
@@ -326,6 +357,15 @@ install(
   INCLUDES DESTINATION include
 )
 
+ament_export_libraries(RobotModelDisplay)
+
+install(
+  TARGETS RobotModelDisplay
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION bin
+  INCLUDES DESTINATION include
+)
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)

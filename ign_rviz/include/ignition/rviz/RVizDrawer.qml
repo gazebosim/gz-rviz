@@ -29,6 +29,9 @@ Rectangle {
             case "addPoseDisplay":
                 RViz.addPoseDisplay();
                 break;
+            case "addRobotModelDisplay":
+                RViz.addRobotModelDisplay();
+                break;
             default:
                 parent.onAction(action);
                 break;
@@ -71,6 +74,11 @@ Rectangle {
         ListElement {
             title: "Pose"
             actionElement: "addPoseDisplay"
+        }
+
+        ListElement {
+            title: "RobotModel"
+            actionElement: "addRobotModelDisplay"
         }
 
         ListElement {
