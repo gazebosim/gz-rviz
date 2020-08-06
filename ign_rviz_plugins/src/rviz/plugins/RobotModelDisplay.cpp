@@ -56,6 +56,8 @@ void RobotModelDisplay::initialize(rclcpp::Node::SharedPtr _node)
 {
   std::lock_guard<std::recursive_mutex>(this->lock);
   this->node = std::move(_node);
+
+  this->qos = this->qos.keep_last(1).transient_local();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -106,8 +108,22 @@ void RobotModelDisplay::callback(const std_msgs::msg::String::SharedPtr _msg)
   if (!_msg) {
     return;
   }
-
+  RCLCPP_INFO(this->node->get_logger(), "%s", _msg->data.c_str());
   this->msg = std::move(_msg);
+
+  if (!this->robotModel.initString(this->msg->data)) {
+    RCLCPP_ERROR(this->node->get_logger(), "FAILED TO LOAD THE URDF STRING");
+  } else {
+    RCLCPP_INFO(this->node->get_logger(), "SUCCESSFULLY LOADED THE URDF STRING");
+
+    // Recursively destroy all visuals
+    this->scene->DestroyVisual(this->rootVisual, true);
+    this->rootVisual = this->scene->CreateVisual();
+    this->scene->RootVisual()->AddChild(this->rootVisual);
+
+    this->robotVisualLinks.clear();
+    this->modelLoaded = false;
+  }
 }
 
 

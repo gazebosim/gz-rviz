@@ -152,6 +152,7 @@ public:
       // Set frame manager and install event filter for recently added plugin
       robotModelPlugin[pluginCount]->initialize(this->node);
       robotModelPlugin[pluginCount]->setFrameManager(this->frameManager);
+      robotModelPlugin[pluginCount]->setTopic("/robot_description");
       ignition::gui::App()->findChild<ignition::gui::MainWindow *>()->installEventFilter(
         robotModelPlugin[pluginCount]);
     }
