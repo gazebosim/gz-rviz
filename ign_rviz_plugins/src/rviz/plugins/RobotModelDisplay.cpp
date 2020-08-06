@@ -35,7 +35,7 @@ namespace plugins
 {
 ////////////////////////////////////////////////////////////////////////////////
 RobotModelDisplay::RobotModelDisplay()
-: MessageDisplay(), modelLoaded(true)
+: MessageDisplay(), modelLoaded(true), destroyModel(false)
 {
   // Get reference to scene
   this->engine = ignition::rendering::engine("ogre");
@@ -96,7 +96,8 @@ void RobotModelDisplay::setTopic(const QString & topic_name)
 
   // Destroy previous subscription
   this->unsubscribe();
-
+  // Reset visualization
+  this->reset();
   // Create new subscription
   this->subscribe();
 }
@@ -108,20 +109,13 @@ void RobotModelDisplay::callback(const std_msgs::msg::String::SharedPtr _msg)
   if (!_msg) {
     return;
   }
-  RCLCPP_INFO(this->node->get_logger(), "%s", _msg->data.c_str());
+
   this->msg = std::move(_msg);
 
   if (!this->robotModel.initString(this->msg->data)) {
     RCLCPP_ERROR(this->node->get_logger(), "FAILED TO LOAD THE URDF STRING");
   } else {
-    RCLCPP_INFO(this->node->get_logger(), "SUCCESSFULLY LOADED THE URDF STRING");
-
-    // Recursively destroy all visuals
-    this->scene->DestroyVisual(this->rootVisual, true);
-    this->rootVisual = this->scene->CreateVisual();
-    this->scene->RootVisual()->AddChild(this->rootVisual);
-
-    this->robotVisualLinks.clear();
+    this->destroyModel = true;
     this->modelLoaded = false;
   }
 }
@@ -141,6 +135,18 @@ bool RobotModelDisplay::eventFilter(QObject * _object, QEvent * _event)
 void RobotModelDisplay::update()
 {
   std::lock_guard<std::recursive_mutex>(this->lock);
+
+  if (this->destroyModel) {
+    // Recursively destroy all visuals
+    if (this->rootVisual != nullptr) {
+      this->scene->DestroyVisual(this->rootVisual, true);
+      this->rootVisual.reset();
+    }
+
+    this->robotVisualLinks.clear();
+    this->destroyModel = false;
+  }
+
   // Load model
   if (!this->modelLoaded) {
     loadRobotModel();
@@ -169,6 +175,12 @@ void RobotModelDisplay::update()
 void RobotModelDisplay::loadRobotModel()
 {
   std::lock_guard<std::recursive_mutex>(this->lock);
+
+  if (this->rootVisual == nullptr) {
+    this->rootVisual = this->scene->CreateVisual();
+    this->scene->RootVisual()->AddChild(this->rootVisual);
+  }
+
   const auto & root = this->robotModel.getRoot();
 
   addLinkVisual(root.get());
@@ -275,24 +287,47 @@ void RobotModelDisplay::addLinkVisual(const urdf::Link * _link)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void RobotModelDisplay::reset() {}
+void RobotModelDisplay::reset()
+{
+  std::lock_guard<std::recursive_mutex>(this->lock);
+  this->destroyModel = true;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void RobotModelDisplay::sourceChanged(const int & _source)
+{
+  std::lock_guard<std::recursive_mutex>(this->lock);
+  // Source: Topic
+  if (_source == 0) {
+    this->reset();
+    this->subscribe();
+    return;
+  }
+  // Source: File
+  this->unsubscribe();
+  this->reset();
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 void RobotModelDisplay::openFile(const QString & _file)
 {
   std::lock_guard<std::recursive_mutex>(this->lock);
+  // Reset model visualziation
+  this->destroyModel = true;
 
-  if (!this->robotModel.initFile(_file.toStdString().substr(7))) {
+  if (_file.isEmpty()) {
+    RCLCPP_ERROR(this->node->get_logger(), "FAILED TO LOAD THE FILE");
+    return;
+  }
+
+  std::string file = _file.toStdString();
+  if (_file.startsWith("file://")) {
+    file = _file.mid(7).toStdString();
+  }
+
+  if (!this->robotModel.initFile(file)) {
     RCLCPP_ERROR(this->node->get_logger(), "FAILED TO LOAD THE FILE");
   } else {
-    RCLCPP_INFO(this->node->get_logger(), "SUCCESSFULLY LOADED THE FILE");
-
-    // Recursively destroy all visuals
-    this->scene->DestroyVisual(this->rootVisual, true);
-    this->rootVisual = this->scene->CreateVisual();
-    this->scene->RootVisual()->AddChild(this->rootVisual);
-
-    this->robotVisualLinks.clear();
     this->modelLoaded = false;
   }
 }

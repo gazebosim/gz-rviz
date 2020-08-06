@@ -26,20 +26,107 @@ Item {
   anchors.fill: parent
   anchors.margins: 10
 
-  RowLayout {
+  ColumnLayout {
     width: parent.width
-    Button {
-      id: fileButton
-      text: "Open"
-      onClicked: {
-        fileDialog.open();
+
+    RowLayout {
+      Layout.fillWidth: true
+      spacing: 10
+
+      Text {
+        text: "Description Source"
+      }
+
+      ComboBox {
+        id: sourceCombo
+        Layout.fillWidth: true
+        model: [ "Topic", "File" ]
+        currentIndex: 0
+        onCurrentIndexChanged: {
+          if (currentIndex < 0) {
+            return;
+          }
+
+          RobotModelDisplay.sourceChanged(currentIndex);
+
+          if(currentIndex === 1) {
+            RobotModelDisplay.openFile(fileText.text);
+          }
+        }
       }
     }
 
-    Text {
-      Layout.fillWidth: true
-      id: fileText
-      text: ""
+    ColumnLayout {
+      visible: sourceCombo.currentIndex === 0
+      RowLayout {
+        width: parent.width
+        RoundButton {
+          text: "\u21bb"
+          Material.background: Material.primary
+          onClicked: {
+            RobotModelDisplay.onRefresh();
+          }
+        }
+
+        ComboBox {
+          id: combo
+          Layout.fillWidth: true
+          model: RobotModelDisplay.topicList
+          currentIndex: 0
+          editable: true
+          editText: currentText
+          displayText: currentText
+          onCurrentIndexChanged: {
+            if (currentIndex < 0) {
+              return;
+            }
+
+            RobotModelDisplay.setTopic(textAt(currentIndex));
+          }
+
+          Component.onCompleted: {
+            combo.editText = "/robot_description"
+            combo.displayText = "/robot_description"
+          }
+
+          Connections {
+            target: RobotModelDisplay
+            onSetCurrentIndex: {
+              combo.currentIndex = index
+            }
+          }
+        }
+      }
+    }
+
+    RowLayout {
+      visible: sourceCombo.currentIndex === 1
+      width: parent.width
+      spacing: 10
+
+      Text {
+        text: "Description File"
+      }
+
+      TextField {
+        Layout.fillWidth: true
+        id: fileText
+        text: ""
+        onAccepted: {
+          RobotModelDisplay.openFile(text);
+        }
+      }
+
+      Button {
+        id: fileButton
+        text: "\u2505"
+        font.pointSize: 11
+        Layout.preferredWidth: 30
+        Layout.preferredHeight: 30
+        onClicked: {
+          fileDialog.open();
+        }
+      }
     }
   }
 
@@ -51,7 +138,7 @@ Item {
     nameFilters: [ "URDF (*.urdf)", "All files (*)" ]
     onAccepted: {
       fileText.text = fileDialog.fileUrl
-      RobotModelDisplay.openFile(fileDialog.fileUrl)
+      RobotModelDisplay.openFile(fileText.text)
     }
     onRejected: {
       console.log("Canceled")

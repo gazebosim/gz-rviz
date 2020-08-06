@@ -121,7 +121,17 @@ public slots:
    */
   Q_INVOKABLE QStringList getTopicList() const;
 
+  /**
+   * @brief Load RobotModel from file
+   * @param[in] _file Robot model file URI
+   */
   Q_INVOKABLE void openFile(const QString & _file);
+
+  /**
+   * @brief Callback for description source change
+   * @param[in] _source Index of source. 0: Topic, 1: File
+   */
+  Q_INVOKABLE void sourceChanged(const int & _source);
 
 signals:
   /**
@@ -137,8 +147,21 @@ signals:
   void setCurrentIndex(const int index);
 
 private:
+  /**
+   * @brief Render robot model by reading the data
+   */
   void loadRobotModel();
+
+  /**
+   * @brief Create robot model link
+   * @param[in] _link Link to be created
+   */
   void createLink(const urdf::LinkSharedPtr & _link);
+
+  /**
+   * @brief Create geometry for link's visual element
+   * @param[in] _link Link with visual information
+   */
   void addLinkVisual(const urdf::Link * _link);
 
 private:
@@ -146,12 +169,12 @@ private:
   ignition::rendering::RenderEngine * engine;
   ignition::rendering::ScenePtr scene;
   ignition::rendering::VisualPtr rootVisual;
-  rendering::MeshPtr mesh;
   std::unordered_map<std::string, rendering::VisualPtr> robotVisualLinks;
   std_msgs::msg::String::SharedPtr msg;
   QStringList topicList;
   urdf::Model robotModel;
   bool modelLoaded;
+  bool destroyModel;
 };
 
 }  // namespace plugins
