@@ -22,12 +22,20 @@ import QtQuick.Dialogs 1.0
 
 Item {
   Layout.minimumWidth: 280
-  Layout.minimumHeight: 200
+  Layout.minimumHeight: 300
   anchors.fill: parent
   anchors.margins: 10
 
   ColumnLayout {
     width: parent.width
+
+    CheckBox {
+      checked: true
+      text: "Visual Enabled"
+      onClicked: {
+        RobotModelDisplay.visualEnabled(checked)
+      }
+    }
 
     RowLayout {
       Layout.fillWidth: true

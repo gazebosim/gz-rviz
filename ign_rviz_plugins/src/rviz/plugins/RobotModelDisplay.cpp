@@ -35,7 +35,7 @@ namespace plugins
 {
 ////////////////////////////////////////////////////////////////////////////////
 RobotModelDisplay::RobotModelDisplay()
-: MessageDisplay(), modelLoaded(true), destroyModel(false)
+: MessageDisplay(), modelLoaded(true), destroyModel(false), showVisual(true)
 {
   // Get reference to scene
   this->engine = ignition::rendering::engine("ogre");
@@ -159,6 +159,7 @@ void RobotModelDisplay::update()
 
     auto linkInfo = this->robotModel.getLink(link.first);
     if (linkInfo->visual != nullptr) {
+      link.second->SetVisible(showVisual);
       const auto & origin = linkInfo->visual->origin;
       linkPose += math::Pose3d(
         origin.position.x, origin.position.y, origin.position.z,
@@ -330,6 +331,13 @@ void RobotModelDisplay::openFile(const QString & _file)
   } else {
     this->modelLoaded = false;
   }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void RobotModelDisplay::visualEnabled(const bool & _enabled)
+{
+  std::lock_guard<std::recursive_mutex>(this->lock);
+  this->showVisual = _enabled;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

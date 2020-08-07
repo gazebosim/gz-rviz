@@ -133,6 +133,12 @@ public slots:
    */
   Q_INVOKABLE void sourceChanged(const int & _source);
 
+  /**
+   * @brief Set link visual visibility
+   * @param[in] _enabled Visual visibility
+   */
+  Q_INVOKABLE void visualEnabled(const bool & _enabled);
+
 signals:
   /**
    * @brief Notify that topic list has changed
@@ -175,6 +181,7 @@ private:
   urdf::Model robotModel;
   bool modelLoaded;
   bool destroyModel;
+  bool showVisual;
 };
 
 }  // namespace plugins
