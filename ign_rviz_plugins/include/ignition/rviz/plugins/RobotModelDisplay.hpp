@@ -139,6 +139,12 @@ public slots:
    */
   Q_INVOKABLE void visualEnabled(const bool & _enabled);
 
+  /**
+   * @brief Set link collision visibility
+   * @param[in] _enabled Collision visibility
+   */
+  Q_INVOKABLE void collisionEnabled(const bool & _enabled);
+
 signals:
   /**
    * @brief Notify that topic list has changed
@@ -159,29 +165,38 @@ private:
   void loadRobotModel();
 
   /**
-   * @brief Create robot model link
-   * @param[in] _link Link to be created
+   * @brief Add robot model link
+   * @param[in] _link Robot Link
    */
-  void createLink(const urdf::LinkSharedPtr & _link);
+  void addLink(const urdf::LinkSharedPtr & _link);
 
   /**
-   * @brief Create geometry for link's visual element
-   * @param[in] _link Link with visual information
+   * @brief Create a robot link (visual and collision)
+   * @param[in] _link Robot Link
    */
-  void addLinkVisual(const urdf::Link * _link);
+  void createLink(const urdf::Link * _link);
+
+  /**
+   * @brief Create robot model visual using using geometry information
+   * @param[in] _geometry Link goemetry information
+   * @return Link visual with described geometry
+   */
+  rendering::VisualPtr createLinkGeometry(const urdf::GeometrySharedPtr & _geometry);
 
 private:
   std::recursive_mutex lock;
   ignition::rendering::RenderEngine * engine;
   ignition::rendering::ScenePtr scene;
   ignition::rendering::VisualPtr rootVisual;
-  std::unordered_map<std::string, rendering::VisualPtr> robotVisualLinks;
+  std::unordered_map<std::string,
+    std::pair<rendering::VisualPtr, rendering::VisualPtr>> robotVisualLinks;
   std_msgs::msg::String::SharedPtr msg;
   QStringList topicList;
   urdf::Model robotModel;
   bool modelLoaded;
   bool destroyModel;
   bool showVisual;
+  bool showCollision;
 };
 
 }  // namespace plugins

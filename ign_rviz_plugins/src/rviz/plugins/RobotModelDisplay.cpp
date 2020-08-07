@@ -35,7 +35,7 @@ namespace plugins
 {
 ////////////////////////////////////////////////////////////////////////////////
 RobotModelDisplay::RobotModelDisplay()
-: MessageDisplay(), modelLoaded(true), destroyModel(false), showVisual(true)
+: MessageDisplay(), modelLoaded(true), destroyModel(false), showVisual(true), showCollision(false)
 {
   // Get reference to scene
   this->engine = ignition::rendering::engine("ogre");
@@ -155,20 +155,37 @@ void RobotModelDisplay::update()
 
   // Update robot model poses
   for (const auto & link : this->robotVisualLinks) {
-    math::Pose3d linkPose, framePose;
-
+    math::Pose3d framePose;
     auto linkInfo = this->robotModel.getLink(link.first);
-    if (linkInfo->visual != nullptr) {
-      link.second->SetVisible(showVisual);
-      const auto & origin = linkInfo->visual->origin;
-      linkPose += math::Pose3d(
-        origin.position.x, origin.position.y, origin.position.z,
-        origin.rotation.w, origin.rotation.x, origin.rotation.y, origin.rotation.z);
-    }
-
     this->frameManager->getFramePose(link.first, framePose);
 
-    link.second->SetLocalPose(linkPose + framePose);
+    // Update link visual pose and visibility
+    if (link.second.first != nullptr) {
+      math::Pose3d linkPose;
+      if (linkInfo->visual != nullptr) {
+        const auto & origin = linkInfo->visual->origin;
+        linkPose += math::Pose3d(
+          origin.position.x, origin.position.y, origin.position.z,
+          origin.rotation.w, origin.rotation.x, origin.rotation.y, origin.rotation.z);
+      }
+
+      link.second.first->SetLocalPose(linkPose + framePose);
+      link.second.first->SetVisible(showVisual);
+    }
+
+    // Update link collision pose and visibility
+    if (link.second.second != nullptr) {
+      math::Pose3d linkPose;
+      if (linkInfo->collision != nullptr) {
+        const auto & origin = linkInfo->collision->origin;
+        linkPose += math::Pose3d(
+          origin.position.x, origin.position.y, origin.position.z,
+          origin.rotation.w, origin.rotation.x, origin.rotation.y, origin.rotation.z);
+      }
+
+      link.second.second->SetLocalPose(linkPose + framePose);
+      link.second.second->SetVisible(showCollision);
+    }
   }
 }
 
@@ -184,56 +201,78 @@ void RobotModelDisplay::loadRobotModel()
 
   const auto & root = this->robotModel.getRoot();
 
-  addLinkVisual(root.get());
+  createLink(root.get());
+  RCLCPP_ERROR(this->node->get_logger(), "%s", root->name.c_str());
 
   for (const auto & link : root->child_links) {
-    this->createLink(link);
+    this->addLink(link);
   }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void RobotModelDisplay::createLink(const urdf::LinkSharedPtr & _link)
+void RobotModelDisplay::addLink(const urdf::LinkSharedPtr & _link)
 {
   std::lock_guard<std::recursive_mutex>(this->lock);
 
-  addLinkVisual(_link.get());
+  createLink(_link.get());
+  RCLCPP_ERROR(this->node->get_logger(), "%s", _link->name.c_str());
 
   for (const auto & link : _link->child_links) {
-    this->createLink(link);
+    this->addLink(link);
   }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void RobotModelDisplay::addLinkVisual(const urdf::Link * _link)
+void RobotModelDisplay::createLink(const urdf::Link * _link)
 {
   std::lock_guard<std::recursive_mutex>(this->lock);
-  if (_link->visual == nullptr) {
-    return;
+
+  rendering::VisualPtr linkVisual = nullptr, linkCollision = nullptr;
+
+  // Add visual for link visual element
+  if (_link->visual != nullptr && _link->visual->geometry != nullptr) {
+    linkVisual = createLinkGeometry(_link->visual->geometry);
+    if (linkVisual != nullptr) {
+      linkVisual->SetGeometryMaterial(this->scene->Material("Default/TransRed"));
+      this->rootVisual->AddChild(linkVisual);
+    }
   }
 
-  if (_link->visual->geometry == nullptr) {
-    return;
+  // Add visual link collision element
+  if (_link->collision != nullptr && _link->collision->geometry != nullptr) {
+    linkCollision = createLinkGeometry(_link->collision->geometry);
+    if (linkCollision != nullptr) {
+      linkCollision->SetGeometryMaterial(this->scene->Material("Default/TransBlue"));
+      this->rootVisual->AddChild(linkCollision);
+    }
   }
 
+  this->robotVisualLinks.insert({_link->name, std::make_pair(linkVisual, linkCollision)});
+}
+
+////////////////////////////////////////////////////////////////////////////////
+rendering::VisualPtr RobotModelDisplay::createLinkGeometry(
+  const urdf::GeometrySharedPtr & _geometry)
+{
   rendering::VisualPtr visual = this->scene->CreateVisual();
 
-  switch (_link->visual->geometry->type) {
+  switch (_geometry->type) {
     case urdf::Geometry::BOX: {
-        auto boxInfo = std::dynamic_pointer_cast<urdf::Box>(_link->visual->geometry);
+        auto boxInfo = std::dynamic_pointer_cast<urdf::Box>(_geometry);
         rendering::GeometryPtr box = this->scene->CreateBox();
         visual->AddGeometry(box);
         visual->SetLocalScale(boxInfo->dim.x, boxInfo->dim.y, boxInfo->dim.z);
         break;
       }
     case urdf::Geometry::SPHERE: {
-        auto sphereInfo = std::dynamic_pointer_cast<urdf::Sphere>(_link->visual->geometry);
+        auto sphereInfo = std::dynamic_pointer_cast<urdf::Sphere>(_geometry);
         rendering::GeometryPtr sphere = this->scene->CreateSphere();
         visual->AddGeometry(sphere);
         visual->SetLocalScale(sphereInfo->radius * 2.0);
         break;
       }
     case urdf::Geometry::CYLINDER: {
-        auto cylinderInfo = std::dynamic_pointer_cast<urdf::Cylinder>(_link->visual->geometry);
+        auto cylinderInfo = std::dynamic_pointer_cast<urdf::Cylinder>(_geometry);
         rendering::GeometryPtr cylinder = this->scene->CreateCylinder();
         visual->AddGeometry(cylinder);
         visual->SetLocalScale(
@@ -242,7 +281,7 @@ void RobotModelDisplay::addLinkVisual(const urdf::Link * _link)
         break;
       }
     case urdf::Geometry::MESH: {
-        auto meshInfo = std::dynamic_pointer_cast<urdf::Mesh>(_link->visual->geometry);
+        auto meshInfo = std::dynamic_pointer_cast<urdf::Mesh>(_geometry);
 
         if (meshInfo->filename.rfind("package://") == 0) {
           int p = meshInfo->filename.find_first_of('/', 10);
@@ -264,7 +303,7 @@ void RobotModelDisplay::addLinkVisual(const urdf::Link * _link)
           } catch (ament_index_cpp::PackageNotFoundError & e) {
             RCLCPP_ERROR(this->node->get_logger(), e.what());
             this->scene->DestroyVisual(visual);
-            return;
+            return nullptr;
           }
 
         } else if (meshInfo->filename.rfind("file://") == 0) {
@@ -282,9 +321,7 @@ void RobotModelDisplay::addLinkVisual(const urdf::Link * _link)
       }
   }
 
-  visual->SetGeometryMaterial(this->scene->Material("Default/TransRed"));
-  this->rootVisual->AddChild(visual);
-  this->robotVisualLinks.insert({_link->name, visual});
+  return visual;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -338,6 +375,13 @@ void RobotModelDisplay::visualEnabled(const bool & _enabled)
 {
   std::lock_guard<std::recursive_mutex>(this->lock);
   this->showVisual = _enabled;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void RobotModelDisplay::collisionEnabled(const bool & _enabled)
+{
+  std::lock_guard<std::recursive_mutex>(this->lock);
+  this->showCollision = _enabled;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

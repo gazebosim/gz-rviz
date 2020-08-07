@@ -37,6 +37,14 @@ Item {
       }
     }
 
+    CheckBox {
+      checked: false
+      text: "Collision Enabled"
+      onClicked: {
+        RobotModelDisplay.collisionEnabled(checked)
+      }
+    }
+
     RowLayout {
       Layout.fillWidth: true
       spacing: 10
