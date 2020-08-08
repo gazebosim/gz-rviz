@@ -145,6 +145,12 @@ public slots:
    */
   Q_INVOKABLE void collisionEnabled(const bool & _enabled);
 
+  /**
+   * @brief Set robot model transparency
+   * @param[in] _alpha Robot model transparency
+   */
+  Q_INVOKABLE void setAlpha(const float & _alpha);
+
 signals:
   /**
    * @brief Notify that topic list has changed

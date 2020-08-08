@@ -40,6 +40,14 @@ RobotModelDisplay::RobotModelDisplay()
   // Get reference to scene
   this->engine = ignition::rendering::engine("ogre");
   this->scene = this->engine->SceneByName("scene");
+
+  // Create red material if not registered
+  if (!this->scene->MaterialRegistered("RobotModel/Red")) {
+    rendering::MaterialPtr mat = this->scene->CreateMaterial("RobotModel/Red");
+    mat->SetAmbient(ignition::math::Color::Red);
+    mat->SetDiffuse(ignition::math::Color::Red);
+    mat->SetEmissive(ignition::math::Color::Red);
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -247,7 +255,7 @@ void RobotModelDisplay::createLink(const urdf::Link * _link)
     if (linkVisual != nullptr) {
       if (_link->visual->material == nullptr) {
         // Use default material
-        linkVisual->SetMaterial(this->scene->Material("Default/TransRed"));
+        linkVisual->SetMaterial(this->scene->Material("RobotModel/Red"));
       } else if (!_link->visual->material_name.empty()) {
         // Use registered material
         linkVisual->SetMaterial(this->scene->Material(_link->visual->material_name));
@@ -408,6 +416,24 @@ void RobotModelDisplay::collisionEnabled(const bool & _enabled)
 {
   std::lock_guard<std::recursive_mutex>(this->lock);
   this->showCollision = _enabled;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void RobotModelDisplay::setAlpha(const float & _alpha)
+{
+  std::lock_guard<std::recursive_mutex>(this->lock);
+
+  for (const auto & link : this->robotVisualLinks) {
+    if (link.second.first != nullptr) {
+      auto mat = link.second.first->Material();
+      auto color = mat->Ambient();
+      color.A(_alpha);
+      mat->SetAmbient(color);
+      mat->SetDiffuse(color);
+      mat->SetEmissive(color);
+      link.second.first->SetMaterial(mat);
+    }
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -22,7 +22,7 @@ import QtQuick.Dialogs 1.0
 
 Item {
   Layout.minimumWidth: 280
-  Layout.minimumHeight: 300
+  Layout.minimumHeight: 350
   anchors.fill: parent
   anchors.margins: 10
 
@@ -42,6 +42,28 @@ Item {
       text: "Collision Enabled"
       onClicked: {
         RobotModelDisplay.collisionEnabled(checked)
+      }
+    }
+
+    RowLayout {
+      Layout.fillWidth: true
+      spacing: 10
+
+      Text {
+        text: "Alpha"
+      }
+
+      TextField {
+        id: alphaTextField
+        Layout.fillWidth: true
+        text: "1.0"
+        validator: RegExpValidator {
+          // Integer and floating point numbers
+          regExp: /^([0-9]*\.[0-9]+|[0-9]+)$/g
+        }
+        onAccepted: {
+          RobotModelDisplay.setAlpha(text);
+        }
       }
     }
 
