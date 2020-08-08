@@ -202,7 +202,20 @@ void RobotModelDisplay::loadRobotModel()
   const auto & root = this->robotModel.getRoot();
 
   createLink(root.get());
-  RCLCPP_ERROR(this->node->get_logger(), "%s", root->name.c_str());
+
+  const auto & materials = this->robotModel.materials_;
+  for (const auto & material : materials) {
+    // Skip registering material if already registered or material has not name
+    if (material.first.empty() || this->scene->MaterialRegistered(material.first)) {
+      continue;
+    }
+
+    rendering::MaterialPtr mat = this->scene->CreateMaterial(material.first);
+    const auto & color = material.second->color;
+    mat->SetAmbient(color.r, color.g, color.b, color.a);
+    mat->SetDiffuse(color.r, color.g, color.b, color.a);
+    mat->SetEmissive(color.r, color.g, color.b, color.a);
+  }
 
   for (const auto & link : root->child_links) {
     this->addLink(link);
@@ -215,7 +228,6 @@ void RobotModelDisplay::addLink(const urdf::LinkSharedPtr & _link)
   std::lock_guard<std::recursive_mutex>(this->lock);
 
   createLink(_link.get());
-  RCLCPP_ERROR(this->node->get_logger(), "%s", _link->name.c_str());
 
   for (const auto & link : _link->child_links) {
     this->addLink(link);
@@ -233,7 +245,21 @@ void RobotModelDisplay::createLink(const urdf::Link * _link)
   if (_link->visual != nullptr && _link->visual->geometry != nullptr) {
     linkVisual = createLinkGeometry(_link->visual->geometry);
     if (linkVisual != nullptr) {
-      linkVisual->SetGeometryMaterial(this->scene->Material("Default/TransRed"));
+      if (_link->visual->material == nullptr) {
+        // Use default material
+        linkVisual->SetMaterial(this->scene->Material("Default/TransRed"));
+      } else if (!_link->visual->material_name.empty()) {
+        // Use registered material
+        linkVisual->SetMaterial(this->scene->Material(_link->visual->material_name));
+      } else {
+        // Create new material
+        rendering::MaterialPtr mat = this->scene->CreateMaterial();
+        const auto & color = _link->visual->material->color;
+        mat->SetAmbient(color.r, color.g, color.b, color.a);
+        mat->SetDiffuse(color.r, color.g, color.b, color.a);
+        mat->SetEmissive(color.r, color.g, color.b, color.a);
+        linkVisual->SetMaterial(mat);
+      }
       this->rootVisual->AddChild(linkVisual);
     }
   }
@@ -242,7 +268,7 @@ void RobotModelDisplay::createLink(const urdf::Link * _link)
   if (_link->collision != nullptr && _link->collision->geometry != nullptr) {
     linkCollision = createLinkGeometry(_link->collision->geometry);
     if (linkCollision != nullptr) {
-      linkCollision->SetGeometryMaterial(this->scene->Material("Default/TransBlue"));
+      linkCollision->SetMaterial(this->scene->Material("Default/TransBlue"));
       this->rootVisual->AddChild(linkCollision);
     }
   }
