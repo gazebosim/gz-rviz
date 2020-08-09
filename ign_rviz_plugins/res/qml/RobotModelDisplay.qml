@@ -14,15 +14,31 @@
  * limitations under the License.
  *
 */
+import QtQml.Models 2.2
 import QtQuick 2.9
+import QtQuick.Controls 1.4
 import QtQuick.Controls 2.2
-import QtQuick.Layouts 1.3
+import QtQuick.Controls.Styles 1.4
 import QtQuick.Controls.Material 2.1
+import QtQuick.Layouts 1.3
 import QtQuick.Dialogs 1.0
 
 Item {
+  // Tree Properties
+  property int rowHeight: 30;
+
+  property color highlightColor: Material.accentColor;
+
+  property color evenColor: (Material.theme == Material.Light) ?
+                            Material.color(Material.Grey, Material.Shade100):
+                            Material.color(Material.Grey, Material.Shade800);
+
+  property color oddColor: (Material.theme == Material.Light) ?
+                            Material.color(Material.Grey, Material.Shade200):
+                            Material.color(Material.Grey, Material.Shade900);
+
   Layout.minimumWidth: 280
-  Layout.minimumHeight: 350
+  Layout.minimumHeight: 475
   anchors.fill: parent
   anchors.margins: 10
 
@@ -164,6 +180,53 @@ Item {
         onClicked: {
           fileDialog.open();
         }
+      }
+    }
+
+    TreeView {
+      id: tree
+      Layout.fillWidth: true
+      Layout.fillHeight: true
+      model: RobotModelDisplay.robotLinkModel
+
+      headerVisible: false
+      headerDelegate: Rectangle {
+        visible: false
+      }
+
+      frameVisible: false
+
+      verticalScrollBarPolicy: Qt.ScrollBarAsNeeded
+      horizontalScrollBarPolicy: Qt.ScrollBarAsNeeded
+
+      // Selection
+      selection: ItemSelectionModel {
+        model: tree.model;
+      }
+
+      selectionMode: SelectionMode.SingleSelection;
+
+      style: TreeViewStyle {
+        transientScrollBars: true
+      }
+
+      TableViewColumn {
+        role: "name"
+        delegate: CheckDelegate {
+          text: model === null ? false : model.name
+          checked: model === null ? false : model.checked
+          onClicked: {
+            model.checked = checked;
+          }
+        }
+      }
+
+      // Delegates
+      rowDelegate: Rectangle
+      {
+        id: row
+        color: (styleData.selected)? highlightColor : (styleData.row % 2 == 0) ? evenColor : oddColor;
+        height: rowHeight;
       }
     }
   }

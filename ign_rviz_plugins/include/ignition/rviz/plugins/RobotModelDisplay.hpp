@@ -27,7 +27,7 @@
 #include <memory>
 #include <mutex>
 #include <string>
-#include <unordered_map>
+#include <map>
 #include <utility>
 #include <vector>
 
@@ -39,6 +39,49 @@ namespace rviz
 {
 namespace plugins
 {
+////////////////////////////////////////////////////////////////////////////////
+/**
+ * @brief Helper class to render robot model link tree view
+ */
+class RobotLinkModel : public QStandardItemModel
+{
+  Q_OBJECT
+
+public:
+  /**
+   * @brief Roles for tree view of robot model links
+   */
+  enum RobotLinkRoles
+  {
+    NameRole = Qt::UserRole + 2
+  };
+
+  // Constructor
+  explicit RobotLinkModel(QObject * _parent = 0);
+
+  /**
+   * @brief Add robot link to tree view
+   * @param[in] _name Robot link name
+   * @param[in] _parentItem Pointer to tree view parent item
+   */
+  Q_INVOKABLE void addLink(const QString & _name, QStandardItem * _parentItem);
+
+  /**
+   * @brief Add a parent item to tree view
+   * @param[in] _name Item name
+   * @return Pointer to tree view parent item
+   */
+  Q_INVOKABLE QStandardItem * addParentRow(const QString & _name);
+
+  // Documentation inherited
+  QVariant data(const QModelIndex & _index, int _role = Qt::DisplayRole) const;
+
+protected:
+  // Documentation inherited
+  QHash<int, QByteArray> roleNames() const;
+};
+
+////////////////////////////////////////////////////////////////////////////////
 /**
  * @brief RobotModelDisplay plugin renders robot model
  */
@@ -53,6 +96,15 @@ class RobotModelDisplay : public MessageDisplay<std_msgs::msg::String>
     QStringList topicList
     READ getTopicList
     NOTIFY topicListChanged
+  )
+
+  /**
+   * @brief Robot model link tree model
+   */
+  Q_PROPERTY(
+    RobotLinkModel * robotLinkModel
+    READ getRobotLinkModel
+    NOTIFY robotLinkModelChanged
   )
 
 public:
@@ -151,6 +203,21 @@ public slots:
    */
   Q_INVOKABLE void setAlpha(const float & _alpha);
 
+  /**
+   * @brief Get the tree view model
+   * @return Tree view model
+   */
+  Q_INVOKABLE RobotLinkModel * getRobotLinkModel() const
+  {
+    return this->robotLinkModel;
+  }
+
+signals:
+  /**
+   * @brief Notify that tree view has changed
+   */
+  void robotLinkModelChanged();
+
 signals:
   /**
    * @brief Notify that topic list has changed
@@ -189,13 +256,16 @@ private:
    */
   rendering::VisualPtr createLinkGeometry(const urdf::GeometrySharedPtr & _geometry);
 
+public:
+  // Tree view robot link model
+  RobotLinkModel * robotLinkModel;
+
 private:
   std::recursive_mutex lock;
   ignition::rendering::RenderEngine * engine;
   ignition::rendering::ScenePtr scene;
   ignition::rendering::VisualPtr rootVisual;
-  std::unordered_map<std::string,
-    std::pair<rendering::VisualPtr, rendering::VisualPtr>> robotVisualLinks;
+  std::map<std::string, std::pair<rendering::VisualPtr, rendering::VisualPtr>> robotVisualLinks;
   std_msgs::msg::String::SharedPtr msg;
   QStringList topicList;
   urdf::Model robotModel;
@@ -203,6 +273,7 @@ private:
   bool destroyModel;
   bool showVisual;
   bool showCollision;
+  QStandardItem * parentRow;
 };
 
 }  // namespace plugins

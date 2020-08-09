@@ -34,6 +34,56 @@ namespace rviz
 namespace plugins
 {
 ////////////////////////////////////////////////////////////////////////////////
+RobotLinkModel::RobotLinkModel(QObject * _parent)
+: QStandardItemModel(_parent)
+{}
+
+////////////////////////////////////////////////////////////////////////////////
+void RobotLinkModel::addLink(const QString & _name, QStandardItem * _parentItem)
+{
+  QStandardItem * linkRow = new QStandardItem();
+  linkRow->setData(_name, NameRole);
+  linkRow->setCheckState(Qt::CheckState::Checked);
+  _parentItem->appendRow(linkRow);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+QStandardItem * RobotLinkModel::addParentRow(const QString & _name)
+{
+  QStandardItem * entry = new QStandardItem();
+  entry->setData(_name, NameRole);
+  entry->setCheckState(Qt::CheckState::Checked);
+  appendRow(entry);
+  return entry;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+QVariant RobotLinkModel::data(const QModelIndex & _index, int _role) const
+{
+  QStandardItem * myItem = itemFromIndex(_index);
+
+  if (_role == NameRole) {
+    return myItem->data(NameRole);
+  }
+
+  if (_role == Qt::CheckStateRole) {
+    return myItem->data(Qt::CheckStateRole);
+  }
+
+  return QVariant();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+QHash<int, QByteArray> RobotLinkModel::roleNames() const
+{
+  QHash<int, QByteArray> roles;
+  roles[NameRole] = "name";
+  roles[Qt::CheckStateRole] = "checked";
+
+  return roles;
+}
+
+////////////////////////////////////////////////////////////////////////////////
 RobotModelDisplay::RobotModelDisplay()
 : MessageDisplay(), modelLoaded(true), destroyModel(false), showVisual(true), showCollision(false)
 {
@@ -48,6 +98,9 @@ RobotModelDisplay::RobotModelDisplay()
     mat->SetDiffuse(ignition::math::Color::Red);
     mat->SetEmissive(ignition::math::Color::Red);
   }
+
+  this->robotLinkModel = new RobotLinkModel();
+  parentRow = this->robotLinkModel->addParentRow(QString::fromStdString("All Links"));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -228,6 +281,12 @@ void RobotModelDisplay::loadRobotModel()
   for (const auto & link : root->child_links) {
     this->addLink(link);
   }
+
+  // Populate tree view
+  for (const auto & link : this->robotVisualLinks) {
+    this->robotLinkModel->addLink(QString::fromStdString(link.first), this->parentRow);
+  }
+  robotLinkModelChanged();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -369,6 +428,10 @@ void RobotModelDisplay::reset()
 void RobotModelDisplay::sourceChanged(const int & _source)
 {
   std::lock_guard<std::recursive_mutex>(this->lock);
+  // Clear tree view
+  this->parentRow->removeRows(0, parentRow->rowCount());
+  robotLinkModelChanged();
+
   // Source: Topic
   if (_source == 0) {
     this->reset();
@@ -386,6 +449,9 @@ void RobotModelDisplay::openFile(const QString & _file)
   std::lock_guard<std::recursive_mutex>(this->lock);
   // Reset model visualziation
   this->destroyModel = true;
+  // Clear tree view
+  this->parentRow->removeRows(0, parentRow->rowCount());
+  robotLinkModelChanged();
 
   if (_file.isEmpty()) {
     RCLCPP_ERROR(this->node->get_logger(), "FAILED TO LOAD THE FILE");
