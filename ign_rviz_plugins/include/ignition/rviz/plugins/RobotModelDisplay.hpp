@@ -83,6 +83,17 @@ protected:
 
 ////////////////////////////////////////////////////////////////////////////////
 /**
+ * @brief Wrapper struct for robot link visual, collision and visibility properties
+ */
+struct RobotLinkProperties
+{
+  bool visible = true;
+  rendering::VisualPtr visual = nullptr;
+  rendering::VisualPtr collision = nullptr;
+};
+
+////////////////////////////////////////////////////////////////////////////////
+/**
  * @brief RobotModelDisplay plugin renders robot model
  */
 class RobotModelDisplay : public MessageDisplay<std_msgs::msg::String>
@@ -151,6 +162,13 @@ public:
   Q_INVOKABLE void updateQoS(
     const int & _depth, const int & _history, const int & _reliability,
     const int & _durability);
+
+  /**
+   * @brief Set robot link visibility
+   * @param[in] _link Robot link name
+   * @param[in] _visible Robot link visibility
+   */
+  Q_INVOKABLE void setLinkVisibility(const QString & _link, const bool & _visible);
 
   /**
    * @brief Qt eventFilters. Original documentation can be found
@@ -265,7 +283,7 @@ private:
   ignition::rendering::RenderEngine * engine;
   ignition::rendering::ScenePtr scene;
   ignition::rendering::VisualPtr rootVisual;
-  std::map<std::string, std::pair<rendering::VisualPtr, rendering::VisualPtr>> robotVisualLinks;
+  std::map<std::string, RobotLinkProperties> robotVisualLinks;
   std_msgs::msg::String::SharedPtr msg;
   QStringList topicList;
   urdf::Model robotModel;
@@ -273,6 +291,7 @@ private:
   bool destroyModel;
   bool showVisual;
   bool showCollision;
+  float alpha;
   QStandardItem * parentRow;
 };
 

@@ -85,7 +85,8 @@ QHash<int, QByteArray> RobotLinkModel::roleNames() const
 
 ////////////////////////////////////////////////////////////////////////////////
 RobotModelDisplay::RobotModelDisplay()
-: MessageDisplay(), modelLoaded(true), destroyModel(false), showVisual(true), showCollision(false)
+: MessageDisplay(), modelLoaded(true), destroyModel(false), showVisual(true), showCollision(false),
+  alpha(1.0)
 {
   // Get reference to scene
   this->engine = ignition::rendering::engine("ogre");
@@ -221,7 +222,7 @@ void RobotModelDisplay::update()
     this->frameManager->getFramePose(link.first, framePose);
 
     // Update link visual pose and visibility
-    if (link.second.first != nullptr) {
+    if (link.second.visual != nullptr) {
       math::Pose3d linkPose;
       if (linkInfo->visual != nullptr) {
         const auto & origin = linkInfo->visual->origin;
@@ -230,12 +231,12 @@ void RobotModelDisplay::update()
           origin.rotation.w, origin.rotation.x, origin.rotation.y, origin.rotation.z);
       }
 
-      link.second.first->SetLocalPose(linkPose + framePose);
-      link.second.first->SetVisible(showVisual);
+      link.second.visual->SetLocalPose(linkPose + framePose);
+      link.second.visual->SetVisible(showVisual && link.second.visible);
     }
 
     // Update link collision pose and visibility
-    if (link.second.second != nullptr) {
+    if (link.second.collision != nullptr) {
       math::Pose3d linkPose;
       if (linkInfo->collision != nullptr) {
         const auto & origin = linkInfo->collision->origin;
@@ -244,8 +245,8 @@ void RobotModelDisplay::update()
           origin.rotation.w, origin.rotation.x, origin.rotation.y, origin.rotation.z);
       }
 
-      link.second.second->SetLocalPose(linkPose + framePose);
-      link.second.second->SetVisible(showCollision);
+      link.second.collision->SetLocalPose(linkPose + framePose);
+      link.second.collision->SetVisible(showCollision && link.second.visible);
     }
   }
 }
@@ -305,42 +306,55 @@ void RobotModelDisplay::addLink(const urdf::LinkSharedPtr & _link)
 void RobotModelDisplay::createLink(const urdf::Link * _link)
 {
   std::lock_guard<std::recursive_mutex>(this->lock);
-
-  rendering::VisualPtr linkVisual = nullptr, linkCollision = nullptr;
+  RobotLinkProperties robotLink;
 
   // Add visual for link visual element
   if (_link->visual != nullptr && _link->visual->geometry != nullptr) {
-    linkVisual = createLinkGeometry(_link->visual->geometry);
-    if (linkVisual != nullptr) {
+    robotLink.visual = createLinkGeometry(_link->visual->geometry);
+    if (robotLink.visual != nullptr) {
       if (_link->visual->material == nullptr) {
         // Use default material
-        linkVisual->SetMaterial(this->scene->Material("RobotModel/Red"));
+        const auto & mat = this->scene->Material("RobotModel/Red");
+        // Update alpha
+        auto color = mat->Ambient();
+        color.A(this->alpha);
+        mat->SetAmbient(color);
+        mat->SetDiffuse(color);
+        mat->SetEmissive(color);
+        robotLink.visual->SetMaterial(mat);
       } else if (!_link->visual->material_name.empty()) {
         // Use registered material
-        linkVisual->SetMaterial(this->scene->Material(_link->visual->material_name));
+        const auto & mat = this->scene->Material(_link->visual->material_name);
+        // Update alpha
+        auto color = mat->Ambient();
+        color.A(this->alpha);
+        mat->SetAmbient(color);
+        mat->SetDiffuse(color);
+        mat->SetEmissive(color);
+        robotLink.visual->SetMaterial(mat);
       } else {
         // Create new material
         rendering::MaterialPtr mat = this->scene->CreateMaterial();
         const auto & color = _link->visual->material->color;
-        mat->SetAmbient(color.r, color.g, color.b, color.a);
-        mat->SetDiffuse(color.r, color.g, color.b, color.a);
-        mat->SetEmissive(color.r, color.g, color.b, color.a);
-        linkVisual->SetMaterial(mat);
+        mat->SetAmbient(color.r, color.g, color.b, this->alpha);
+        mat->SetDiffuse(color.r, color.g, color.b, this->alpha);
+        mat->SetEmissive(color.r, color.g, color.b, this->alpha);
+        robotLink.visual->SetMaterial(mat);
       }
-      this->rootVisual->AddChild(linkVisual);
+      this->rootVisual->AddChild(robotLink.visual);
     }
   }
 
   // Add visual link collision element
   if (_link->collision != nullptr && _link->collision->geometry != nullptr) {
-    linkCollision = createLinkGeometry(_link->collision->geometry);
-    if (linkCollision != nullptr) {
-      linkCollision->SetMaterial(this->scene->Material("Default/TransBlue"));
-      this->rootVisual->AddChild(linkCollision);
+    robotLink.collision = createLinkGeometry(_link->collision->geometry);
+    if (robotLink.collision != nullptr) {
+      robotLink.collision->SetMaterial(this->scene->Material("Default/TransBlue"));
+      this->rootVisual->AddChild(robotLink.collision);
     }
   }
 
-  this->robotVisualLinks.insert({_link->name, std::make_pair(linkVisual, linkCollision)});
+  this->robotVisualLinks.insert({_link->name, robotLink});
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -488,18 +502,52 @@ void RobotModelDisplay::collisionEnabled(const bool & _enabled)
 void RobotModelDisplay::setAlpha(const float & _alpha)
 {
   std::lock_guard<std::recursive_mutex>(this->lock);
+  this->alpha = _alpha;
 
   for (const auto & link : this->robotVisualLinks) {
-    if (link.second.first != nullptr) {
-      auto mat = link.second.first->Material();
+    if (link.second.visual != nullptr) {
+      auto mat = link.second.visual->Material();
       auto color = mat->Ambient();
-      color.A(_alpha);
+      color.A(this->alpha);
       mat->SetAmbient(color);
       mat->SetDiffuse(color);
       mat->SetEmissive(color);
-      link.second.first->SetMaterial(mat);
+      link.second.visual->SetMaterial(mat);
     }
   }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void RobotModelDisplay::setLinkVisibility(const QString & _link, const bool & _visible)
+{
+  std::lock_guard<std::recursive_mutex>(this->lock);
+
+  if (_link == "All Links") {
+    // Update frame GUI checkboxes
+    for (int i = 0; i < parentRow->rowCount(); ++i) {
+      parentRow->child(i)->setData(_visible, Qt::CheckStateRole);
+    }
+    // Update frame visibility info
+    for (auto & link : robotVisualLinks) {
+      link.second.visible = _visible;
+    }
+    return;
+  }
+
+  // Update frame visibility
+  bool linkStatus = true;
+  for (auto & link : robotVisualLinks) {
+    if (link.first == _link.toStdString()) {
+      link.second.visible = _visible;
+    }
+    linkStatus &= link.second.visible;
+  }
+
+  // All Frames checkbox checked if all child frames are visible
+  parentRow->setData(linkStatus, Qt::CheckStateRole);
+
+  // Notify model update
+  robotLinkModelChanged();
 }
 
 ////////////////////////////////////////////////////////////////////////////////

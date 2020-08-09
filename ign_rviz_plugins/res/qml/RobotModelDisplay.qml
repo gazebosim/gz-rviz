@@ -217,6 +217,7 @@ Item {
           checked: model === null ? false : model.checked
           onClicked: {
             model.checked = checked;
+            RobotModelDisplay.setLinkVisibility(model.name, model.checked);
           }
         }
       }
