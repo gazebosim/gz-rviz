@@ -263,8 +263,6 @@ void RobotModelDisplay::loadRobotModel()
 
   const auto & root = this->robotModel.getRoot();
 
-  createLink(root.get());
-
   const auto & materials = this->robotModel.materials_;
   for (const auto & material : materials) {
     // Skip registering material if already registered or material has not name
@@ -278,6 +276,9 @@ void RobotModelDisplay::loadRobotModel()
     mat->SetDiffuse(color.r, color.g, color.b, color.a);
     mat->SetEmissive(color.r, color.g, color.b, color.a);
   }
+
+  // Create links
+  createLink(root.get());
 
   for (const auto & link : root->child_links) {
     this->addLink(link);
