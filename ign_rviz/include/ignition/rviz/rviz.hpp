@@ -28,6 +28,7 @@
 #include <geometry_msgs/msg/pose_stamped.hpp>
 #include <sensor_msgs/msg/image.hpp>
 #include <sensor_msgs/msg/laser_scan.hpp>
+#include <std_msgs/msg/string.hpp>
 #include <tf2_msgs/msg/tf_message.hpp>
 
 #include <ignition/rviz/plugins/message_display_base.hpp>
@@ -134,6 +135,26 @@ public:
       posePlugin[pluginCount]->setFrameManager(this->frameManager);
       ignition::gui::App()->findChild<ignition::gui::MainWindow *>()->installEventFilter(
         posePlugin[pluginCount]);
+    }
+  }
+
+  /**
+   * @brief Loads RobotModel Dispaly Plugin
+   */
+  Q_INVOKABLE void addRobotModelDisplay()
+  {
+    // Load plugin
+    if (ignition::gui::App()->LoadPlugin("RobotModelDisplay")) {
+      auto robotModelPlugin =
+        ignition::gui::App()->findChildren<DisplayPlugin<std_msgs::msg::String> *>();
+      int pluginCount = robotModelPlugin.size() - 1;
+
+      // Set frame manager and install event filter for recently added plugin
+      robotModelPlugin[pluginCount]->initialize(this->node);
+      robotModelPlugin[pluginCount]->setFrameManager(this->frameManager);
+      robotModelPlugin[pluginCount]->setTopic("/robot_description");
+      ignition::gui::App()->findChild<ignition::gui::MainWindow *>()->installEventFilter(
+        robotModelPlugin[pluginCount]);
     }
   }
 
