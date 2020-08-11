@@ -25,6 +25,7 @@
 #include <rclcpp/rclcpp.hpp>
 
 #include <geometry_msgs/msg/point_stamped.hpp>
+#include <geometry_msgs/msg/polygon_stamped.hpp>
 #include <geometry_msgs/msg/pose_stamped.hpp>
 #include <sensor_msgs/msg/image.hpp>
 #include <sensor_msgs/msg/laser_scan.hpp>
@@ -115,6 +116,27 @@ public:
       pointStampedPlugin[pluginCount]->setFrameManager(this->frameManager);
       ignition::gui::App()->findChild<ignition::gui::MainWindow *>()->installEventFilter(
         pointStampedPlugin[pluginCount]);
+    }
+  }
+
+
+  /**
+   * @brief Loads Polygon Visualization Plugin
+   */
+  Q_INVOKABLE void addPolygonDisplay()
+  {
+    // Load plugin
+    if (ignition::gui::App()->LoadPlugin("PolygonDisplay")) {
+      auto polygonPlugin =
+        ignition::gui::App()->findChildren<DisplayPlugin<geometry_msgs::msg::PolygonStamped> *>();
+      int pluginCount = polygonPlugin.size() - 1;
+
+      // Set frame manager and install event filter for recently added plugin
+      polygonPlugin[pluginCount]->initialize(this->node);
+      polygonPlugin[pluginCount]->setTopic("/polygon");
+      polygonPlugin[pluginCount]->setFrameManager(this->frameManager);
+      ignition::gui::App()->findChild<ignition::gui::MainWindow *>()->installEventFilter(
+        polygonPlugin[pluginCount]);
     }
   }
 

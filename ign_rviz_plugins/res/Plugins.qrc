@@ -34,4 +34,8 @@
   <qresource prefix="RobotModelDisplay/">
     <file alias="RobotModelDisplay.qml">qml/RobotModelDisplay.qml</file>
   </qresource>
+
+  <qresource prefix="PolygonDisplay/">
+    <file alias="PolygonDisplay.qml">qml/PolygonDisplay.qml</file>
+  </qresource>
 </RCC>
