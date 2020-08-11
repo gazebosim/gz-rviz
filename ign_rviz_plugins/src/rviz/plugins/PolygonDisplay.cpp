@@ -116,14 +116,18 @@ bool PolygonDisplay::eventFilter(QObject * _object, QEvent * _event)
 ////////////////////////////////////////////////////////////////////////////////
 void PolygonDisplay::reset()
 {
+  this->msg.reset();
+
   auto marker = std::dynamic_pointer_cast<rendering::Marker>(this->rootVisual->GeometryByIndex(0));
+
+  if (marker == nullptr) {
+    return;
+  }
 
   marker->ClearPoints();
   // Add two points to clear polygon visual
   marker->AddPoint(0.0, 0.0, 0.0, this->color);
   marker->AddPoint(0.0, 0.0, 0.0, this->color);
-
-  this->msg.reset();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
