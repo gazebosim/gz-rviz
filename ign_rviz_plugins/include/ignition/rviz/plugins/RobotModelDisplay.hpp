@@ -125,13 +125,13 @@ public:
   // Destructor
   ~RobotModelDisplay();
 
-  // Documentation Inherited
+  // Documentation inherited
   void LoadConfig(const tinyxml2::XMLElement * /*_pluginElem*/) override;
 
-  // Documentation Inherited
+  // Documentation inherited
   void initialize(rclcpp::Node::SharedPtr _node) override;
 
-  // Documentation Inherited
+  // Documentation inherited
   void callback(const std_msgs::msg::String::SharedPtr _msg) override;
 
   // Documentation inherited

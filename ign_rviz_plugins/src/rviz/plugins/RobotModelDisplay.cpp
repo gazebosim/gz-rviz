@@ -395,7 +395,6 @@ rendering::VisualPtr RobotModelDisplay::createLinkGeometry(
           int p = meshInfo->filename.find_first_of('/', 10);
           auto package_name = meshInfo->filename.substr(10, p - 10);
 
-
           try {
             std::string filepath = ament_index_cpp::get_package_share_directory(package_name);
             filepath += meshInfo->filename.substr(p);
