@@ -107,6 +107,12 @@ public:
    */
   Q_INVOKABLE QStringList getTopicList() const;
 
+  /**
+   * @brief Set polygon visual color and transparency
+   * @param _color Color and transparency of polygon visual
+   */
+  Q_INVOKABLE void setColor(const QColor & _color);
+
 signals:
   /**
    * @brief Notify that topic list has changed
@@ -139,6 +145,8 @@ private:
   std::mutex lock;
   geometry_msgs::msg::PolygonStamped::SharedPtr msg;
   QStringList topicList;
+  math::Color color;
+  bool createMarker;
 };
 
 }  // namespace plugins

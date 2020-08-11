@@ -33,7 +33,7 @@ namespace plugins
 {
 ////////////////////////////////////////////////////////////////////////////////
 PolygonDisplay::PolygonDisplay()
-: MessageDisplay()
+: MessageDisplay(), color(0.098, 1.0, 0.2), createMarker(true)
 {
   // Get reference to scene
   this->engine = ignition::rendering::engine("ogre");
@@ -120,8 +120,8 @@ void PolygonDisplay::reset()
 
   marker->ClearPoints();
   // Add two points to clear polygon visual
-  marker->AddPoint(0.0, 0.0, 0.0, math::Color::White);
-  marker->AddPoint(0.0, 0.0, 0.0, math::Color::White);
+  marker->AddPoint(0.0, 0.0, 0.0, this->color);
+  marker->AddPoint(0.0, 0.0, 0.0, this->color);
 
   this->msg.reset();
 }
@@ -135,11 +135,20 @@ void PolygonDisplay::update()
     return;
   }
 
-  if (this->rootVisual->GeometryCount() == 0) {
+  if (createMarker) {
+    // Delete previous marker geometry.
+    this->rootVisual->RemoveGeometries();
+
+    // Create marker and set type to line strip
     rendering::MarkerPtr marker = this->scene->CreateMarker();
     marker->SetType(rendering::MarkerType::MT_LINE_STRIP);
-    marker->SetMaterial(this->scene->Material("Default/White"));
+
+    // This material is not used anywhere but is required to set
+    // point color in marker AddPoint method
+    marker->SetMaterial(this->scene->Material("Default/TransGreen"));
+
     this->rootVisual->AddGeometry(marker);
+    createMarker = false;
   }
 
   math::Pose3d pose;
@@ -158,21 +167,31 @@ void PolygonDisplay::update()
 
   if (this->msg->polygon.points.size() == 0) {
     // Add two points to clear polygon visual
-    marker->AddPoint(0.0, 0.0, 0.0, math::Color::White);
-    marker->AddPoint(0.0, 0.0, 0.0, math::Color::White);
+    marker->AddPoint(0.0, 0.0, 0.0, this->color);
+    marker->AddPoint(0.0, 0.0, 0.0, this->color);
     return;
   }
 
   // Add polygon vertices
   for (const auto & point : this->msg->polygon.points) {
-    marker->AddPoint(point.x, point.y, point.z, math::Color::White);
+    marker->AddPoint(point.x, point.y, point.z, this->color);
   }
 
   // Adding fist point again to close polygon
   const auto & point = this->msg->polygon.points.front();
-  marker->AddPoint(point.x, point.y, point.z, math::Color::White);
+  marker->AddPoint(point.x, point.y, point.z, this->color);
 
   this->rootVisual->SetLocalPose(pose);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void PolygonDisplay::setColor(const QColor & _color)
+{
+  std::lock_guard<std::mutex>(this->lock);
+  this->color.Set(_color.redF(), _color.greenF(), _color.blueF(), _color.alphaF());
+
+  // Recreating marker is the only way to change color and transparency
+  this->createMarker = true;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
