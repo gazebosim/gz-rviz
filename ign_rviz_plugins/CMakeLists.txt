@@ -172,6 +172,32 @@ target_include_directories(PointStampedDisplay
 )
 
 ########################################################################
+add_library(PolygonDisplay SHARED ${headers_MOC}
+  include/ignition/rviz/plugins/PolygonDisplay.hpp
+  src/rviz/plugins/PolygonDisplay.cpp
+  ${resources_RCC}
+)
+
+ament_target_dependencies(PolygonDisplay
+  geometry_msgs
+  ign_rviz_common
+  ignition-gui4
+  ignition-math6
+  ignition-rendering4
+  tf2_ros
+)
+
+target_link_libraries(PolygonDisplay Qt5::Core Qt5::Qml Qt5::Quick Qt5::QuickControls2)
+
+target_include_directories(PolygonDisplay
+  PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>
+  ${Qt5Widgets_INCLUDE_DIRS}
+  ${IGNITION-GUI_INCLUDE_DIRS}
+)
+
+########################################################################
 add_library(PoseDisplay SHARED ${headers_MOC}
   include/ignition/rviz/plugins/PoseDisplay.hpp
   src/rviz/plugins/PoseDisplay.cpp
@@ -341,6 +367,16 @@ ament_export_libraries(PointStampedDisplay)
 
 install(
   TARGETS PointStampedDisplay
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION bin
+  INCLUDES DESTINATION include
+)
+
+ament_export_libraries(PolygonDisplay)
+
+install(
+  TARGETS PolygonDisplay
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin

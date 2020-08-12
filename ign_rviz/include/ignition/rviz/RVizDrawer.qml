@@ -32,6 +32,8 @@ Rectangle {
             case "addRobotModelDisplay":
                 RViz.addRobotModelDisplay();
                 break;
+            case "addPolygonDisplay":
+                RViz.addPolygonDisplay();
             default:
                 parent.onAction(action);
                 break;
@@ -79,6 +81,11 @@ Rectangle {
         ListElement {
             title: "RobotModel"
             actionElement: "addRobotModelDisplay"
+        }
+
+        ListElement {
+            title: "Polygon"
+            actionElement: "addPolygonDisplay"
         }
 
         ListElement {
