@@ -46,46 +46,55 @@ Rectangle {
 
         ListElement {
             title: "Axes"
+            icon: "icons/Axes.png"
             actionElement: "addAxesDisplay"
         }
 
         ListElement {
             title: "Grid"
+            icon: "icons/Grid.png"
             actionElement: "addGrid3D"
         }
 
         ListElement {
             title: "Image"
+            icon: "icons/Image.png"
             actionElement: "addImageDisplay"
         }
 
         ListElement {
             title: "LaserScan"
+            icon: "icons/LaserScan.png"
             actionElement: "addLaserScanDisplay"
         }
 
         ListElement {
             title: "PointStamped"
+            icon: "icons/PointStamped.png"
             actionElement: "addPointStampedDisplay"
         }
 
         ListElement {
             title: "Polygon"
+            icon: "icons/Polygon.png"
             actionElement: "addPolygonDisplay"
         }
 
         ListElement {
             title: "Pose"
+            icon: "icons/Pose.png"
             actionElement: "addPoseDisplay"
         }
 
         ListElement {
             title: "RobotModel"
+            icon: "icons/RobotModel.png"
             actionElement: "addRobotModelDisplay"
         }
 
         ListElement {
             title: "TF"
+            icon: "icons/TF.png"
             actionElement: "addTFDisplay"
         }
     }
@@ -94,14 +103,38 @@ Rectangle {
         id: displayListView
         anchors.fill: parent
 
-        delegate: ItemDelegate {
-            Material.theme: Material.theme
-            width:parent.width
-            text: title
-            highlighted: ListView.isCurrentItem
-            onClicked: {
-                displayDrawer.onAction(actionElement);
-                displayDrawer.parent.closeDrawer();
+        delegate: Rectangle {
+            id: delegateItem
+            width: parent.width;
+            height: 50
+            color: delegateArea.containsMouse ? Material.color(Material.Grey, Material.Shade200) : "#fff"
+
+            Image {
+                id: imageItem
+                height: 15
+                width: 15
+                anchors.left: parent.left
+                anchors.verticalCenter: parent.verticalCenter
+                anchors.leftMargin: 10
+                source: icon
+            }
+
+            Text {
+                id: textItem
+                anchors.left: imageItem.right
+                anchors.leftMargin: 10
+                anchors.verticalCenter: parent.verticalCenter
+                text: title
+            }
+
+            MouseArea {
+                id: delegateArea
+                anchors.fill: parent
+                hoverEnabled: true
+                onClicked: {
+                    displayDrawer.onAction(actionElement);
+                    displayDrawer.parent.closeDrawer();
+                }
             }
         }
 
