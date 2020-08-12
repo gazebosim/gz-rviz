@@ -15,9 +15,8 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(rclcpp REQUIRED)
-find_package(resource_retriever REQUIRED)
-find_package(std_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
+find_package(std_msgs REQUIRED)
 find_package(tf2_msgs REQUIRED)
 find_package(tf2_ros REQUIRED)
 find_package(urdf REQUIRED)
@@ -42,239 +41,141 @@ include_directories(SYSTEM
 qt5_add_resources(resources_RCC res/Plugins.qrc)
 
 ########################################################################
-add_library(AxesDisplay SHARED ${headers_MOC}
-  include/ignition/rviz/plugins/AxesDisplay.hpp
-  include/ignition/rviz/plugins/message_display_base.hpp
-  src/rviz/plugins/AxesDisplay.cpp
-  ${resources_RCC}
-)
+macro(add_ign_rviz_plugin)
+  set(oneValueArgs NAME)
+  set(multiValueArgs DEPENDENCIES)
+  cmake_parse_arguments(IGN_RVIZ_PLUGIN "" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
-ament_target_dependencies(AxesDisplay
-  tf2_ros
-  ignition-gui4
-  ignition-math6
-  ignition-rendering4
-  ign_rviz_common
-)
+  add_library(${IGN_RVIZ_PLUGIN_NAME} SHARED ${headers_MOC}
+    include/ignition/rviz/plugins/${IGN_RVIZ_PLUGIN_NAME}.hpp
+    include/ignition/rviz/plugins/message_display_base.hpp
+    src/rviz/plugins/${IGN_RVIZ_PLUGIN_NAME}.cpp
+    ${resources_RCC}
+  )
 
-target_link_libraries(AxesDisplay Qt5::Core Qt5::Qml Qt5::Quick Qt5::QuickControls2)
+  ament_target_dependencies(
+    ${IGN_RVIZ_PLUGIN_NAME}
+    ${IGN_RVIZ_PLUGIN_DEPENDENCIES}
+  )
 
-target_include_directories(AxesDisplay
-  PUBLIC
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-  $<INSTALL_INTERFACE:include>
-  ${Qt5Widgets_INCLUDE_DIRS}
-  ${IGNITION-GUI_INCLUDE_DIRS}
+  target_link_libraries(
+    ${IGN_RVIZ_PLUGIN_NAME}
+    Qt5::Core Qt5::Qml Qt5::Quick Qt5::QuickControls2
+  )
+
+  target_include_directories(${IGN_RVIZ_PLUGIN_NAME}
+    PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>
+    ${Qt5Widgets_INCLUDE_DIRS}
+    ${IGNITION-GUI_INCLUDE_DIRS}
+  )
+endmacro()
+
+########################################################################
+add_ign_rviz_plugin(
+  NAME AxesDisplay
+  DEPENDENCIES
+    ign_rviz_common
+    ignition-gui4
+    ignition-math6
+    ignition-rendering4
+    tf2_ros
 )
 
 ########################################################################
-add_library(GlobalOptions SHARED ${headers_MOC}
-  include/ignition/rviz/plugins/GlobalOptions.hpp
-  src/rviz/plugins/GlobalOptions.cpp
-  ${resources_RCC}
-)
-
-ament_target_dependencies(GlobalOptions
-  tf2_ros
-  ignition-gui4
-  ignition-math6
-  ignition-rendering4
-  ign_rviz_common
-)
-
-target_link_libraries(GlobalOptions Qt5::Core Qt5::Qml Qt5::Quick Qt5::QuickControls2)
-
-target_include_directories(GlobalOptions
-  PUBLIC
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-  $<INSTALL_INTERFACE:include>
-  ${Qt5Widgets_INCLUDE_DIRS}
-  ${IGNITION-GUI_INCLUDE_DIRS}
+add_ign_rviz_plugin(
+  NAME GlobalOptions
+  DEPENDENCIES
+    ign_rviz_common
+    ignition-gui4
+    ignition-math6
+    ignition-rendering4
+    tf2_ros
 )
 
 ########################################################################
-add_library(ImageDisplay SHARED ${headers_MOC}
-  include/ignition/rviz/plugins/ImageDisplay.hpp
-  include/ignition/rviz/plugins/message_display_base.hpp
-  src/rviz/plugins/ImageDisplay.cpp
-  ${resources_RCC}
-)
-
-ament_target_dependencies(ImageDisplay
-  ign_rviz_common
-  ignition-gui4
-  ignition-math6
-  ignition-rendering4
-  sensor_msgs
-  tf2_ros
-)
-
-target_link_libraries(ImageDisplay Qt5::Core Qt5::Qml Qt5::Quick Qt5::QuickControls2)
-
-target_include_directories(ImageDisplay
-  PUBLIC
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-  $<INSTALL_INTERFACE:include>
-  ${Qt5Widgets_INCLUDE_DIRS}
-  ${IGNITION-GUI_INCLUDE_DIRS}
+add_ign_rviz_plugin(
+  NAME ImageDisplay
+  DEPENDENCIES
+    ign_rviz_common
+    ignition-gui4
+    ignition-math6
+    ignition-rendering4
+    sensor_msgs
+    tf2_ros
 )
 
 ########################################################################
-add_library(LaserScanDisplay SHARED ${headers_MOC}
-  include/ignition/rviz/plugins/LaserScanDisplay.hpp
-  src/rviz/plugins/LaserScanDisplay.cpp
-  ${resources_RCC}
-)
-
-ament_target_dependencies(LaserScanDisplay
-  tf2_ros
-  sensor_msgs
-  ignition-gui4
-  ignition-math6
-  ignition-rendering4
-  ign_rviz_common
-)
-
-target_link_libraries(LaserScanDisplay Qt5::Core Qt5::Qml Qt5::Quick Qt5::QuickControls2)
-
-target_include_directories(LaserScanDisplay
-  PUBLIC
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-  $<INSTALL_INTERFACE:include>
-  ${Qt5Widgets_INCLUDE_DIRS}
-  ${IGNITION-GUI_INCLUDE_DIRS}
+add_ign_rviz_plugin(
+  NAME LaserScanDisplay
+  DEPENDENCIES
+    tf2_ros
+    sensor_msgs
+    ignition-gui4
+    ignition-math6
+    ignition-rendering4
+    ign_rviz_common
 )
 
 ########################################################################
-add_library(PointStampedDisplay SHARED ${headers_MOC}
-  include/ignition/rviz/plugins/PointStampedDisplay.hpp
-  src/rviz/plugins/PointStampedDisplay.cpp
-  ${resources_RCC}
-)
-
-ament_target_dependencies(PointStampedDisplay
-  geometry_msgs
-  ign_rviz_common
-  ignition-gui4
-  ignition-math6
-  ignition-rendering4
-  tf2_ros
-)
-
-target_link_libraries(PointStampedDisplay Qt5::Core Qt5::Qml Qt5::Quick Qt5::QuickControls2)
-
-target_include_directories(PointStampedDisplay
-  PUBLIC
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-  $<INSTALL_INTERFACE:include>
-  ${Qt5Widgets_INCLUDE_DIRS}
-  ${IGNITION-GUI_INCLUDE_DIRS}
+add_ign_rviz_plugin(
+  NAME PointStampedDisplay
+  DEPENDENCIES
+    geometry_msgs
+    ign_rviz_common
+    ignition-gui4
+    ignition-math6
+    ignition-rendering4
+    tf2_ros
 )
 
 ########################################################################
-add_library(PolygonDisplay SHARED ${headers_MOC}
-  include/ignition/rviz/plugins/PolygonDisplay.hpp
-  src/rviz/plugins/PolygonDisplay.cpp
-  ${resources_RCC}
-)
-
-ament_target_dependencies(PolygonDisplay
-  geometry_msgs
-  ign_rviz_common
-  ignition-gui4
-  ignition-math6
-  ignition-rendering4
-  tf2_ros
-)
-
-target_link_libraries(PolygonDisplay Qt5::Core Qt5::Qml Qt5::Quick Qt5::QuickControls2)
-
-target_include_directories(PolygonDisplay
-  PUBLIC
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-  $<INSTALL_INTERFACE:include>
-  ${Qt5Widgets_INCLUDE_DIRS}
-  ${IGNITION-GUI_INCLUDE_DIRS}
+add_ign_rviz_plugin(
+  NAME PolygonDisplay
+  DEPENDENCIES
+    geometry_msgs
+    ign_rviz_common
+    ignition-gui4
+    ignition-math6
+    ignition-rendering4
+    tf2_ros
 )
 
 ########################################################################
-add_library(PoseDisplay SHARED ${headers_MOC}
-  include/ignition/rviz/plugins/PoseDisplay.hpp
-  src/rviz/plugins/PoseDisplay.cpp
-  ${resources_RCC}
-)
-
-ament_target_dependencies(PoseDisplay
-  geometry_msgs
-  ign_rviz_common
-  ignition-gui4
-  ignition-math6
-  ignition-rendering4
-  tf2_ros
-)
-
-target_link_libraries(PoseDisplay Qt5::Core Qt5::Qml Qt5::Quick Qt5::QuickControls2)
-
-target_include_directories(PoseDisplay
-  PUBLIC
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-  $<INSTALL_INTERFACE:include>
-  ${Qt5Widgets_INCLUDE_DIRS}
-  ${IGNITION-GUI_INCLUDE_DIRS}
+add_ign_rviz_plugin(
+  NAME PoseDisplay
+  DEPENDENCIES
+    geometry_msgs
+    ign_rviz_common
+    ignition-gui4
+    ignition-math6
+    ignition-rendering4
+    tf2_ros
 )
 
 ########################################################################
-add_library(RobotModelDisplay SHARED ${headers_MOC}
-  include/ignition/rviz/plugins/RobotModelDisplay.hpp
-  src/rviz/plugins/RobotModelDisplay.cpp
-  ${resources_RCC}
-)
-
-ament_target_dependencies(RobotModelDisplay
-  ign_rviz_common
-  ignition-gui4
-  ignition-math6
-  ignition-rendering4
-  std_msgs
-  resource_retriever
-  tf2_ros
-  urdf
-)
-
-target_link_libraries(RobotModelDisplay Qt5::Core Qt5::Qml Qt5::Quick Qt5::QuickControls2)
-
-target_include_directories(RobotModelDisplay
-  PUBLIC
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-  $<INSTALL_INTERFACE:include>
-  ${Qt5Widgets_INCLUDE_DIRS}
-  ${IGNITION-GUI_INCLUDE_DIRS}
+add_ign_rviz_plugin(
+  NAME RobotModelDisplay
+  DEPENDENCIES
+    ign_rviz_common
+    ignition-gui4
+    ignition-math6
+    ignition-rendering4
+    std_msgs
+    tf2_ros
+    urdf
 )
 
 ########################################################################
-add_library(TFDisplay SHARED ${headers_MOC}
-  include/ignition/rviz/plugins/TFDisplay.hpp
-  include/ignition/rviz/plugins/message_display_base.hpp
-  src/rviz/plugins/TFDisplay.cpp
-  ${resources_RCC}
-)
-
-ament_target_dependencies(TFDisplay
-  tf2_ros
-  ignition-gui4
-  ignition-math6
-  ignition-rendering4
-  ign_rviz_common
-)
-
-target_link_libraries(TFDisplay Qt5::Core Qt5::Qml Qt5::Quick Qt5::QuickControls2)
-
-target_include_directories(TFDisplay
-  PUBLIC
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-  $<INSTALL_INTERFACE:include>
-  ${Qt5Widgets_INCLUDE_DIRS}
-  ${IGNITION-GUI_INCLUDE_DIRS}
+add_ign_rviz_plugin(
+  NAME TFDisplay
+  DEPENDENCIES
+    tf2_ros
+    ignition-gui4
+    ignition-math6
+    ignition-rendering4
+    ign_rviz_common
 )
 
 ########################################################################
@@ -283,10 +184,10 @@ add_library(ign_rviz_plugins SHARED
 )
 
 ament_target_dependencies(ign_rviz_plugins
+  ign_rviz_common
+  ignition-gui4
   rclcpp
   tf2_ros
-  ignition-gui4
-  ign_rviz_common
 )
 
 target_include_directories(ign_rviz_plugins
@@ -303,6 +204,7 @@ install(
 )
 
 ament_export_include_directories(include)
+
 ament_export_libraries(ign_rviz_plugins)
 
 install(
@@ -313,90 +215,30 @@ install(
   INCLUDES DESTINATION include
 )
 
-ament_export_libraries(AxesDisplay)
-
-install(
-  TARGETS AxesDisplay
-  ARCHIVE DESTINATION lib
-  LIBRARY DESTINATION lib
-  RUNTIME DESTINATION bin
-  INCLUDES DESTINATION include
+########################################################################
+ament_export_libraries(
+  AxesDisplay
+  GlobalOptions
+  ImageDisplay
+  LaserScanDisplay
+  PointStampedDisplay
+  PolygonDisplay
+  PoseDisplay
+  RobotModelDisplay
+  TFDisplay
 )
 
-ament_export_libraries(GlobalOptions)
-
 install(
-  TARGETS GlobalOptions
-  ARCHIVE DESTINATION lib
-  LIBRARY DESTINATION lib
-  RUNTIME DESTINATION bin
-  INCLUDES DESTINATION include
-)
-
-ament_export_libraries(TFDisplay)
-
-install(
-  TARGETS TFDisplay
-  ARCHIVE DESTINATION lib
-  LIBRARY DESTINATION lib
-  RUNTIME DESTINATION bin
-  INCLUDES DESTINATION include
-)
-
-ament_export_libraries(LaserScanDisplay)
-
-install(
-  TARGETS LaserScanDisplay
-  ARCHIVE DESTINATION lib
-  LIBRARY DESTINATION lib
-  RUNTIME DESTINATION bin
-  INCLUDES DESTINATION include
-)
-
-ament_export_libraries(ImageDisplay)
-
-install(
-  TARGETS ImageDisplay
-  ARCHIVE DESTINATION lib
-  LIBRARY DESTINATION lib
-  RUNTIME DESTINATION bin
-  INCLUDES DESTINATION include
-)
-
-ament_export_libraries(PointStampedDisplay)
-
-install(
-  TARGETS PointStampedDisplay
-  ARCHIVE DESTINATION lib
-  LIBRARY DESTINATION lib
-  RUNTIME DESTINATION bin
-  INCLUDES DESTINATION include
-)
-
-ament_export_libraries(PolygonDisplay)
-
-install(
-  TARGETS PolygonDisplay
-  ARCHIVE DESTINATION lib
-  LIBRARY DESTINATION lib
-  RUNTIME DESTINATION bin
-  INCLUDES DESTINATION include
-)
-
-ament_export_libraries(PoseDisplay)
-
-install(
-  TARGETS PoseDisplay
-  ARCHIVE DESTINATION lib
-  LIBRARY DESTINATION lib
-  RUNTIME DESTINATION bin
-  INCLUDES DESTINATION include
-)
-
-ament_export_libraries(RobotModelDisplay)
-
-install(
-  TARGETS RobotModelDisplay
+  TARGETS
+    AxesDisplay
+    GlobalOptions
+    ImageDisplay
+    LaserScanDisplay
+    PointStampedDisplay
+    PolygonDisplay
+    PoseDisplay
+    RobotModelDisplay
+    TFDisplay
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin
