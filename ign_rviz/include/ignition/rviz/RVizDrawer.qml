@@ -8,23 +8,23 @@ Rectangle {
 
     function onAction(action) {
         switch(action) {
-            case "addGrid3D":
-                RViz.addGrid3D();
-                break;
-            case "addTFDisplay":
-                RViz.addTFDisplay();
-                break;
-            case "addLaserScanDisplay":
-                RViz.addLaserScanDisplay();
-                break;
             case "addAxesDisplay":
                 RViz.addAxesDisplay();
+                break;
+            case "addGrid3D":
+                RViz.addGrid3D();
                 break;
             case "addImageDisplay":
                 RViz.addImageDisplay();
                 break;
+            case "addLaserScanDisplay":
+                RViz.addLaserScanDisplay();
+                break;
             case "addPointStampedDisplay":
                 RViz.addPointStampedDisplay();
+                break;
+            case "addPolygonDisplay":
+                RViz.addPolygonDisplay();
                 break;
             case "addPoseDisplay":
                 RViz.addPoseDisplay();
@@ -32,8 +32,9 @@ Rectangle {
             case "addRobotModelDisplay":
                 RViz.addRobotModelDisplay();
                 break;
-            case "addPolygonDisplay":
-                RViz.addPolygonDisplay();
+            case "addTFDisplay":
+                RViz.addTFDisplay();
+                break;
             default:
                 parent.onAction(action);
                 break;
@@ -44,23 +45,13 @@ Rectangle {
         id: displayDrawerModel
 
         ListElement {
-            title: "Grid"
-            actionElement: "addGrid3D"
-        }
-
-        ListElement {
-            title: "TF"
-            actionElement: "addTFDisplay"
-        }
-
-        ListElement {
-            title: "LaserScan"
-            actionElement: "addLaserScanDisplay"
-        }
-
-        ListElement {
             title: "Axes"
             actionElement: "addAxesDisplay"
+        }
+
+        ListElement {
+            title: "Grid"
+            actionElement: "addGrid3D"
         }
 
         ListElement {
@@ -69,8 +60,18 @@ Rectangle {
         }
 
         ListElement {
+            title: "LaserScan"
+            actionElement: "addLaserScanDisplay"
+        }
+
+        ListElement {
             title: "PointStamped"
             actionElement: "addPointStampedDisplay"
+        }
+
+        ListElement {
+            title: "Polygon"
+            actionElement: "addPolygonDisplay"
         }
 
         ListElement {
@@ -84,13 +85,8 @@ Rectangle {
         }
 
         ListElement {
-            title: "Polygon"
-            actionElement: "addPolygonDisplay"
-        }
-
-        ListElement {
-            title: "Exit"
-            actionElement: "close"
+            title: "TF"
+            actionElement: "addTFDisplay"
         }
     }
 
