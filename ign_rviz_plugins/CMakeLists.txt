@@ -15,7 +15,6 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(rclcpp REQUIRED)
-find_package(resource_retriever REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(tf2_msgs REQUIRED)
@@ -50,11 +49,11 @@ add_library(AxesDisplay SHARED ${headers_MOC}
 )
 
 ament_target_dependencies(AxesDisplay
-  tf2_ros
+  ign_rviz_common
   ignition-gui4
   ignition-math6
   ignition-rendering4
-  ign_rviz_common
+  tf2_ros
 )
 
 target_link_libraries(AxesDisplay Qt5::Core Qt5::Qml Qt5::Quick Qt5::QuickControls2)
@@ -75,11 +74,11 @@ add_library(GlobalOptions SHARED ${headers_MOC}
 )
 
 ament_target_dependencies(GlobalOptions
-  tf2_ros
+  ign_rviz_common
   ignition-gui4
   ignition-math6
   ignition-rendering4
-  ign_rviz_common
+  tf2_ros
 )
 
 target_link_libraries(GlobalOptions Qt5::Core Qt5::Qml Qt5::Quick Qt5::QuickControls2)
@@ -127,12 +126,12 @@ add_library(LaserScanDisplay SHARED ${headers_MOC}
 )
 
 ament_target_dependencies(LaserScanDisplay
-  tf2_ros
-  sensor_msgs
+  ign_rviz_common
   ignition-gui4
   ignition-math6
   ignition-rendering4
-  ign_rviz_common
+  sensor_msgs
+  tf2_ros
 )
 
 target_link_libraries(LaserScanDisplay Qt5::Core Qt5::Qml Qt5::Quick Qt5::QuickControls2)
@@ -236,7 +235,6 @@ ament_target_dependencies(RobotModelDisplay
   ignition-math6
   ignition-rendering4
   std_msgs
-  resource_retriever
   tf2_ros
   urdf
 )
@@ -313,90 +311,30 @@ install(
   INCLUDES DESTINATION include
 )
 
-ament_export_libraries(AxesDisplay)
-
-install(
-  TARGETS AxesDisplay
-  ARCHIVE DESTINATION lib
-  LIBRARY DESTINATION lib
-  RUNTIME DESTINATION bin
-  INCLUDES DESTINATION include
+########################################################################
+ament_export_libraries(
+  AxesDisplay
+  GlobalOptions
+  ImageDisplay
+  LaserScanDisplay
+  PointStampedDisplay
+  PolygonDisplay
+  PoseDisplay
+  RobotModelDisplay
+  TFDisplay
 )
 
-ament_export_libraries(GlobalOptions)
-
 install(
-  TARGETS GlobalOptions
-  ARCHIVE DESTINATION lib
-  LIBRARY DESTINATION lib
-  RUNTIME DESTINATION bin
-  INCLUDES DESTINATION include
-)
-
-ament_export_libraries(TFDisplay)
-
-install(
-  TARGETS TFDisplay
-  ARCHIVE DESTINATION lib
-  LIBRARY DESTINATION lib
-  RUNTIME DESTINATION bin
-  INCLUDES DESTINATION include
-)
-
-ament_export_libraries(LaserScanDisplay)
-
-install(
-  TARGETS LaserScanDisplay
-  ARCHIVE DESTINATION lib
-  LIBRARY DESTINATION lib
-  RUNTIME DESTINATION bin
-  INCLUDES DESTINATION include
-)
-
-ament_export_libraries(ImageDisplay)
-
-install(
-  TARGETS ImageDisplay
-  ARCHIVE DESTINATION lib
-  LIBRARY DESTINATION lib
-  RUNTIME DESTINATION bin
-  INCLUDES DESTINATION include
-)
-
-ament_export_libraries(PointStampedDisplay)
-
-install(
-  TARGETS PointStampedDisplay
-  ARCHIVE DESTINATION lib
-  LIBRARY DESTINATION lib
-  RUNTIME DESTINATION bin
-  INCLUDES DESTINATION include
-)
-
-ament_export_libraries(PolygonDisplay)
-
-install(
-  TARGETS PolygonDisplay
-  ARCHIVE DESTINATION lib
-  LIBRARY DESTINATION lib
-  RUNTIME DESTINATION bin
-  INCLUDES DESTINATION include
-)
-
-ament_export_libraries(PoseDisplay)
-
-install(
-  TARGETS PoseDisplay
-  ARCHIVE DESTINATION lib
-  LIBRARY DESTINATION lib
-  RUNTIME DESTINATION bin
-  INCLUDES DESTINATION include
-)
-
-ament_export_libraries(RobotModelDisplay)
-
-install(
-  TARGETS RobotModelDisplay
+  TARGETS
+    AxesDisplay
+    GlobalOptions
+    ImageDisplay
+    LaserScanDisplay
+    PointStampedDisplay
+    PolygonDisplay
+    PoseDisplay
+    RobotModelDisplay
+    TFDisplay
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin
