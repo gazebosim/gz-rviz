@@ -9,6 +9,7 @@
 	<file>icons/PointStamped.png</file>
 	<file>icons/Polygon.png</file>
 	<file>icons/Pose.png</file>
+	<file>icons/PoseArray.png</file>
 	<file>icons/RobotModel.png</file>
 	<file>icons/TF.png</file>
   </qresource>
