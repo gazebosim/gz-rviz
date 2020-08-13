@@ -54,7 +54,7 @@ struct PoseArrayVisual
 
   // Arrow
   std::vector<rendering::ArrowVisualPtr> arrows;
-  // ignition::rendering::MaterialPtr mat;
+  ignition::rendering::MaterialPtr mat;
   float shaftLength = 0.23;
   float shaftRadius = 0.01;
   float headLength = 0.07;
@@ -159,6 +159,23 @@ public:
    * @param _radius Axis radius
    */
   Q_INVOKABLE void setAxisDimentions(const float & _length, const float & _radius);
+
+  /**
+   * @brief Set arrow dimentions
+   * @param _shaftLength Arrow shaft length
+   * @param _shaftRadius Arrow shaft radius
+   * @param _headLength Arrow head length
+   * @param _headRadius Arrow head radius
+   */
+  Q_INVOKABLE void setArrowDimentions(
+    const float & _shaftLength, const float & _shaftRadius,
+    const float & _headLength, const float & _headRadius);
+
+  /**
+   * @brief Set visual color and transparency
+   * @param _color Color and transparency of visual
+   */
+  Q_INVOKABLE void setColor(const QColor & _color);
 
 signals:
   /**

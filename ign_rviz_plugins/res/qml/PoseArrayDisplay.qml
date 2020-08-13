@@ -100,6 +100,183 @@ Item {
     }
 
     ColumnLayout {
+      id: arrowConfig
+      visible: shapeCombo.currentIndex === 0
+      width: parent.width
+      Layout.fillWidth: true
+
+      RowLayout {
+        Layout.fillWidth: true
+        spacing: 10
+
+        Text {
+          width: 80
+          Layout.minimumWidth: 80
+          text: "Color"
+          font.pointSize: 10.5
+        }
+
+        Button {
+          Layout.preferredWidth: 20
+          Layout.preferredHeight: 20
+          onClicked: colorDialog.open()
+          background: Rectangle {
+            width: 20
+            height: 20
+            id: bgColor
+            color: "#ff1900"
+            border.color: "#000000"
+            border.width: 2
+          }
+        }
+
+        TextField {
+          id: colorTextField
+          text: "#ff1900"
+          Layout.fillWidth: true
+          validator: RegExpValidator {
+            regExp: /#([\da-f]{3}){1,2}/ig
+          }
+          onAccepted: {
+            colorDialog.color = text
+            bgColor.color = text
+            PoseArrayDisplay.setColor(text);
+          }
+        }
+      }
+
+      RowLayout {
+        Layout.fillWidth: true
+        spacing: 10
+        Text {
+          width: 110
+          Layout.minimumWidth: 110
+          text: "Alpha"
+          font.pointSize: 10.5
+        }
+
+        TextField {
+          id: alphaTextField
+          Layout.fillWidth: true
+          text: "1.0"
+          validator: RegExpValidator {
+            // Integer and floating point numbers
+            regExp: /^([0-9]*\.[0-9]+|[0-9]+)$/g
+          }
+          onAccepted: {
+            colorDialog.color.a = alphaTextField.text;
+            bgColor.color = colorDialog.color
+            PoseArrayDisplay.setColor(colorDialog.color);
+          }
+        }
+      }
+
+      RowLayout {
+        Layout.fillWidth: true
+        spacing: 10
+
+        Text {
+          width: 110
+          Layout.minimumWidth: 110
+          text: "Shaft Length"
+          font.pointSize: 10.5
+        }
+
+        TextField {
+          id: shaftLength
+          Layout.fillWidth: true
+          width: 150
+          text: "0.23"
+          validator: RegExpValidator {
+            // Integer and floating point numbers
+            regExp: /^([0-9]*\.[0-9]+|[0-9]+)$/g
+          }
+          onAccepted: {
+            PoseArrayDisplay.setArrowDimentions(shaftLength.text, shaftRadius.text, headLength.text, headRadius.text)
+          }
+        }
+      }
+
+      RowLayout {
+        Layout.fillWidth: true
+        spacing: 10
+
+        Text {
+          width: 110
+          Layout.minimumWidth: 110
+          text: "Shaft Radius"
+          font.pointSize: 10.5
+        }
+
+        TextField {
+          id: shaftRadius
+          Layout.fillWidth: true
+          width: 150
+          text: "0.01"
+          validator: RegExpValidator {
+            // Integer and floating point numbers
+            regExp: /^([0-9]*\.[0-9]+|[0-9]+)$/g
+          }
+          onAccepted: {
+            PoseArrayDisplay.setArrowDimentions(shaftLength.text, shaftRadius.text, headLength.text, headRadius.text)
+          }
+        }
+      }
+
+      RowLayout {
+        Layout.fillWidth: true
+        spacing: 10
+
+        Text {
+          width: 110
+          Layout.minimumWidth: 110
+          text: "Head Length"
+          font.pointSize: 10.5
+        }
+
+        TextField {
+          id: headLength
+          Layout.fillWidth: true
+          width: 150
+          text: "0.07"
+          validator: RegExpValidator {
+            // Integer and floating point numbers
+            regExp: /^([0-9]*\.[0-9]+|[0-9]+)$/g
+          }
+          onAccepted: {
+            PoseArrayDisplay.setArrowDimentions(shaftLength.text, shaftRadius.text, headLength.text, headRadius.text)
+          }
+        }
+      }
+
+      RowLayout {
+        Layout.fillWidth: true
+        spacing: 10
+
+        Text {
+          width: 110
+          Layout.minimumWidth: 110
+          text: "Head Radius"
+          font.pointSize: 10.5
+        }
+
+        TextField {
+          id: headRadius
+          Layout.fillWidth: true
+          width: 150
+          text: "0.03"
+          validator: RegExpValidator {
+            // Integer and floating point numbers
+            regExp: /^([0-9]*\.[0-9]+|[0-9]+)$/g
+          }
+          onAccepted: {
+            PoseArrayDisplay.setArrowDimentions(shaftLength.text, shaftRadius.text, headLength.text, headRadius.text)
+          }
+        }
+      }
+    }
+
+    ColumnLayout {
       id: axisConfig
       visible: shapeCombo.currentIndex === 1
       width: parent.width
@@ -163,5 +340,22 @@ Item {
         onClicked: { PoseArrayDisplay.setAxisHeadVisibility(checked) }
       }
     }
+  }
+
+  ColorDialog {
+    id: colorDialog
+    title: "Select arrow visual color"
+    color: "#ff1900"
+    showAlphaChannel: false
+    onAccepted: {
+      bgColor.color = colorDialog.color
+      colorTextField.text = colorDialog.color
+      colorDialog.color.a = alphaTextField.text
+      PoseArrayDisplay.setColor(colorDialog.color);
+    }
+    onRejected: {
+      console.log("Canceled")
+    }
+    Component.onCompleted: visible = false
   }
 }

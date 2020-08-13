@@ -41,6 +41,11 @@ PoseArrayDisplay::PoseArrayDisplay()
 
   this->rootVisual = this->scene->CreateVisual();
   this->scene->RootVisual()->AddChild(this->rootVisual);
+
+  this->poseArrayVisual.mat = this->scene->CreateMaterial();
+  this->poseArrayVisual.mat->SetAmbient(1.0, 0.098, 0.0);
+  this->poseArrayVisual.mat->SetDiffuse(1.0, 0.098, 0.0);
+  this->poseArrayVisual.mat->SetEmissive(1.0, 0.098, 0.0);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -155,10 +160,13 @@ void PoseArrayDisplay::update()
       rendering::AxisVisualPtr axis = this->scene->CreateAxisVisual();
       this->rootVisual->AddChild(axis);
       this->poseArrayVisual.axes.push_back(axis);
+
       // Create Arrow
       rendering::ArrowVisualPtr arrow = this->scene->CreateArrowVisual();
+      arrow->SetMaterial(this->poseArrayVisual.mat);
       this->rootVisual->AddChild(arrow);
       this->poseArrayVisual.arrows.push_back(arrow);
+
       // Set current properties
       this->poseArrayVisual.updateVisual(i);
     }
@@ -217,6 +225,35 @@ void PoseArrayDisplay::setAxisDimentions(const float & _length, const float & _r
   this->poseArrayVisual.axisLength = _length;
   this->poseArrayVisual.axisRadius = _radius;
   this->dirty = true;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void PoseArrayDisplay::setArrowDimentions(
+  const float & _shaftLength, const float & _shaftRadius,
+  const float & _headLength, const float & _headRadius)
+{
+  std::lock_guard<std::mutex>(this->lock);
+  this->poseArrayVisual.shaftLength = _shaftLength;
+  this->poseArrayVisual.shaftRadius = _shaftRadius;
+  this->poseArrayVisual.headLength = _headLength;
+  this->poseArrayVisual.headRadius = _headRadius;
+  this->dirty = true;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void PoseArrayDisplay::setColor(const QColor & _color)
+{
+  std::lock_guard<std::mutex>(this->lock);
+  this->poseArrayVisual.mat->SetAmbient(
+    _color.redF(), _color.greenF(), _color.blueF(), _color.alphaF());
+  this->poseArrayVisual.mat->SetDiffuse(
+    _color.redF(), _color.greenF(), _color.blueF(), _color.alphaF());
+  this->poseArrayVisual.mat->SetEmissive(
+    _color.redF(), _color.greenF(), _color.blueF(), _color.alphaF());
+
+  for (const auto & arrow : this->poseArrayVisual.arrows) {
+    arrow->SetMaterial(this->poseArrayVisual.mat);
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
