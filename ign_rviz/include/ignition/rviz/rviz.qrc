@@ -1,5 +1,15 @@
 <!DOCTYPE RCC><RCC version="1.0">
   <qresource prefix="RViz/">
     <file>RVizDrawer.qml</file>
+	<file>icons/Axes.png</file>
+	<file>icons/Grid.png</file>
+	<file>icons/Image.png</file>
+	<file>icons/LaserScan.png</file>
+	<file>icons/Marker.png</file>
+	<file>icons/PointStamped.png</file>
+	<file>icons/Polygon.png</file>
+	<file>icons/Pose.png</file>
+	<file>icons/RobotModel.png</file>
+	<file>icons/TF.png</file>
   </qresource>
 </RCC>
