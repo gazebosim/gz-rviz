@@ -140,17 +140,26 @@ void PoseArrayDisplay::update()
     return;
   }
 
+  this->rootVisual->SetLocalPose(visualPose);
+
   // Hide unused visuals. Faster than removing excess visuals and recreating them.
   for (auto i = this->msg->poses.size(); i < this->poseArrayVisual.axes.size(); ++i) {
     this->poseArrayVisual.axes[i]->SetVisible(false);
+    this->poseArrayVisual.arrows[i]->SetVisible(false);
   }
 
   // Update poses and create new visuals if required
   for (int i = 0; i < static_cast<int>(this->msg->poses.size()); ++i) {
     if (static_cast<int>(this->poseArrayVisual.axes.size()) == i) {
+      // Create Axis
       rendering::AxisVisualPtr axis = this->scene->CreateAxisVisual();
       this->rootVisual->AddChild(axis);
       this->poseArrayVisual.axes.push_back(axis);
+      // Create Arrow
+      rendering::ArrowVisualPtr arrow = this->scene->CreateArrowVisual();
+      this->rootVisual->AddChild(arrow);
+      this->poseArrayVisual.arrows.push_back(arrow);
+      // Set current properties
       this->poseArrayVisual.updateVisual(i);
     }
 
@@ -168,6 +177,11 @@ void PoseArrayDisplay::update()
     this->poseArrayVisual.axes[i]->SetVisible(!this->poseArrayVisual.visualShape);
     this->poseArrayVisual.axes[i]->ShowAxisHead(
       !this->poseArrayVisual.visualShape && this->poseArrayVisual.axisHeadVisisble);
+
+    this->poseArrayVisual.arrows[i]->SetLocalPosition(localPose.Pos());
+    this->poseArrayVisual.arrows[i]->SetLocalRotation(
+      localPose.Rot() * math::Quaterniond(0, 1.57, 0));
+    this->poseArrayVisual.arrows[i]->SetVisible(this->poseArrayVisual.visualShape);
   }
 
   if (dirty) {
