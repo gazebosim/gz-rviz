@@ -33,7 +33,7 @@ namespace plugins
 {
 ////////////////////////////////////////////////////////////////////////////////
 PoseArrayDisplay::PoseArrayDisplay()
-: MessageDisplay()
+: MessageDisplay(), dirty(false)
 {
   // Get reference to scene
   this->engine = ignition::rendering::engine("ogre");
@@ -140,10 +140,9 @@ void PoseArrayDisplay::update()
     return;
   }
 
-  // Remove excess visuals
-  while (this->poseArrayVisual.axes.size() > this->msg->poses.size()) {
-    this->scene->DestroyVisual(this->poseArrayVisual.axes.back());
-    this->poseArrayVisual.axes.pop_back();
+  // Hide unused visuals. Faster than removing excess visuals and recreating them.
+  for (auto i = this->msg->poses.size(); i < this->poseArrayVisual.axes.size(); ++i) {
+    this->poseArrayVisual.axes[i]->SetVisible(false);
   }
 
   // Update poses and create new visuals if required
@@ -152,6 +151,7 @@ void PoseArrayDisplay::update()
       rendering::AxisVisualPtr axis = this->scene->CreateAxisVisual();
       this->rootVisual->AddChild(axis);
       this->poseArrayVisual.axes.push_back(axis);
+      this->poseArrayVisual.updateVisual(i);
     }
 
     math::Pose3d localPose(
@@ -165,7 +165,44 @@ void PoseArrayDisplay::update()
     );
 
     this->poseArrayVisual.axes[i]->SetLocalPose(localPose);
+    this->poseArrayVisual.axes[i]->SetVisible(!this->poseArrayVisual.visualShape);
+    this->poseArrayVisual.axes[i]->ShowAxisHead(
+      !this->poseArrayVisual.visualShape && this->poseArrayVisual.axisHeadVisisble);
   }
+
+  if (dirty) {
+    // Update visuals
+    for (int i = 0; i < static_cast<int>(this->poseArrayVisual.axes.size()); ++i) {
+      this->poseArrayVisual.updateVisual(i);
+    }
+
+    this->dirty = false;
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void PoseArrayDisplay::setShape(const bool & _shape)
+{
+  std::lock_guard<std::mutex>(this->lock);
+  this->poseArrayVisual.visualShape = _shape;
+  this->dirty = true;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void PoseArrayDisplay::setAxisHeadVisibility(const bool & _visible)
+{
+  std::lock_guard<std::mutex>(this->lock);
+  this->poseArrayVisual.axisHeadVisisble = _visible;
+  this->dirty = true;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void PoseArrayDisplay::setAxisDimentions(const float & _length, const float & _radius)
+{
+  std::lock_guard<std::mutex>(this->lock);
+  this->poseArrayVisual.axisLength = _length;
+  this->poseArrayVisual.axisRadius = _radius;
+  this->dirty = true;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

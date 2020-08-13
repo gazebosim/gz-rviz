@@ -36,9 +36,19 @@ namespace plugins
 {
 struct PoseArrayVisual
 {
+  void updateVisual(int _index)
+  {
+    for (int i = 0; i < 3; ++i) {
+      auto arrow = std::dynamic_pointer_cast<rendering::ArrowVisual>(axes[_index]->ChildByIndex(i));
+      arrow->SetLocalScale(axisRadius * 20, axisRadius * 20, axisLength * 2);
+    }
+  }
+
+  bool visualShape{true};  // True: Arrow; False: Axis
+
   std::vector<rendering::AxisVisualPtr> axes;
   float axisLength = 0.3;
-  float axisRadius = 0.01;
+  float axisRadius = 0.03;
   bool axisHeadVisisble = false;
 };
 
@@ -117,6 +127,24 @@ public:
    */
   Q_INVOKABLE QStringList getTopicList() const;
 
+  /**
+   * @brief Set pose array visual shape
+   * @param _shape Visual shape. True: Arrow; False Axis
+   */
+  Q_INVOKABLE void setShape(const bool & _shape);
+
+  /**
+   * @brief Set axis arrow head visibility
+   */
+  Q_INVOKABLE void setAxisHeadVisibility(const bool & _visible);
+
+  /**
+   * @brief Set axis length
+   * @param _length Axis length
+   * @param _radius Axis radius
+   */
+  Q_INVOKABLE void setAxisDimentions(const float & _length, const float & _radius);
+
 signals:
   /**
    * @brief Notify that topic list has changed
@@ -150,6 +178,7 @@ private:
   geometry_msgs::msg::PoseArray::SharedPtr msg;
   QStringList topicList;
   PoseArrayVisual poseArrayVisual;
+  bool dirty;
 };
 
 }  // namespace plugins

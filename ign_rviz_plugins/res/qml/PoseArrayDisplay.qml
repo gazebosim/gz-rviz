@@ -74,5 +74,94 @@ Item {
         PoseArrayDisplay.updateQoS(depth, history, reliability, durability)
       }
     }
+
+    RowLayout {
+      width: parent.width
+
+      Text {
+        width: 110
+        Layout.minimumWidth: 110
+        text: "Shape"
+        font.pointSize: 10.5
+      }
+
+      ComboBox {
+        id: shapeCombo
+        Layout.fillWidth: true
+        currentIndex: 0
+        model: [ "Arrow", "Axis" ]
+        onCurrentIndexChanged: {
+          if (currentIndex < 0) {
+            return;
+          }
+          PoseArrayDisplay.setShape(currentIndex === 0)
+        }
+      }
+    }
+
+    ColumnLayout {
+      id: axisConfig
+      visible: shapeCombo.currentIndex === 1
+      width: parent.width
+      Layout.fillWidth: true
+
+      RowLayout {
+        Layout.fillWidth: true
+        spacing: 10
+
+        Text {
+          width: 110
+          Layout.minimumWidth: 110
+          text: "Length"
+          font.pointSize: 10.5
+        }
+
+        TextField {
+          id: axisLengthField
+          Layout.fillWidth: true
+          width: 150
+          text: "0.3"
+          validator: RegExpValidator {
+            // Integer and floating point numbers
+            regExp: /^([0-9]*\.[0-9]+|[0-9]+)$/g
+          }
+          onAccepted: {
+            PoseArrayDisplay.setAxisDimentions(axisLengthField.text, axisRadiusField.text)
+          }
+        }
+      }
+
+      RowLayout {
+        Layout.fillWidth: true
+        spacing: 10
+
+        Text {
+          width: 110
+          Layout.minimumWidth: 110
+          text: "Radius"
+          font.pointSize: 10.5
+        }
+
+        TextField {
+          id: axisRadiusField
+          Layout.fillWidth: true
+          width: 150
+          text: "0.03"
+          validator: RegExpValidator {
+            // Integer and floating point numbers
+            regExp: /^([0-9]*\.[0-9]+|[0-9]+)$/g
+          }
+          onAccepted: {
+            PoseArrayDisplay.setAxisDimentions(axisLengthField.text, axisRadiusField.text)
+          }
+        }
+      }
+
+      CheckBox {
+        checked: false
+        text: qsTr("Show axis head")
+        onClicked: { PoseArrayDisplay.setAxisHeadVisibility(checked) }
+      }
+    }
   }
 }
