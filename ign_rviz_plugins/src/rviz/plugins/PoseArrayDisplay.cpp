@@ -33,7 +33,8 @@ namespace plugins
 {
 ////////////////////////////////////////////////////////////////////////////////
 PoseArrayDisplay::PoseArrayDisplay()
-: MessageDisplay(), dirty(false)
+: MessageDisplay(), dirty(false), visualShape(true), shaftLength(0.23), shaftRadius(0.01),
+  headLength(0.07), headRadius(0.03), axisLength(0.3), axisRadius(0.03), axisHeadVisible(false)
 {
   // Get reference to scene
   this->engine = ignition::rendering::engine("ogre");
@@ -42,10 +43,10 @@ PoseArrayDisplay::PoseArrayDisplay()
   this->rootVisual = this->scene->CreateVisual();
   this->scene->RootVisual()->AddChild(this->rootVisual);
 
-  this->poseArrayVisual.mat = this->scene->CreateMaterial();
-  this->poseArrayVisual.mat->SetAmbient(1.0, 0.098, 0.0);
-  this->poseArrayVisual.mat->SetDiffuse(1.0, 0.098, 0.0);
-  this->poseArrayVisual.mat->SetEmissive(1.0, 0.098, 0.0);
+  this->mat = this->scene->CreateMaterial();
+  this->mat->SetAmbient(1.0, 0.098, 0.0);
+  this->mat->SetDiffuse(1.0, 0.098, 0.0);
+  this->mat->SetEmissive(1.0, 0.098, 0.0);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -148,27 +149,27 @@ void PoseArrayDisplay::update()
   this->rootVisual->SetLocalPose(visualPose);
 
   // Hide unused visuals. Faster than removing excess visuals and recreating them.
-  for (auto i = this->msg->poses.size(); i < this->poseArrayVisual.axes.size(); ++i) {
-    this->poseArrayVisual.axes[i]->SetVisible(false);
-    this->poseArrayVisual.arrows[i]->SetVisible(false);
+  for (auto i = this->msg->poses.size(); i < this->axes.size(); ++i) {
+    this->axes[i]->SetVisible(false);
+    this->arrows[i]->SetVisible(false);
   }
 
   // Update poses and create new visuals if required
   for (int i = 0; i < static_cast<int>(this->msg->poses.size()); ++i) {
-    if (static_cast<int>(this->poseArrayVisual.axes.size()) == i) {
+    if (static_cast<int>(this->axes.size()) == i) {
       // Create Axis
       rendering::AxisVisualPtr axis = this->scene->CreateAxisVisual();
       this->rootVisual->AddChild(axis);
-      this->poseArrayVisual.axes.push_back(axis);
+      this->axes.push_back(axis);
 
       // Create Arrow
       rendering::ArrowVisualPtr arrow = this->scene->CreateArrowVisual();
-      arrow->SetMaterial(this->poseArrayVisual.mat);
+      arrow->SetMaterial(this->mat);
       this->rootVisual->AddChild(arrow);
-      this->poseArrayVisual.arrows.push_back(arrow);
+      this->arrows.push_back(arrow);
 
       // Set current properties
-      this->poseArrayVisual.updateVisual(i);
+      this->updateVisual(i);
     }
 
     math::Pose3d localPose(
@@ -181,24 +182,38 @@ void PoseArrayDisplay::update()
       this->msg->poses[i].orientation.z
     );
 
-    this->poseArrayVisual.axes[i]->SetLocalPose(localPose);
-    this->poseArrayVisual.axes[i]->SetVisible(!this->poseArrayVisual.visualShape);
-    this->poseArrayVisual.axes[i]->ShowAxisHead(
-      !this->poseArrayVisual.visualShape && this->poseArrayVisual.axisHeadVisisble);
+    this->axes[i]->SetLocalPose(localPose);
+    this->axes[i]->SetVisible(!this->visualShape);
+    this->axes[i]->ShowAxisHead(!this->visualShape && this->axisHeadVisible);
 
-    this->poseArrayVisual.arrows[i]->SetLocalPosition(localPose.Pos());
-    this->poseArrayVisual.arrows[i]->SetLocalRotation(
+    this->arrows[i]->SetLocalPosition(localPose.Pos());
+    this->arrows[i]->SetLocalRotation(
       localPose.Rot() * math::Quaterniond(0, 1.57, 0));
-    this->poseArrayVisual.arrows[i]->SetVisible(this->poseArrayVisual.visualShape);
+    this->arrows[i]->SetVisible(this->visualShape);
   }
 
   if (dirty) {
     // Update visuals
-    for (int i = 0; i < static_cast<int>(this->poseArrayVisual.axes.size()); ++i) {
-      this->poseArrayVisual.updateVisual(i);
+    for (int i = 0; i < static_cast<int>(this->axes.size()); ++i) {
+      this->updateVisual(i);
     }
-
     this->dirty = false;
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void PoseArrayDisplay::updateVisual(int _index)
+{
+  // Update Arrow
+  this->arrows[_index]->Shaft()->SetLocalScale(shaftRadius * 2.0, shaftRadius * 2.0, shaftLength);
+  this->arrows[_index]->SetOrigin(0, 0, -shaftLength);
+  this->arrows[_index]->Head()->SetLocalScale(headRadius * 2.0, headRadius * 2.0, headLength * 2.0);
+
+  // Update Axis
+  for (int i = 0; i < 3; ++i) {
+    auto arrow =
+      std::dynamic_pointer_cast<rendering::ArrowVisual>(this->axes[_index]->ChildByIndex(i));
+    arrow->SetLocalScale(axisRadius * 20, axisRadius * 20, axisLength * 2);
   }
 }
 
@@ -206,7 +221,7 @@ void PoseArrayDisplay::update()
 void PoseArrayDisplay::setShape(const bool & _shape)
 {
   std::lock_guard<std::mutex>(this->lock);
-  this->poseArrayVisual.visualShape = _shape;
+  this->visualShape = _shape;
   this->dirty = true;
 }
 
@@ -214,7 +229,7 @@ void PoseArrayDisplay::setShape(const bool & _shape)
 void PoseArrayDisplay::setAxisHeadVisibility(const bool & _visible)
 {
   std::lock_guard<std::mutex>(this->lock);
-  this->poseArrayVisual.axisHeadVisisble = _visible;
+  this->axisHeadVisible = _visible;
   this->dirty = true;
 }
 
@@ -222,8 +237,8 @@ void PoseArrayDisplay::setAxisHeadVisibility(const bool & _visible)
 void PoseArrayDisplay::setAxisDimentions(const float & _length, const float & _radius)
 {
   std::lock_guard<std::mutex>(this->lock);
-  this->poseArrayVisual.axisLength = _length;
-  this->poseArrayVisual.axisRadius = _radius;
+  this->axisLength = _length;
+  this->axisRadius = _radius;
   this->dirty = true;
 }
 
@@ -233,10 +248,10 @@ void PoseArrayDisplay::setArrowDimentions(
   const float & _headLength, const float & _headRadius)
 {
   std::lock_guard<std::mutex>(this->lock);
-  this->poseArrayVisual.shaftLength = _shaftLength;
-  this->poseArrayVisual.shaftRadius = _shaftRadius;
-  this->poseArrayVisual.headLength = _headLength;
-  this->poseArrayVisual.headRadius = _headRadius;
+  this->shaftLength = _shaftLength;
+  this->shaftRadius = _shaftRadius;
+  this->headLength = _headLength;
+  this->headRadius = _headRadius;
   this->dirty = true;
 }
 
@@ -244,15 +259,12 @@ void PoseArrayDisplay::setArrowDimentions(
 void PoseArrayDisplay::setColor(const QColor & _color)
 {
   std::lock_guard<std::mutex>(this->lock);
-  this->poseArrayVisual.mat->SetAmbient(
-    _color.redF(), _color.greenF(), _color.blueF(), _color.alphaF());
-  this->poseArrayVisual.mat->SetDiffuse(
-    _color.redF(), _color.greenF(), _color.blueF(), _color.alphaF());
-  this->poseArrayVisual.mat->SetEmissive(
-    _color.redF(), _color.greenF(), _color.blueF(), _color.alphaF());
+  this->mat->SetAmbient(_color.redF(), _color.greenF(), _color.blueF(), _color.alphaF());
+  this->mat->SetDiffuse(_color.redF(), _color.greenF(), _color.blueF(), _color.alphaF());
+  this->mat->SetEmissive(_color.redF(), _color.greenF(), _color.blueF(), _color.alphaF());
 
-  for (const auto & arrow : this->poseArrayVisual.arrows) {
-    arrow->SetMaterial(this->poseArrayVisual.mat);
+  for (const auto & arrow : this->arrows) {
+    arrow->SetMaterial(this->mat);
   }
 }
 

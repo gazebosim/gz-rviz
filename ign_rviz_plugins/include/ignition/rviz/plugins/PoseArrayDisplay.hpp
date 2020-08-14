@@ -34,39 +34,6 @@ namespace rviz
 {
 namespace plugins
 {
-struct PoseArrayVisual
-{
-  void updateVisual(int _index)
-  {
-    // Update Arrow
-    arrows[_index]->Shaft()->SetLocalScale(shaftRadius * 2.0, shaftRadius * 2.0, shaftLength);
-    arrows[_index]->SetOrigin(0, 0, -shaftLength);
-    arrows[_index]->Head()->SetLocalScale(headRadius * 2.0, headRadius * 2.0, headLength * 2.0);
-
-    // Update Axis
-    for (int i = 0; i < 3; ++i) {
-      auto arrow = std::dynamic_pointer_cast<rendering::ArrowVisual>(axes[_index]->ChildByIndex(i));
-      arrow->SetLocalScale(axisRadius * 20, axisRadius * 20, axisLength * 2);
-    }
-  }
-
-  bool visualShape{true};  // True: Arrow; False: Axis
-
-  // Arrow
-  std::vector<rendering::ArrowVisualPtr> arrows;
-  ignition::rendering::MaterialPtr mat;
-  float shaftLength = 0.23;
-  float shaftRadius = 0.01;
-  float headLength = 0.07;
-  float headRadius = 0.03;
-
-  // Axes
-  std::vector<rendering::AxisVisualPtr> axes;
-  float axisLength = 0.3;
-  float axisRadius = 0.03;
-  bool axisHeadVisisble = false;
-};
-
 /**
  * @brief Renders data from geometry_msgs::msg::PoseArray message as arrows or axes
  */
@@ -202,6 +169,12 @@ protected:
    */
   void update() override;
 
+  /**
+   * @brief Update pose array visual dimentions
+   * @param _index Index of pose array visual
+   */
+  void updateVisual(int _index);
+
 private:
   ignition::rendering::RenderEngine * engine;
   ignition::rendering::ScenePtr scene;
@@ -209,8 +182,22 @@ private:
   std::mutex lock;
   geometry_msgs::msg::PoseArray::SharedPtr msg;
   QStringList topicList;
-  PoseArrayVisual poseArrayVisual;
   bool dirty;
+  bool visualShape;  // True: Arrow; False: Axis
+
+  // Arrows
+  std::vector<rendering::ArrowVisualPtr> arrows;
+  ignition::rendering::MaterialPtr mat;
+  float shaftLength;
+  float shaftRadius;
+  float headLength;
+  float headRadius;
+
+  // Axes
+  std::vector<rendering::AxisVisualPtr> axes;
+  float axisLength;
+  float axisRadius;
+  bool axisHeadVisible;
 };
 
 }  // namespace plugins
