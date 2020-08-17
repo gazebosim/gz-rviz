@@ -192,7 +192,7 @@ Item {
             regExp: /^([0-9]*\.[0-9]+|[0-9]+)$/g
           }
           onAccepted: {
-            PoseArrayDisplay.setArrowDimentions(shaftLength.text, shaftRadius.text, headLength.text, headRadius.text)
+            PoseArrayDisplay.setArrowDimensions(shaftLength.text, shaftRadius.text, headLength.text, headRadius.text)
           }
         }
       }
@@ -218,7 +218,7 @@ Item {
             regExp: /^([0-9]*\.[0-9]+|[0-9]+)$/g
           }
           onAccepted: {
-            PoseArrayDisplay.setArrowDimentions(shaftLength.text, shaftRadius.text, headLength.text, headRadius.text)
+            PoseArrayDisplay.setArrowDimensions(shaftLength.text, shaftRadius.text, headLength.text, headRadius.text)
           }
         }
       }
@@ -244,7 +244,7 @@ Item {
             regExp: /^([0-9]*\.[0-9]+|[0-9]+)$/g
           }
           onAccepted: {
-            PoseArrayDisplay.setArrowDimentions(shaftLength.text, shaftRadius.text, headLength.text, headRadius.text)
+            PoseArrayDisplay.setArrowDimensions(shaftLength.text, shaftRadius.text, headLength.text, headRadius.text)
           }
         }
       }
@@ -270,7 +270,7 @@ Item {
             regExp: /^([0-9]*\.[0-9]+|[0-9]+)$/g
           }
           onAccepted: {
-            PoseArrayDisplay.setArrowDimentions(shaftLength.text, shaftRadius.text, headLength.text, headRadius.text)
+            PoseArrayDisplay.setArrowDimensions(shaftLength.text, shaftRadius.text, headLength.text, headRadius.text)
           }
         }
       }
@@ -303,7 +303,7 @@ Item {
             regExp: /^([0-9]*\.[0-9]+|[0-9]+)$/g
           }
           onAccepted: {
-            PoseArrayDisplay.setAxisDimentions(axisLengthField.text, axisRadiusField.text)
+            PoseArrayDisplay.setAxisDimensions(axisLengthField.text, axisRadiusField.text)
           }
         }
       }
@@ -329,7 +329,7 @@ Item {
             regExp: /^([0-9]*\.[0-9]+|[0-9]+)$/g
           }
           onAccepted: {
-            PoseArrayDisplay.setAxisDimentions(axisLengthField.text, axisRadiusField.text)
+            PoseArrayDisplay.setAxisDimensions(axisLengthField.text, axisRadiusField.text)
           }
         }
       }

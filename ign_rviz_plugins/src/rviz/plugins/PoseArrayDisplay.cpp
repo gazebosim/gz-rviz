@@ -122,8 +122,11 @@ bool PoseArrayDisplay::eventFilter(QObject * _object, QEvent * _event)
 ////////////////////////////////////////////////////////////////////////////////
 void PoseArrayDisplay::reset()
 {
-//   this->arrow.visual->SetLocalPose(math::Pose3d::Zero);
-//   this->axis.visual->SetLocalPose(math::Pose3d::Zero);
+  for (int i = 0; i < static_cast<int>(this->axes.size()); ++i) {
+    this->arrows[i]->SetLocalPose(math::Pose3d::Zero);
+    this->axes[i]->SetLocalPose(math::Pose3d::Zero);
+  }
+
   this->msg.reset();
 }
 
@@ -234,7 +237,7 @@ void PoseArrayDisplay::setAxisHeadVisibility(const bool & _visible)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void PoseArrayDisplay::setAxisDimentions(const float & _length, const float & _radius)
+void PoseArrayDisplay::setAxisDimensions(const float & _length, const float & _radius)
 {
   std::lock_guard<std::mutex>(this->lock);
   this->axisLength = _length;
@@ -243,7 +246,7 @@ void PoseArrayDisplay::setAxisDimentions(const float & _length, const float & _r
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void PoseArrayDisplay::setArrowDimentions(
+void PoseArrayDisplay::setArrowDimensions(
   const float & _shaftLength, const float & _shaftRadius,
   const float & _headLength, const float & _headRadius)
 {

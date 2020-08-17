@@ -121,20 +121,20 @@ public:
   Q_INVOKABLE void setAxisHeadVisibility(const bool & _visible);
 
   /**
-   * @brief Set axis length
+   * @brief Set axis dimensions
    * @param _length Axis length
    * @param _radius Axis radius
    */
-  Q_INVOKABLE void setAxisDimentions(const float & _length, const float & _radius);
+  Q_INVOKABLE void setAxisDimensions(const float & _length, const float & _radius);
 
   /**
-   * @brief Set arrow dimentions
+   * @brief Set arrow dimensions
    * @param _shaftLength Arrow shaft length
    * @param _shaftRadius Arrow shaft radius
    * @param _headLength Arrow head length
    * @param _headRadius Arrow head radius
    */
-  Q_INVOKABLE void setArrowDimentions(
+  Q_INVOKABLE void setArrowDimensions(
     const float & _shaftLength, const float & _shaftRadius,
     const float & _headLength, const float & _headRadius);
 
@@ -170,7 +170,7 @@ protected:
   void update() override;
 
   /**
-   * @brief Update pose array visual dimentions
+   * @brief Update pose array visual dimensions
    * @param _index Index of pose array visual
    */
   void updateVisual(int _index);
