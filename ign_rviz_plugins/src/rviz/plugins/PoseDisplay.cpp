@@ -199,7 +199,7 @@ void PoseDisplay::setAxisHeadVisibility(const bool & _visible)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void PoseDisplay::setAxisDimentions(const float & _length, const float & _radius)
+void PoseDisplay::setAxisDimensions(const float & _length, const float & _radius)
 {
   std::lock_guard<std::mutex>(this->lock);
   this->axis.length = _length;
@@ -208,7 +208,7 @@ void PoseDisplay::setAxisDimentions(const float & _length, const float & _radius
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void PoseDisplay::setArrowDimentions(
+void PoseDisplay::setArrowDimensions(
   const float & _shaftLength, const float & _shaftRadius,
   const float & _headLength, const float & _headRadius)
 {
