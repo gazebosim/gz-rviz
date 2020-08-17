@@ -45,6 +45,9 @@ Rectangle {
       case "addPoseDisplay":
         RViz.addPoseDisplay();
         break;
+      case "addPoseArrayDisplay":
+        RViz.addPoseArrayDisplay();
+        break;
       case "addRobotModelDisplay":
         RViz.addRobotModelDisplay();
         break;
@@ -100,6 +103,12 @@ Rectangle {
       title: "Pose"
       icon: "icons/Pose.png"
       actionElement: "addPoseDisplay"
+    }
+
+    ListElement {
+      title: "PoseArray"
+      icon: "icons/PoseArray.png"
+      actionElement: "addPoseArrayDisplay"
     }
 
     ListElement {

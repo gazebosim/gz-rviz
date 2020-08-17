@@ -27,6 +27,7 @@
 #include <geometry_msgs/msg/point_stamped.hpp>
 #include <geometry_msgs/msg/polygon_stamped.hpp>
 #include <geometry_msgs/msg/pose_stamped.hpp>
+#include <geometry_msgs/msg/pose_array.hpp>
 #include <sensor_msgs/msg/image.hpp>
 #include <sensor_msgs/msg/laser_scan.hpp>
 #include <std_msgs/msg/string.hpp>
@@ -157,6 +158,26 @@ public:
       posePlugin[pluginCount]->setFrameManager(this->frameManager);
       ignition::gui::App()->findChild<ignition::gui::MainWindow *>()->installEventFilter(
         posePlugin[pluginCount]);
+    }
+  }
+
+  /**
+   * @brief Loads PoseArray Visualization Plugin
+   */
+  Q_INVOKABLE void addPoseArrayDisplay()
+  {
+    // Load plugin
+    if (ignition::gui::App()->LoadPlugin("PoseArrayDisplay")) {
+      auto poseArrayPlugin =
+        ignition::gui::App()->findChildren<DisplayPlugin<geometry_msgs::msg::PoseArray> *>();
+      int pluginCount = poseArrayPlugin.size() - 1;
+
+      // Set frame manager and install event filter for recently added plugin
+      poseArrayPlugin[pluginCount]->initialize(this->node);
+      poseArrayPlugin[pluginCount]->setTopic("/pose_array");
+      poseArrayPlugin[pluginCount]->setFrameManager(this->frameManager);
+      ignition::gui::App()->findChild<ignition::gui::MainWindow *>()->installEventFilter(
+        poseArrayPlugin[pluginCount]);
     }
   }
 

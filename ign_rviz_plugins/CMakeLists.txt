@@ -156,6 +156,18 @@ add_ign_rviz_plugin(
 
 ########################################################################
 add_ign_rviz_plugin(
+  NAME PoseArrayDisplay
+  DEPENDENCIES
+    geometry_msgs
+    ign_rviz_common
+    ignition-gui4
+    ignition-math6
+    ignition-rendering4
+    tf2_ros
+)
+
+########################################################################
+add_ign_rviz_plugin(
   NAME RobotModelDisplay
   DEPENDENCIES
     ign_rviz_common
@@ -224,6 +236,7 @@ ament_export_libraries(
   PointStampedDisplay
   PolygonDisplay
   PoseDisplay
+  PoseArrayDisplay
   RobotModelDisplay
   TFDisplay
 )
@@ -237,6 +250,7 @@ install(
     PointStampedDisplay
     PolygonDisplay
     PoseDisplay
+    PoseArrayDisplay
     RobotModelDisplay
     TFDisplay
   ARCHIVE DESTINATION lib
