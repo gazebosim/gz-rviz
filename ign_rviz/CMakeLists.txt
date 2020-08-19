@@ -21,21 +21,22 @@ find_package(Qt5 COMPONENTS
 
 # ROS2 packages
 find_package(ament_cmake REQUIRED)
-find_package(rclcpp REQUIRED)
+find_package(ament_index_cpp REQUIRED)
 find_package(geometry_msgs REQUIRED)
+find_package(rclcpp REQUIRED)
+find_package(sensor_msgs REQUIRED)
+find_package(nav_msgs REQUIRED)
 find_package(tf2_geometry_msgs REQUIRED)
 find_package(tf2_msgs REQUIRED)
 find_package(tf2_ros REQUIRED)
-find_package(sensor_msgs REQUIRED)
-find_package(ament_index_cpp REQUIRED)
-find_package(ign_rviz_plugins REQUIRED)
-find_package(ign_rviz_common REQUIRED)
 
 # Ignition libraries
-find_package(ignition-gui4 REQUIRED)
+find_package(ign_rviz_common REQUIRED)
+find_package(ign_rviz_plugins REQUIRED)
 find_package(ignition-common3 REQUIRED)
-find_package(ignition-rendering4 REQUIRED)
+find_package(ignition-gui4 REQUIRED)
 find_package(ignition-math6 REQUIRED)
+find_package(ignition-rendering4 REQUIRED)
 
 qt5_add_resources(resources_RCC include/ignition/rviz/rviz.qrc)
 
@@ -59,16 +60,17 @@ include_directories(include)
 add_executable(ign_rviz src/rviz/rviz.cpp include/ignition/rviz/rviz.hpp ${resources_RCC})
 
 ament_target_dependencies(ign_rviz
-  ignition-gui4
-  rclcpp
   ament_index_cpp
+  ign_rviz_common
+  ign_rviz_plugins
+  ignition-math6
+  ignition-gui4
   geometry_msgs
+  nav_msgs
+  rclcpp
+  sensor_msgs
   tf2_msgs
   tf2_ros
-  sensor_msgs
-  ign_rviz_plugins
-  ign_rviz_common
-  ignition-math6
 )
 
 target_link_libraries(ign_rviz Qt5::Core Qt5::Qml Qt5::Quick Qt5::QuickControls2)

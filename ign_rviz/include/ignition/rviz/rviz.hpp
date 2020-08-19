@@ -28,6 +28,7 @@
 #include <geometry_msgs/msg/polygon_stamped.hpp>
 #include <geometry_msgs/msg/pose_stamped.hpp>
 #include <geometry_msgs/msg/pose_array.hpp>
+#include <nav_msgs/msg/path.hpp>
 #include <sensor_msgs/msg/image.hpp>
 #include <sensor_msgs/msg/laser_scan.hpp>
 #include <std_msgs/msg/string.hpp>
@@ -178,6 +179,26 @@ public:
       poseArrayPlugin[pluginCount]->setFrameManager(this->frameManager);
       ignition::gui::App()->findChild<ignition::gui::MainWindow *>()->installEventFilter(
         poseArrayPlugin[pluginCount]);
+    }
+  }
+
+  /**
+   * @brief Loads Path Visualization Plugin
+   */
+  Q_INVOKABLE void addPathDisplay()
+  {
+    // Load plugin
+    if (ignition::gui::App()->LoadPlugin("PathDisplay")) {
+      auto pathPlugin =
+        ignition::gui::App()->findChildren<DisplayPlugin<nav_msgs::msg::Path> *>();
+      int pluginCount = pathPlugin.size() - 1;
+
+      // Set frame manager and install event filter for recently added plugin
+      pathPlugin[pluginCount]->initialize(this->node);
+      pathPlugin[pluginCount]->setTopic("/path");
+      pathPlugin[pluginCount]->setFrameManager(this->frameManager);
+      ignition::gui::App()->findChild<ignition::gui::MainWindow *>()->installEventFilter(
+        pathPlugin[pluginCount]);
     }
   }
 
