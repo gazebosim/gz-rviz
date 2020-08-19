@@ -23,7 +23,7 @@ import "qrc:/QoSConfig"
 
 Item {
   Layout.minimumWidth: 250
-  Layout.minimumHeight: 475
+  Layout.minimumHeight: 550
   anchors.fill: parent
   anchors.margins: 10
   Column {
@@ -72,6 +72,72 @@ Item {
     QoSConfig {
       onProfileUpdate: {
         PathDisplay.updateQoS(depth, history, reliability, durability)
+      }
+    }
+
+    RowLayout {
+      width: parent.width
+      spacing: 10
+
+      Text {
+        width: 75
+        Layout.minimumWidth: 75
+        text: "Line Color"
+        font.pointSize: 10.5
+      }
+
+      Button {
+        Layout.preferredWidth: 20
+        Layout.preferredHeight: 20
+        onClicked: lineColorDialog.open()
+        background: Rectangle {
+          width: 20
+          height: 20
+          id: lineBgColor
+          color: "#19ff00"
+          border.color: "#000000"
+          border.width: 2
+        }
+      }
+
+      TextField {
+        id: lineColorTextField
+        text: "#19ff00"
+        Layout.fillWidth: true
+        validator: RegExpValidator {
+          regExp: /#([\da-f]{3}){1,2}/ig
+        }
+        onAccepted: {
+          lineColorDialog.color = text
+          lineBgColor.color = text
+          PathDisplay.setLineColor(text);
+        }
+      }
+    }
+
+    RowLayout {
+      width: parent.width
+
+      Text {
+        width: 110
+        Layout.minimumWidth: 110
+        text: "Alpha"
+        font.pointSize: 10.5
+      }
+
+      TextField {
+        id: lineAlphaTextField
+        Layout.fillWidth: true
+        text: "1.0"
+        validator: RegExpValidator {
+          // Integer and floating point numbers
+          regExp: /^([0-9]*\.[0-9]+|[0-9]+)$/g
+        }
+        onAccepted: {
+          lineColorDialog.color.a = lineAlphaTextField.text;
+          lineBgColor.color = lineColorDialog.color
+          PathDisplay.setLineColor(lineColorDialog.color);
+        }
       }
     }
 
@@ -352,6 +418,23 @@ Item {
       colorTextField.text = colorDialog.color
       colorDialog.color.a = alphaTextField.text
       PathDisplay.setColor(colorDialog.color);
+    }
+    onRejected: {
+      console.log("Canceled")
+    }
+    Component.onCompleted: visible = false
+  }
+
+  ColorDialog {
+    id: lineColorDialog
+    title: "Select line color"
+    color: "#19ff00"
+    showAlphaChannel: false
+    onAccepted: {
+      lineBgColor.color = lineColorDialog.color
+      lineColorTextField.text = lineColorDialog.color
+      lineColorDialog.color.a = lineAlphaTextField.text
+      PathDisplay.setLineColor(lineColorDialog.color);
     }
     onRejected: {
       console.log("Canceled")

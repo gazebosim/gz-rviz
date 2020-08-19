@@ -144,6 +144,12 @@ public:
    */
   Q_INVOKABLE void setColor(const QColor & _color);
 
+  /**
+   * @brief Set line color and transparency
+   * @param _color Color and transparency of line
+   */
+  Q_INVOKABLE void setLineColor(const QColor & _color);
+
 signals:
   /**
    * @brief Notify that topic list has changed

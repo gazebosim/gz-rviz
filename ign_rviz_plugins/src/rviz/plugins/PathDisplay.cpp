@@ -296,6 +296,16 @@ void PathDisplay::setColor(const QColor & _color)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+void PathDisplay::setLineColor(const QColor & _color)
+{
+  std::lock_guard<std::mutex>(this->lock);
+  this->color.Set(_color.redF(), _color.greenF(), _color.blueF(), _color.alphaF());
+
+  // Recreating marker is the only way to change color and transparency
+  this->createMarker = true;
+}
+
+////////////////////////////////////////////////////////////////////////////////
 void PathDisplay::setFrameManager(std::shared_ptr<common::FrameManager> _frameManager)
 {
   std::lock_guard<std::mutex>(this->lock);
