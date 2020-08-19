@@ -23,7 +23,7 @@ import "qrc:/QoSConfig"
 
 Item {
   Layout.minimumWidth: 250
-  Layout.minimumHeight: 550
+  Layout.minimumHeight: 600
   anchors.fill: parent
   anchors.margins: 10
   Column {
@@ -111,6 +111,66 @@ Item {
           lineColorDialog.color = text
           lineBgColor.color = text
           PathDisplay.setLineColor(text);
+        }
+      }
+    }
+
+    RowLayout {
+      width: parent.width
+      spacing: 10
+
+      Text {
+        text: "Offset"
+      }
+
+      Text {
+        text: "X"
+      }
+
+      TextField {
+        text: "0"
+        id: xOffset
+        Layout.fillWidth: true
+        validator: RegExpValidator {
+          // Integer and floating point numbers
+          regExp: /^([+-]?[0-9]*\.[0-9]+|[+-]?[0-9]+)$/g
+        }
+        onAccepted: {
+          PathDisplay.setOffset(xOffset.text, yOffset.text, zOffset.text);
+        }
+      }
+
+      Text {
+        text: "Y"
+      }
+
+      TextField {
+        text: "0"
+        id: yOffset
+        Layout.fillWidth: true
+        validator: RegExpValidator {
+          // Integer and floating point numbers
+          regExp: /^([+-]?[0-9]*\.[0-9]+|[+-]?[0-9]+)$/g
+        }
+        onAccepted: {
+          PathDisplay.setOffset(xOffset.text, yOffset.text, zOffset.text);
+        }
+      }
+
+      Text {
+        text: "Z"
+      }
+
+      TextField {
+        text: "0"
+        id: zOffset
+        Layout.fillWidth: true
+        validator: RegExpValidator {
+          // Integer and floating point numbers
+          regExp: /^([+-]?[0-9]*\.[0-9]+|[+-]?[0-9]+)$/g
+        }
+        onAccepted: {
+          PathDisplay.setOffset(xOffset.text, yOffset.text, zOffset.text);
         }
       }
     }

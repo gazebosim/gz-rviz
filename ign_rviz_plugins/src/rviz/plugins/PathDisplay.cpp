@@ -48,6 +48,8 @@ PathDisplay::PathDisplay()
   this->mat->SetAmbient(1.0, 0.098, 0.0);
   this->mat->SetDiffuse(1.0, 0.098, 0.0);
   this->mat->SetEmissive(1.0, 0.098, 0.0);
+
+  this->offset = math::Vector3d::Zero;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -166,7 +168,8 @@ void PathDisplay::update()
     return;
   }
 
-  this->rootVisual->SetLocalPose(visualPose);
+  this->rootVisual->SetLocalPosition(visualPose.Pos() + this->offset);
+  this->rootVisual->SetLocalRotation(visualPose.Rot());
 
   auto marker = std::dynamic_pointer_cast<rendering::Marker>(this->rootVisual->GeometryByIndex(0));
   marker->ClearPoints();
@@ -303,6 +306,13 @@ void PathDisplay::setLineColor(const QColor & _color)
 
   // Recreating marker is the only way to change color and transparency
   this->createMarker = true;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void PathDisplay::setOffset(const float & _x, const float & _y, const float & _z)
+{
+  std::lock_guard<std::mutex>(this->lock);
+  this->offset.Set(_x, _y, _z);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

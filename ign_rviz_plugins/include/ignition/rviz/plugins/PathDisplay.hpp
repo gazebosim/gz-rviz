@@ -150,6 +150,14 @@ public:
    */
   Q_INVOKABLE void setLineColor(const QColor & _color);
 
+  /**
+   * @brief Set path offset
+   * @param _x X Offset
+   * @param _y Y Offset
+   * @param _z Z Offset
+   */
+  Q_INVOKABLE void setOffset(const float & _x, const float & _y, const float & _z);
+
 signals:
   /**
    * @brief Notify that topic list has changed
@@ -189,7 +197,8 @@ private:
   nav_msgs::msg::Path::SharedPtr msg;
   QStringList topicList;
   bool dirty;
-  int visualShape;  // 0: None; 1: Arrow; False: Axis
+  int visualShape;  // 0: None; 1: Arrow; 2: Axis
+  math::Vector3d offset;
 
   // Arrows
   std::vector<rendering::ArrowVisualPtr> arrows;
