@@ -33,8 +33,9 @@ namespace plugins
 {
 ////////////////////////////////////////////////////////////////////////////////
 PathDisplay::PathDisplay()
-: MessageDisplay(), dirty(false), visualShape(true), shaftLength(0.23), shaftRadius(0.01),
-  headLength(0.07), headRadius(0.03), axisLength(0.3), axisRadius(0.03), axisHeadVisible(false)
+: MessageDisplay(), dirty(false), visualShape(0), shaftLength(0.23), shaftRadius(0.01),
+  headLength(0.07), headRadius(0.03), axisLength(0.3), axisRadius(0.03), axisHeadVisible(false),
+  color(0.098, 1.0, 0.2), createMarker(true)
 {
   // Get reference to scene
   this->engine = ignition::rendering::engine("ogre");
@@ -139,6 +140,22 @@ void PathDisplay::update()
     return;
   }
 
+  if (this->createMarker) {
+    // Delete previous marker geometry.
+    this->rootVisual->RemoveGeometries();
+
+    // Create marker and set type to line strip
+    rendering::MarkerPtr marker = this->scene->CreateMarker();
+    marker->SetType(rendering::MarkerType::MT_LINE_STRIP);
+
+    // This material is not used anywhere but is required to set
+    // point color in marker AddPoint method
+    marker->SetMaterial(this->scene->Material("Default/TransGreen"));
+
+    this->rootVisual->AddGeometry(marker);
+    this->createMarker = false;
+  }
+
   math::Pose3d visualPose;
   bool poseAvailable = this->frameManager->getFramePose(this->msg->header.frame_id, visualPose);
 
@@ -151,6 +168,9 @@ void PathDisplay::update()
 
   this->rootVisual->SetLocalPose(visualPose);
 
+  auto marker = std::dynamic_pointer_cast<rendering::Marker>(this->rootVisual->GeometryByIndex(0));
+  marker->ClearPoints();
+
   // Hide unused visuals. Faster than removing excess visuals and recreating them.
   for (auto i = this->msg->poses.size(); i < this->axes.size(); ++i) {
     this->axes[i]->SetVisible(false);
@@ -162,12 +182,14 @@ void PathDisplay::update()
     if (static_cast<int>(this->axes.size()) == i) {
       // Create Axis
       rendering::AxisVisualPtr axis = this->scene->CreateAxisVisual();
+      axis->SetVisible(false);
       this->rootVisual->AddChild(axis);
       this->axes.push_back(axis);
 
       // Create Arrow
       rendering::ArrowVisualPtr arrow = this->scene->CreateArrowVisual();
       arrow->SetMaterial(this->mat);
+      arrow->SetVisible(false);
       this->rootVisual->AddChild(arrow);
       this->arrows.push_back(arrow);
 
@@ -185,14 +207,16 @@ void PathDisplay::update()
       this->msg->poses[i].pose.orientation.z
     );
 
+    marker->AddPoint(localPose.Pos(), this->color);
+
     this->axes[i]->SetLocalPose(localPose);
-    this->axes[i]->SetVisible(!this->visualShape);
-    this->axes[i]->ShowAxisHead(!this->visualShape && this->axisHeadVisible);
+    this->axes[i]->SetVisible(this->visualShape == 2);
+    this->axes[i]->ShowAxisHead(this->visualShape == 2 && this->axisHeadVisible);
 
     this->arrows[i]->SetLocalPosition(localPose.Pos());
     this->arrows[i]->SetLocalRotation(
       localPose.Rot() * math::Quaterniond(0, 1.57, 0));
-    this->arrows[i]->SetVisible(this->visualShape);
+    this->arrows[i]->SetVisible(this->visualShape == 1);
   }
 
   if (dirty) {
@@ -221,7 +245,7 @@ void PathDisplay::updateVisual(int _index)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void PathDisplay::setShape(const bool & _shape)
+void PathDisplay::setShape(const int & _shape)
 {
   std::lock_guard<std::mutex>(this->lock);
   this->visualShape = _shape;

@@ -111,9 +111,9 @@ public:
 
   /**
    * @brief Set path visual shape
-   * @param _shape Visual shape. True: Arrow; False Axis
+   * @param _index Visual shape. 0: None; 1: Arrow; 2: Axes
    */
-  Q_INVOKABLE void setShape(const bool & _shape);
+  Q_INVOKABLE void setShape(const int & _index);
 
   /**
    * @brief Set axis arrow head visibility
@@ -183,7 +183,7 @@ private:
   nav_msgs::msg::Path::SharedPtr msg;
   QStringList topicList;
   bool dirty;
-  bool visualShape;  // True: Arrow; False: Axis
+  int visualShape;  // 0: None; 1: Arrow; False: Axis
 
   // Arrows
   std::vector<rendering::ArrowVisualPtr> arrows;
@@ -198,6 +198,10 @@ private:
   float axisLength;
   float axisRadius;
   bool axisHeadVisible;
+
+  // Line
+  math::Color color;
+  bool createMarker;
 };
 
 }  // namespace plugins

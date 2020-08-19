@@ -81,7 +81,7 @@ Item {
       Text {
         width: 110
         Layout.minimumWidth: 110
-        text: "Shape"
+        text: "Pose Style"
         font.pointSize: 10.5
       }
 
@@ -89,19 +89,19 @@ Item {
         id: shapeCombo
         Layout.fillWidth: true
         currentIndex: 0
-        model: [ "Arrow", "Axis" ]
+        model: [ "None", "Arrow", "Axis" ]
         onCurrentIndexChanged: {
           if (currentIndex < 0) {
             return;
           }
-          PathDisplay.setShape(currentIndex === 0)
+          PathDisplay.setShape(currentIndex)
         }
       }
     }
 
     ColumnLayout {
       id: arrowConfig
-      visible: shapeCombo.currentIndex === 0
+      visible: shapeCombo.currentIndex === 1
       width: parent.width
       Layout.fillWidth: true
 
@@ -278,7 +278,7 @@ Item {
 
     ColumnLayout {
       id: axisConfig
-      visible: shapeCombo.currentIndex === 1
+      visible: shapeCombo.currentIndex === 2
       width: parent.width
       Layout.fillWidth: true
 
