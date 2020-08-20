@@ -23,6 +23,10 @@
     <file alias="ImageDisplay.qml">qml/ImageDisplay.qml</file>
   </qresource>
 
+  <qresource prefix="PathDisplay/">
+    <file alias="PathDisplay.qml">qml/PathDisplay.qml</file>
+  </qresource>
+
   <qresource prefix="PointStampedDisplay/">
     <file alias="PointStampedDisplay.qml">qml/PointStampedDisplay.qml</file>
   </qresource>

@@ -36,6 +36,9 @@ Rectangle {
       case "addLaserScanDisplay":
         RViz.addLaserScanDisplay();
         break;
+      case "addPathDisplay":
+        RViz.addPathDisplay();
+        break;
       case "addPointStampedDisplay":
         RViz.addPointStampedDisplay();
         break;
@@ -85,6 +88,12 @@ Rectangle {
       title: "LaserScan"
       icon: "icons/LaserScan.png"
       actionElement: "addLaserScanDisplay"
+    }
+
+    ListElement {
+      title: "Path"
+      icon: "icons/Path.png"
+      actionElement: "addPathDisplay"
     }
 
     ListElement {

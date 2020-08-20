@@ -14,6 +14,7 @@ endif()
 # ROS2 packages
 find_package(ament_cmake REQUIRED)
 find_package(geometry_msgs REQUIRED)
+find_package(nav_msgs REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(std_msgs REQUIRED)
@@ -116,6 +117,19 @@ add_ign_rviz_plugin(
     ignition-math6
     ignition-rendering4
     ign_rviz_common
+)
+
+########################################################################
+add_ign_rviz_plugin(
+  NAME PathDisplay
+  DEPENDENCIES
+    geometry_msgs
+    ign_rviz_common
+    ignition-gui4
+    ignition-math6
+    ignition-rendering4
+    nav_msgs
+    tf2_ros
 )
 
 ########################################################################
@@ -233,6 +247,7 @@ ament_export_libraries(
   GlobalOptions
   ImageDisplay
   LaserScanDisplay
+  PathDisplay
   PointStampedDisplay
   PolygonDisplay
   PoseDisplay
@@ -247,6 +262,7 @@ install(
     GlobalOptions
     ImageDisplay
     LaserScanDisplay
+    PathDisplay
     PointStampedDisplay
     PolygonDisplay
     PoseDisplay
