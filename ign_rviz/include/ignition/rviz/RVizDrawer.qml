@@ -199,7 +199,7 @@ Rectangle {
   ApplicationWindow {
     id: topicWindow
     title: "Select Topic"
-    width: 500
+    width: 550
     height: 300
 
     ListView {
@@ -208,6 +208,39 @@ Rectangle {
       delegate: ItemDelegate {
         width: parent.width
         text: model.topic + "  :  " + model.msgType
+        onClicked: {
+          switch(model.msgType) {
+            case "geometry_msgs/msg/PointStamped": {
+              RViz.addPointStampedDisplay(model.topic)
+              break;
+            }
+            case "geometry_msgs/msg/PolygonStamped": {
+              RViz.addPolygonDisplay(model.topic)
+              break;
+            }
+            case "geometry_msgs/msg/PoseStamped": {
+              RViz.addPoseDisplay(model.topic)
+              break;
+            }
+            case "geometry_msgs/msg/PoseArray": {
+              RViz.addPoseArrayDisplay(model.topic)
+              break;
+            }
+            case "nav_msgs/msg/Path": {
+              RViz.addPathDisplay(model.topic)
+              break;
+            }
+            case "sensor_msgs/msg/Image": {
+              RViz.addImageDisplay(model.topic)
+              break;
+            }
+            case "sensor_msgs/msg/LaserScan": {
+              RViz.addLaserScanDisplay(model.topic)
+              break;
+            }
+          }
+          topicWindow.close();
+        }
       }
 
       ScrollIndicator.vertical: ScrollIndicator { }

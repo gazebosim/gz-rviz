@@ -24,16 +24,6 @@
 
 #include <rclcpp/rclcpp.hpp>
 
-#include <geometry_msgs/msg/point_stamped.hpp>
-#include <geometry_msgs/msg/polygon_stamped.hpp>
-#include <geometry_msgs/msg/pose_stamped.hpp>
-#include <geometry_msgs/msg/pose_array.hpp>
-#include <nav_msgs/msg/path.hpp>
-#include <sensor_msgs/msg/image.hpp>
-#include <sensor_msgs/msg/laser_scan.hpp>
-#include <std_msgs/msg/string.hpp>
-#include <tf2_msgs/msg/tf_message.hpp>
-
 #include <ignition/rviz/plugins/message_display_base.hpp>
 
 #include <memory>
@@ -129,33 +119,39 @@ public:
 
   /**
    * @brief Loads LaserScan Visualization Plugin
+   * @param[in] _topic Topic name
    */
-  Q_INVOKABLE void addLaserScanDisplay() const;
+  Q_INVOKABLE void addLaserScanDisplay(const QString & _topic = "/scan") const;
 
   /**
    * @brief Loads PointStamped Visualization Plugin
+   * @param[in] _topic Topic name
    */
-  Q_INVOKABLE void addPointStampedDisplay() const;
+  Q_INVOKABLE void addPointStampedDisplay(const QString & _topic = "/point") const;
 
   /**
    * @brief Loads Polygon Visualization Plugin
+   * @param[in] _topic Topic name
    */
-  Q_INVOKABLE void addPolygonDisplay() const;
+  Q_INVOKABLE void addPolygonDisplay(const QString & _topic = "/polygon") const;
 
   /**
    * @brief Loads Pose Visualization Plugin
+   * @param[in] _topic Topic name
    */
-  Q_INVOKABLE void addPoseDisplay() const;
+  Q_INVOKABLE void addPoseDisplay(const QString & _topic = "/pose") const;
 
   /**
    * @brief Loads PoseArray Visualization Plugin
+   * @param[in] _topic Topic name
    */
-  Q_INVOKABLE void addPoseArrayDisplay() const;
+  Q_INVOKABLE void addPoseArrayDisplay(const QString & _topic = "/pose_array") const;
 
   /**
    * @brief Loads Path Visualization Plugin
+   * @param[in] _topic Topic name
    */
-  Q_INVOKABLE void addPathDisplay() const;
+  Q_INVOKABLE void addPathDisplay(const QString & _topic = "/path") const;
 
   /**
    * @brief Loads RobotModel Dispaly Plugin
@@ -164,8 +160,9 @@ public:
 
   /**
    * @brief Loads Image Display Plugin
+   * @param[in] _topic Topic name
    */
-  Q_INVOKABLE void addImageDisplay() const;
+  Q_INVOKABLE void addImageDisplay(const QString & _topic = "/image") const;
 
   /**
    * @brief Loads Axes Visualization Plugin

@@ -14,12 +14,27 @@
 
 #include "ignition/rviz/rviz.hpp"
 
+#include <geometry_msgs/msg/point_stamped.hpp>
+#include <geometry_msgs/msg/polygon_stamped.hpp>
+#include <geometry_msgs/msg/pose_stamped.hpp>
+#include <geometry_msgs/msg/pose_array.hpp>
+#include <nav_msgs/msg/path.hpp>
+#include <sensor_msgs/msg/image.hpp>
+#include <sensor_msgs/msg/laser_scan.hpp>
+#include <std_msgs/msg/string.hpp>
+#include <tf2_msgs/msg/tf_message.hpp>
+
+#include <memory>
+#include <string>
+#include <vector>
+
 namespace ignition
 {
 namespace rviz
 {
 ////////////////////////////////////////////////////////////////////////////////
-TopicModel::TopicModel(QObject * _parent) : QStandardItemModel(_parent) {}
+TopicModel::TopicModel(QObject * _parent)
+: QStandardItemModel(_parent) {}
 
 ////////////////////////////////////////////////////////////////////////////////
 void TopicModel::addTopic(const std::string & _name, const std::string & _msgType)
@@ -63,7 +78,7 @@ RViz::RViz()
   this->supportedDisplays = {
     "geometry_msgs/msg/PointStamped",
     "geometry_msgs/msg/PolygonStamped",
-    "geometry_msgs/msg/Pose",
+    "geometry_msgs/msg/PoseStamped",
     "geometry_msgs/msg/PoseArray",
     "nav_msgs/msg/Path",
     "sensor_msgs/msg/Image",
@@ -88,7 +103,6 @@ void RViz::refreshTopicList() const
           supportedDisplays.begin(), supportedDisplays.end(),
           topicType) != this->supportedDisplays.end())
       {
-        RCLCPP_INFO(this->node->get_logger(), "%s", topic.first.c_str());
         this->topicModel->addTopic(topic.first, topicType);
       }
     }
@@ -119,7 +133,7 @@ void RViz::addTFDisplay() const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void RViz::addLaserScanDisplay() const
+void RViz::addLaserScanDisplay(const QString & _topic) const
 {
   // Load plugin
   if (ignition::gui::App()->LoadPlugin("LaserScanDisplay")) {
@@ -129,7 +143,7 @@ void RViz::addLaserScanDisplay() const
 
     // Set frame manager and install event filter for recently added plugin
     laserScanPlugin[pluginCount]->initialize(this->node);
-    laserScanPlugin[pluginCount]->setTopic("/scan");
+    laserScanPlugin[pluginCount]->setTopic(_topic.toStdString());
     laserScanPlugin[pluginCount]->setFrameManager(this->frameManager);
     ignition::gui::App()->findChild<ignition::gui::MainWindow *>()->installEventFilter(
       laserScanPlugin[pluginCount]);
@@ -137,7 +151,7 @@ void RViz::addLaserScanDisplay() const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void RViz::addPointStampedDisplay() const
+void RViz::addPointStampedDisplay(const QString & _topic) const
 {
   // Load plugin
   if (ignition::gui::App()->LoadPlugin("PointStampedDisplay")) {
@@ -147,7 +161,7 @@ void RViz::addPointStampedDisplay() const
 
     // Set frame manager and install event filter for recently added plugin
     pointStampedPlugin[pluginCount]->initialize(this->node);
-    pointStampedPlugin[pluginCount]->setTopic("/point");
+    pointStampedPlugin[pluginCount]->setTopic(_topic.toStdString());
     pointStampedPlugin[pluginCount]->setFrameManager(this->frameManager);
     ignition::gui::App()->findChild<ignition::gui::MainWindow *>()->installEventFilter(
       pointStampedPlugin[pluginCount]);
@@ -155,7 +169,7 @@ void RViz::addPointStampedDisplay() const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void RViz::addPolygonDisplay() const
+void RViz::addPolygonDisplay(const QString & _topic) const
 {
   // Load plugin
   if (ignition::gui::App()->LoadPlugin("PolygonDisplay")) {
@@ -165,7 +179,7 @@ void RViz::addPolygonDisplay() const
 
     // Set frame manager and install event filter for recently added plugin
     polygonPlugin[pluginCount]->initialize(this->node);
-    polygonPlugin[pluginCount]->setTopic("/polygon");
+    polygonPlugin[pluginCount]->setTopic(_topic.toStdString());
     polygonPlugin[pluginCount]->setFrameManager(this->frameManager);
     ignition::gui::App()->findChild<ignition::gui::MainWindow *>()->installEventFilter(
       polygonPlugin[pluginCount]);
@@ -173,7 +187,7 @@ void RViz::addPolygonDisplay() const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void RViz::addPoseDisplay() const
+void RViz::addPoseDisplay(const QString & _topic) const
 {
   // Load plugin
   if (ignition::gui::App()->LoadPlugin("PoseDisplay")) {
@@ -183,7 +197,7 @@ void RViz::addPoseDisplay() const
 
     // Set frame manager and install event filter for recently added plugin
     posePlugin[pluginCount]->initialize(this->node);
-    posePlugin[pluginCount]->setTopic("/pose");
+    posePlugin[pluginCount]->setTopic(_topic.toStdString());
     posePlugin[pluginCount]->setFrameManager(this->frameManager);
     ignition::gui::App()->findChild<ignition::gui::MainWindow *>()->installEventFilter(
       posePlugin[pluginCount]);
@@ -191,7 +205,7 @@ void RViz::addPoseDisplay() const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void RViz::addPoseArrayDisplay() const
+void RViz::addPoseArrayDisplay(const QString & _topic) const
 {
   // Load plugin
   if (ignition::gui::App()->LoadPlugin("PoseArrayDisplay")) {
@@ -201,7 +215,7 @@ void RViz::addPoseArrayDisplay() const
 
     // Set frame manager and install event filter for recently added plugin
     poseArrayPlugin[pluginCount]->initialize(this->node);
-    poseArrayPlugin[pluginCount]->setTopic("/pose_array");
+    poseArrayPlugin[pluginCount]->setTopic(_topic.toStdString());
     poseArrayPlugin[pluginCount]->setFrameManager(this->frameManager);
     ignition::gui::App()->findChild<ignition::gui::MainWindow *>()->installEventFilter(
       poseArrayPlugin[pluginCount]);
@@ -209,7 +223,7 @@ void RViz::addPoseArrayDisplay() const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void RViz::addPathDisplay() const
+void RViz::addPathDisplay(const QString & _topic) const
 {
   // Load plugin
   if (ignition::gui::App()->LoadPlugin("PathDisplay")) {
@@ -219,7 +233,7 @@ void RViz::addPathDisplay() const
 
     // Set frame manager and install event filter for recently added plugin
     pathPlugin[pluginCount]->initialize(this->node);
-    pathPlugin[pluginCount]->setTopic("/path");
+    pathPlugin[pluginCount]->setTopic(_topic.toStdString());
     pathPlugin[pluginCount]->setFrameManager(this->frameManager);
     ignition::gui::App()->findChild<ignition::gui::MainWindow *>()->installEventFilter(
       pathPlugin[pluginCount]);
@@ -245,7 +259,7 @@ void RViz::addRobotModelDisplay() const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void RViz::addImageDisplay() const
+void RViz::addImageDisplay(const QString & _topic) const
 {
   // Load plugin
   if (ignition::gui::App()->LoadPlugin("ImageDisplay")) {
@@ -255,7 +269,7 @@ void RViz::addImageDisplay() const
 
     // Set frame manager and install event filter for recently added plugin
     imageDisplayPlugin[pluginCount]->initialize(this->node);
-    imageDisplayPlugin[pluginCount]->setTopic("/image");
+    imageDisplayPlugin[pluginCount]->setTopic(_topic.toStdString());
   }
 }
 
