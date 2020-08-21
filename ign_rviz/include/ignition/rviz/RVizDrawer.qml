@@ -195,51 +195,105 @@ Rectangle {
     topicWindow.show();
   }
 
+  /**
+   * @brief Load plugin on selection
+   * @param[in] _name Topic name
+   * @param[in] _msgType Message type
+   */
+  function loadPlugin(_name, _msgType) {
+    switch(_msgType) {
+      case "geometry_msgs/msg/PointStamped": {
+        RViz.addPointStampedDisplay(_name)
+        break;
+      }
+      case "geometry_msgs/msg/PolygonStamped": {
+        RViz.addPolygonDisplay(_name)
+        break;
+      }
+      case "geometry_msgs/msg/PoseStamped": {
+        RViz.addPoseDisplay(_name)
+        break;
+      }
+      case "geometry_msgs/msg/PoseArray": {
+        RViz.addPoseArrayDisplay(_name)
+        break;
+      }
+      case "nav_msgs/msg/Path": {
+        RViz.addPathDisplay(_name)
+        break;
+      }
+      case "sensor_msgs/msg/Image": {
+        RViz.addImageDisplay(_name)
+        break;
+      }
+      case "sensor_msgs/msg/LaserScan": {
+        RViz.addLaserScanDisplay(_name)
+        break;
+      }
+    }
+  }
+
   // Select topic window
   ApplicationWindow {
     id: topicWindow
     title: "Select Topic"
-    width: 550
-    height: 300
+    width: 500
+    height: 320
+    color: "#fff"
 
     ListView {
       anchors.fill: parent
       model: RViz.topicModel
-      delegate: ItemDelegate {
+      delegate: Rectangle {
+        height: 40
         width: parent.width
-        text: model.topic + "  :  " + model.msgType
-        onClicked: {
-          switch(model.msgType) {
-            case "geometry_msgs/msg/PointStamped": {
-              RViz.addPointStampedDisplay(model.topic)
-              break;
-            }
-            case "geometry_msgs/msg/PolygonStamped": {
-              RViz.addPolygonDisplay(model.topic)
-              break;
-            }
-            case "geometry_msgs/msg/PoseStamped": {
-              RViz.addPoseDisplay(model.topic)
-              break;
-            }
-            case "geometry_msgs/msg/PoseArray": {
-              RViz.addPoseArrayDisplay(model.topic)
-              break;
-            }
-            case "nav_msgs/msg/Path": {
-              RViz.addPathDisplay(model.topic)
-              break;
-            }
-            case "sensor_msgs/msg/Image": {
-              RViz.addImageDisplay(model.topic)
-              break;
-            }
-            case "sensor_msgs/msg/LaserScan": {
-              RViz.addLaserScanDisplay(model.topic)
-              break;
+        color: topicArea.containsMouse ? Material.color(Material.Grey, Material.Shade200) : "#fff"
+        Row {
+          width: parent.width
+          height: parent.height
+          spacing: 10
+          anchors.left: parent.left
+          anchors.leftMargin: 10
+
+          Text {
+            width: parent.width - 160
+            anchors.verticalCenter: parent.verticalCenter
+            text: model.topic
+            clip: true
+          }
+
+          Image {
+            height: 15
+            width: 15
+            anchors.verticalCenter: parent.verticalCenter
+            source: {
+              var type = model.msgType.split("/")[2]
+              if(type != "PointStamped") {
+                type = type.replace("Stamped", "")
+              }
+              return "icons/" + type + ".png"
             }
           }
-          topicWindow.close();
+
+          Text {
+            width: 145
+            anchors.verticalCenter: parent.verticalCenter
+            clip: true
+            text: {
+              var type = model.msgType.split("/")[2]
+              return (type == "PointStamped") ? type : type.replace("Stamped", "")
+            }
+          }
+        }
+
+        MouseArea {
+          id: topicArea
+          anchors.fill: parent
+          hoverEnabled: true
+          onClicked: {
+            loadPlugin(model.topic, model.msgType);
+            topicWindow.close();
+          }
         }
       }
 
