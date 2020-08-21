@@ -37,22 +37,142 @@
 #include <ignition/rviz/plugins/message_display_base.hpp>
 
 #include <memory>
+#include <string>
 #include <vector>
 
 namespace ignition
 {
 namespace rviz
 {
-
 template<typename MessageType>
 using DisplayPlugin = plugins::MessageDisplay<MessageType>;
 
-class RViz : public QObject
+////////////////////////////////////////////////////////////////////////////////
+/**
+ * @brief Helper class to render ros topics in a list
+ */
+class TopicModel : public QStandardItemModel
 {
   Q_OBJECT
 
 public:
-  RViz() {}
+  /**
+   * @brief Roles for topics
+   */
+  enum TopicRoles
+  {
+    NameRole = Qt::UserRole + 3,
+    TypeRole
+  };
+
+  // Constructor
+  explicit TopicModel(QObject * _parent = 0)
+  : QStandardItemModel(_parent) {}
+
+  /**
+   * @brief Add a topic to list view
+   * @param[in] _name Topic name
+   */
+  Q_INVOKABLE void addTopic(const std::string & _name, const std::string & _msgType)
+  {
+    QStandardItem * entry = new QStandardItem();
+    entry->setData(QString::fromStdString(_name), NameRole);
+    entry->setData(QString::fromStdString(_msgType), TypeRole);
+    appendRow(entry);
+  }
+
+  // Documentation inherited
+  QVariant data(const QModelIndex & _index, int _role = Qt::DisplayRole) const
+  {
+    QStandardItem * myItem = itemFromIndex(_index);
+
+    if (_role == NameRole) {
+      return myItem->data(NameRole);
+    }
+
+    if (_role == TypeRole) {
+      return myItem->data(TypeRole);
+    }
+
+    return QVariant();
+  }
+
+protected:
+  // Documentation inherited
+  QHash<int, QByteArray> roleNames() const
+  {
+    QHash<int, QByteArray> roles;
+    roles[NameRole] = "topic";
+    roles[TypeRole] = "msgType";
+    return roles;
+  }
+};
+
+////////////////////////////////////////////////////////////////////////////////
+class RViz : public QObject
+{
+  Q_OBJECT
+
+  /**
+   * @brief Topic model
+   */
+  Q_PROPERTY(
+    TopicModel * topicModel
+    READ getTopicModel
+    NOTIFY topicModelChanged
+  )
+
+public:
+  RViz()
+  {
+    this->topicModel = new TopicModel();
+  }
+
+  std::vector<std::string> supportedDisplays = {
+    "geometry_msgs/msg/PointStamped",
+    "geometry_msgs/msg/PolygonStamped",
+    "geometry_msgs/msg/Pose",
+    "geometry_msgs/msg/PoseArray",
+    "nav_msgs/msg/Path",
+    "sensor_msgs/msg/Image",
+    "sensor_msgs/msg/LaserScan"
+  };
+
+signals:
+  /**
+   * @brief Notify topic model has changed
+   */
+  void topicModelChanged();
+
+public:
+  /**
+   * @brief Get topic model
+   * @return Topic model
+   */
+  Q_INVOKABLE TopicModel * getTopicModel() const
+  {
+    return this->topicModel;
+  }
+
+  /**
+   * @brief Refreshes the supported display topic list
+   */
+  Q_INVOKABLE void refreshTopicList() const
+  {
+    this->topicModel->removeRows(0, this->topicModel->rowCount());
+    auto topics = this->node->get_topic_names_and_types();
+    for (const auto & topic : topics) {
+      for (const auto & topicType : topic.second) {
+        if (std::find(
+            supportedDisplays.begin(), supportedDisplays.end(),
+            topicType) != this->supportedDisplays.end())
+        {
+          RCLCPP_INFO(this->node->get_logger(), "%s", topic.first.c_str());
+          this->topicModel->addTopic(topic.first, topicType);
+        }
+      }
+    }
+  }
 
   /**
    * @brief Add Grid visual to Scene3D
@@ -293,8 +413,10 @@ public:
 private:
   // Data Members
   rclcpp::Node::SharedPtr node;
-
   std::shared_ptr<common::FrameManager> frameManager;
+
+  // Topic model
+  TopicModel * topicModel;
 };
 
 }  // namespace rviz

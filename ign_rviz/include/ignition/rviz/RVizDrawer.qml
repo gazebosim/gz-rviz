@@ -17,6 +17,7 @@
 import QtQuick 2.9
 import QtQuick.Controls 2.2
 import QtQuick.Controls.Material 2.1
+import QtQuick.Window 2.0
 
 Rectangle {
   id: displayDrawer
@@ -24,6 +25,9 @@ Rectangle {
 
   function onAction(action) {
     switch(action) {
+      case "loadPluginByTopic":
+        loadPluginByTopic();
+        break;
       case "addAxesDisplay":
         RViz.addAxesDisplay();
         break;
@@ -65,6 +69,12 @@ Rectangle {
 
   ListModel {
     id: displayDrawerModel
+
+    ListElement {
+      title: "Add By Topic"
+      icon: "icons/Add.png"
+      actionElement: "loadPluginByTopic"
+    }
 
     ListElement {
       title: "Axes"
@@ -174,5 +184,39 @@ Rectangle {
 
     model: displayDrawerModel
     ScrollIndicator.vertical: ScrollIndicator { }
+  }
+
+  /**
+   *  @brief Load display by available topic
+   *  Refresh topic list with available display topics
+   */
+  function loadPluginByTopic() {
+    RViz.refreshTopicList();
+    topicWindow.show();
+  }
+
+  // Select topic window
+  ApplicationWindow {
+    id: topicWindow
+    title: "Select Topic"
+    width: 500
+    height: 300
+
+    ListView {
+      anchors.fill: parent
+      model: RViz.topicModel
+      delegate: ItemDelegate {
+        width: parent.width
+        text: model.topic + "  :  " + model.msgType
+      }
+
+      ScrollIndicator.vertical: ScrollIndicator { }
+    }
+
+    // Center on sceen
+    Component.onCompleted: {
+      setX(Screen.width / 2 - width / 2);
+      setY(Screen.height / 2 - height / 2);
+    }
   }
 }
