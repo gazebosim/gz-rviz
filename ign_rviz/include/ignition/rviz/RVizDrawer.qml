@@ -241,9 +241,23 @@ Rectangle {
     height: 320
     color: "#fff"
 
+    Rectangle {
+      anchors.fill: parent
+      color: "#fff"
+      visible: topicList.count == 0
+      Text {
+        anchors.verticalCenter: parent.verticalCenter
+        anchors.horizontalCenter: parent.horizontalCenter
+        text: "No topics available"
+        font.pointSize: 14
+      }
+    }
+
     ListView {
       anchors.fill: parent
       model: RViz.topicModel
+      id: topicList
+      visible: topicList.count != 0
       delegate: Rectangle {
         height: 40
         width: parent.width
