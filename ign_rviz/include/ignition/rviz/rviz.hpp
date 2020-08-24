@@ -61,6 +61,7 @@ public:
   /**
    * @brief Add a topic to list view
    * @param[in] _name Topic name
+   * @param[in] _msgType Message type
    */
   Q_INVOKABLE void addTopic(const std::string & _name, const std::string & _msgType);
 
