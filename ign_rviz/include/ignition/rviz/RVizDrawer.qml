@@ -17,6 +17,7 @@
 import QtQuick 2.9
 import QtQuick.Controls 2.2
 import QtQuick.Controls.Material 2.1
+import QtQuick.Window 2.0
 
 Rectangle {
   id: displayDrawer
@@ -24,6 +25,9 @@ Rectangle {
 
   function onAction(action) {
     switch(action) {
+      case "loadPluginByTopic":
+        loadPluginByTopic();
+        break;
       case "addAxesDisplay":
         RViz.addAxesDisplay();
         break;
@@ -65,6 +69,12 @@ Rectangle {
 
   ListModel {
     id: displayDrawerModel
+
+    ListElement {
+      title: "Add By Topic"
+      icon: "icons/Add.png"
+      actionElement: "loadPluginByTopic"
+    }
 
     ListElement {
       title: "Axes"
@@ -174,5 +184,140 @@ Rectangle {
 
     model: displayDrawerModel
     ScrollIndicator.vertical: ScrollIndicator { }
+  }
+
+  /**
+   *  @brief Load display by available topic
+   *  Refresh topic list with available display topics
+   */
+  function loadPluginByTopic() {
+    RViz.refreshTopicList();
+    topicWindow.show();
+  }
+
+  /**
+   * @brief Load plugin on selection
+   * @param[in] _name Topic name
+   * @param[in] _msgType Message type
+   */
+  function loadPlugin(_name, _msgType) {
+    switch(_msgType) {
+      case "geometry_msgs/msg/PointStamped": {
+        RViz.addPointStampedDisplay(_name)
+        break;
+      }
+      case "geometry_msgs/msg/PolygonStamped": {
+        RViz.addPolygonDisplay(_name)
+        break;
+      }
+      case "geometry_msgs/msg/PoseStamped": {
+        RViz.addPoseDisplay(_name)
+        break;
+      }
+      case "geometry_msgs/msg/PoseArray": {
+        RViz.addPoseArrayDisplay(_name)
+        break;
+      }
+      case "nav_msgs/msg/Path": {
+        RViz.addPathDisplay(_name)
+        break;
+      }
+      case "sensor_msgs/msg/Image": {
+        RViz.addImageDisplay(_name)
+        break;
+      }
+      case "sensor_msgs/msg/LaserScan": {
+        RViz.addLaserScanDisplay(_name)
+        break;
+      }
+    }
+  }
+
+  // Select topic window
+  ApplicationWindow {
+    id: topicWindow
+    title: "Select Topic"
+    width: 500
+    height: 320
+    color: "#fff"
+
+    Rectangle {
+      anchors.fill: parent
+      color: "#fff"
+      visible: topicList.count == 0
+      Text {
+        anchors.verticalCenter: parent.verticalCenter
+        anchors.horizontalCenter: parent.horizontalCenter
+        text: "No topics available"
+        font.pointSize: 14
+      }
+    }
+
+    ListView {
+      anchors.fill: parent
+      model: RViz.topicModel
+      id: topicList
+      visible: topicList.count != 0
+      delegate: Rectangle {
+        height: 40
+        width: parent.width
+        color: topicArea.containsMouse ? Material.color(Material.Grey, Material.Shade200) : "#fff"
+        Row {
+          width: parent.width
+          height: parent.height
+          spacing: 10
+          anchors.left: parent.left
+          anchors.leftMargin: 10
+
+          Text {
+            width: parent.width - 160
+            anchors.verticalCenter: parent.verticalCenter
+            text: model.topic
+            clip: true
+          }
+
+          Image {
+            height: 15
+            width: 15
+            anchors.verticalCenter: parent.verticalCenter
+            source: {
+              var type = model.msgType.split("/")[2]
+              if(type != "PointStamped") {
+                type = type.replace("Stamped", "")
+              }
+              return "icons/" + type + ".png"
+            }
+          }
+
+          Text {
+            width: 145
+            anchors.verticalCenter: parent.verticalCenter
+            clip: true
+            text: {
+              var type = model.msgType.split("/")[2]
+              return (type == "PointStamped") ? type : type.replace("Stamped", "")
+            }
+          }
+        }
+
+        MouseArea {
+          id: topicArea
+          anchors.fill: parent
+          hoverEnabled: true
+          onClicked: {
+            loadPlugin(model.topic, model.msgType);
+            topicWindow.close();
+          }
+        }
+      }
+
+      ScrollIndicator.vertical: ScrollIndicator { }
+    }
+
+    // Center on sceen
+    Component.onCompleted: {
+      setX(Screen.width / 2 - width / 2);
+      setY(Screen.height / 2 - height / 2);
+    }
   }
 }

@@ -24,277 +24,172 @@
 
 #include <rclcpp/rclcpp.hpp>
 
-#include <geometry_msgs/msg/point_stamped.hpp>
-#include <geometry_msgs/msg/polygon_stamped.hpp>
-#include <geometry_msgs/msg/pose_stamped.hpp>
-#include <geometry_msgs/msg/pose_array.hpp>
-#include <nav_msgs/msg/path.hpp>
-#include <sensor_msgs/msg/image.hpp>
-#include <sensor_msgs/msg/laser_scan.hpp>
-#include <std_msgs/msg/string.hpp>
-#include <tf2_msgs/msg/tf_message.hpp>
-
 #include <ignition/rviz/plugins/message_display_base.hpp>
 
 #include <memory>
+#include <string>
 #include <vector>
 
 namespace ignition
 {
 namespace rviz
 {
-
 template<typename MessageType>
 using DisplayPlugin = plugins::MessageDisplay<MessageType>;
 
-class RViz : public QObject
+////////////////////////////////////////////////////////////////////////////////
+/**
+ * @brief Helper class to render ros topics in a list
+ */
+class TopicModel : public QStandardItemModel
 {
   Q_OBJECT
 
 public:
-  RViz() {}
+  /**
+   * @brief Roles for topics
+   */
+  enum TopicRoles
+  {
+    NameRole = Qt::UserRole + 3,
+    TypeRole
+  };
+
+  // Constructor
+  explicit TopicModel(QObject * _parent = 0);
+
+  /**
+   * @brief Add a topic to list view
+   * @param[in] _name Topic name
+   * @param[in] _msgType Message type
+   */
+  Q_INVOKABLE void addTopic(const std::string & _name, const std::string & _msgType);
+
+  // Documentation inherited
+  QVariant data(const QModelIndex & _index, int _role = Qt::DisplayRole) const;
+
+protected:
+  // Documentation inherited
+  QHash<int, QByteArray> roleNames() const;
+};
+
+////////////////////////////////////////////////////////////////////////////////
+class RViz : public QObject
+{
+  Q_OBJECT
+
+  /**
+   * @brief Topic model
+   */
+  Q_PROPERTY(
+    TopicModel * topicModel
+    READ getTopicModel
+    NOTIFY topicModelChanged
+  )
+
+public:
+  RViz();
+
+signals:
+  /**
+   * @brief Notify topic model has changed
+   */
+  void topicModelChanged();
+
+public:
+  /**
+   * @brief Get topic model
+   * @return Topic model
+   */
+  Q_INVOKABLE TopicModel * getTopicModel() const;
+
+  /**
+   * @brief Refreshes the supported display topic list
+   */
+  Q_INVOKABLE void refreshTopicList() const;
 
   /**
    * @brief Add Grid visual to Scene3D
    */
-  Q_INVOKABLE void addGrid3D() const
-  {
-    ignition::gui::App()->LoadPlugin("Grid3D");
-  }
+  Q_INVOKABLE void addGrid3D() const;
 
   /**
    * @brief Loads TF Visualization Plugin
    */
-  Q_INVOKABLE void addTFDisplay()
-  {
-    // Load plugin
-    if (ignition::gui::App()->LoadPlugin("TFDisplay")) {
-      auto tfDisplayPlugins =
-        ignition::gui::App()->findChildren<DisplayPlugin<tf2_msgs::msg::TFMessage> *>();
-      int tfDisplayCount = tfDisplayPlugins.size() - 1;
-
-      // Set frame manager and install event filter for recently added plugin
-      tfDisplayPlugins[tfDisplayCount]->initialize(this->node);
-      tfDisplayPlugins[tfDisplayCount]->setFrameManager(this->frameManager);
-      ignition::gui::App()->findChild<ignition::gui::MainWindow *>()->installEventFilter(
-        tfDisplayPlugins[tfDisplayCount]);
-    }
-  }
+  Q_INVOKABLE void addTFDisplay() const;
 
   /**
    * @brief Loads LaserScan Visualization Plugin
+   * @param[in] _topic Topic name
    */
-  Q_INVOKABLE void addLaserScanDisplay()
-  {
-    // Load plugin
-    if (ignition::gui::App()->LoadPlugin("LaserScanDisplay")) {
-      auto laserScanPlugin =
-        ignition::gui::App()->findChildren<DisplayPlugin<sensor_msgs::msg::LaserScan> *>();
-      int pluginCount = laserScanPlugin.size() - 1;
-
-      // Set frame manager and install event filter for recently added plugin
-      laserScanPlugin[pluginCount]->initialize(this->node);
-      laserScanPlugin[pluginCount]->setTopic("/scan");
-      laserScanPlugin[pluginCount]->setFrameManager(this->frameManager);
-      ignition::gui::App()->findChild<ignition::gui::MainWindow *>()->installEventFilter(
-        laserScanPlugin[pluginCount]);
-    }
-  }
+  Q_INVOKABLE void addLaserScanDisplay(const QString & _topic = "/scan") const;
 
   /**
    * @brief Loads PointStamped Visualization Plugin
+   * @param[in] _topic Topic name
    */
-  Q_INVOKABLE void addPointStampedDisplay()
-  {
-    // Load plugin
-    if (ignition::gui::App()->LoadPlugin("PointStampedDisplay")) {
-      auto pointStampedPlugin =
-        ignition::gui::App()->findChildren<DisplayPlugin<geometry_msgs::msg::PointStamped> *>();
-      int pluginCount = pointStampedPlugin.size() - 1;
-
-      // Set frame manager and install event filter for recently added plugin
-      pointStampedPlugin[pluginCount]->initialize(this->node);
-      pointStampedPlugin[pluginCount]->setTopic("/point");
-      pointStampedPlugin[pluginCount]->setFrameManager(this->frameManager);
-      ignition::gui::App()->findChild<ignition::gui::MainWindow *>()->installEventFilter(
-        pointStampedPlugin[pluginCount]);
-    }
-  }
-
+  Q_INVOKABLE void addPointStampedDisplay(const QString & _topic = "/point") const;
 
   /**
    * @brief Loads Polygon Visualization Plugin
+   * @param[in] _topic Topic name
    */
-  Q_INVOKABLE void addPolygonDisplay()
-  {
-    // Load plugin
-    if (ignition::gui::App()->LoadPlugin("PolygonDisplay")) {
-      auto polygonPlugin =
-        ignition::gui::App()->findChildren<DisplayPlugin<geometry_msgs::msg::PolygonStamped> *>();
-      int pluginCount = polygonPlugin.size() - 1;
-
-      // Set frame manager and install event filter for recently added plugin
-      polygonPlugin[pluginCount]->initialize(this->node);
-      polygonPlugin[pluginCount]->setTopic("/polygon");
-      polygonPlugin[pluginCount]->setFrameManager(this->frameManager);
-      ignition::gui::App()->findChild<ignition::gui::MainWindow *>()->installEventFilter(
-        polygonPlugin[pluginCount]);
-    }
-  }
+  Q_INVOKABLE void addPolygonDisplay(const QString & _topic = "/polygon") const;
 
   /**
    * @brief Loads Pose Visualization Plugin
+   * @param[in] _topic Topic name
    */
-  Q_INVOKABLE void addPoseDisplay()
-  {
-    // Load plugin
-    if (ignition::gui::App()->LoadPlugin("PoseDisplay")) {
-      auto posePlugin =
-        ignition::gui::App()->findChildren<DisplayPlugin<geometry_msgs::msg::PoseStamped> *>();
-      int pluginCount = posePlugin.size() - 1;
-
-      // Set frame manager and install event filter for recently added plugin
-      posePlugin[pluginCount]->initialize(this->node);
-      posePlugin[pluginCount]->setTopic("/pose");
-      posePlugin[pluginCount]->setFrameManager(this->frameManager);
-      ignition::gui::App()->findChild<ignition::gui::MainWindow *>()->installEventFilter(
-        posePlugin[pluginCount]);
-    }
-  }
+  Q_INVOKABLE void addPoseDisplay(const QString & _topic = "/pose") const;
 
   /**
    * @brief Loads PoseArray Visualization Plugin
+   * @param[in] _topic Topic name
    */
-  Q_INVOKABLE void addPoseArrayDisplay()
-  {
-    // Load plugin
-    if (ignition::gui::App()->LoadPlugin("PoseArrayDisplay")) {
-      auto poseArrayPlugin =
-        ignition::gui::App()->findChildren<DisplayPlugin<geometry_msgs::msg::PoseArray> *>();
-      int pluginCount = poseArrayPlugin.size() - 1;
-
-      // Set frame manager and install event filter for recently added plugin
-      poseArrayPlugin[pluginCount]->initialize(this->node);
-      poseArrayPlugin[pluginCount]->setTopic("/pose_array");
-      poseArrayPlugin[pluginCount]->setFrameManager(this->frameManager);
-      ignition::gui::App()->findChild<ignition::gui::MainWindow *>()->installEventFilter(
-        poseArrayPlugin[pluginCount]);
-    }
-  }
+  Q_INVOKABLE void addPoseArrayDisplay(const QString & _topic = "/pose_array") const;
 
   /**
    * @brief Loads Path Visualization Plugin
+   * @param[in] _topic Topic name
    */
-  Q_INVOKABLE void addPathDisplay()
-  {
-    // Load plugin
-    if (ignition::gui::App()->LoadPlugin("PathDisplay")) {
-      auto pathPlugin =
-        ignition::gui::App()->findChildren<DisplayPlugin<nav_msgs::msg::Path> *>();
-      int pluginCount = pathPlugin.size() - 1;
-
-      // Set frame manager and install event filter for recently added plugin
-      pathPlugin[pluginCount]->initialize(this->node);
-      pathPlugin[pluginCount]->setTopic("/path");
-      pathPlugin[pluginCount]->setFrameManager(this->frameManager);
-      ignition::gui::App()->findChild<ignition::gui::MainWindow *>()->installEventFilter(
-        pathPlugin[pluginCount]);
-    }
-  }
+  Q_INVOKABLE void addPathDisplay(const QString & _topic = "/path") const;
 
   /**
    * @brief Loads RobotModel Dispaly Plugin
    */
-  Q_INVOKABLE void addRobotModelDisplay()
-  {
-    // Load plugin
-    if (ignition::gui::App()->LoadPlugin("RobotModelDisplay")) {
-      auto robotModelPlugin =
-        ignition::gui::App()->findChildren<DisplayPlugin<std_msgs::msg::String> *>();
-      int pluginCount = robotModelPlugin.size() - 1;
-
-      // Set frame manager and install event filter for recently added plugin
-      robotModelPlugin[pluginCount]->initialize(this->node);
-      robotModelPlugin[pluginCount]->setFrameManager(this->frameManager);
-      robotModelPlugin[pluginCount]->setTopic("/robot_description");
-      ignition::gui::App()->findChild<ignition::gui::MainWindow *>()->installEventFilter(
-        robotModelPlugin[pluginCount]);
-    }
-  }
+  Q_INVOKABLE void addRobotModelDisplay() const;
 
   /**
    * @brief Loads Image Display Plugin
+   * @param[in] _topic Topic name
    */
-  Q_INVOKABLE void addImageDisplay()
-  {
-    // Load plugin
-    if (ignition::gui::App()->LoadPlugin("ImageDisplay")) {
-      auto imageDisplayPlugin =
-        ignition::gui::App()->findChildren<DisplayPlugin<sensor_msgs::msg::Image> *>();
-      int pluginCount = imageDisplayPlugin.size() - 1;
-
-      // Set frame manager and install event filter for recently added plugin
-      imageDisplayPlugin[pluginCount]->initialize(this->node);
-      imageDisplayPlugin[pluginCount]->setTopic("/image");
-    }
-  }
+  Q_INVOKABLE void addImageDisplay(const QString & _topic = "/image") const;
 
   /**
    * @brief Loads Axes Visualization Plugin
    */
-  Q_INVOKABLE void addAxesDisplay()
-  {
-    // Load plugin
-    if (ignition::gui::App()->LoadPlugin("AxesDisplay")) {
-      auto axes_plugins =
-        ignition::gui::App()->findChildren<ignition::rviz::plugins::MessageDisplayBase *>();
-      int axes_plugin_count = axes_plugins.size() - 1;
-
-      // Set frame manager and install event filter for recently added plugin
-      axes_plugins[axes_plugin_count]->setFrameManager(this->frameManager);
-      ignition::gui::App()->findChild<ignition::gui::MainWindow *>()->installEventFilter(
-        axes_plugins[axes_plugin_count]);
-    }
-  }
+  Q_INVOKABLE void addAxesDisplay() const;
 
   /**
    * @brief Initialize ignition RViz ROS node and frame manager
    * @throws anything rclcpp::exceptions::throw_from_rcl_error can throw.
    */
-  void init_ros()
-  {
-    this->node = std::make_shared<rclcpp::Node>("ignition_rviz");
-    this->frameManager = std::make_shared<common::FrameManager>(this->node);
-    this->frameManager->setFixedFrame("world");
-
-    // Load Global Options plugin
-    if (ignition::gui::App()->LoadPlugin("GlobalOptions")) {
-      auto globalOptionsPlugin =
-        ignition::gui::App()->findChild<ignition::rviz::plugins::MessageDisplayBase *>();
-
-      // Set frame manager and install
-      globalOptionsPlugin->setFrameManager(this->frameManager);
-
-      // Install event filter
-      ignition::gui::App()->findChild<ignition::gui::MainWindow *>()->installEventFilter(
-        globalOptionsPlugin);
-    }
-  }
+  void init_ros();
 
   /**
    * @brief Returns ignition RViz ROS node
    * @return ROS Node shared pointer
    */
-  rclcpp::Node::SharedPtr get_node()
-  {
-    return this->node;
-  }
+  rclcpp::Node::SharedPtr get_node();
 
 private:
   // Data Members
   rclcpp::Node::SharedPtr node;
-
   std::shared_ptr<common::FrameManager> frameManager;
+  std::vector<std::string> supportedDisplays;
+
+  // Topic model
+  TopicModel * topicModel;
 };
 
 }  // namespace rviz

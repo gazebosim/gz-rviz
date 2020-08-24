@@ -57,7 +57,12 @@ link_directories(
 
 include_directories(include)
 
-add_executable(ign_rviz src/rviz/rviz.cpp include/ignition/rviz/rviz.hpp ${resources_RCC})
+add_executable(ign_rviz
+  src/rviz/application.cpp
+  src/rviz/rviz.cpp
+  include/ignition/rviz/rviz.hpp
+  ${resources_RCC}
+)
 
 ament_target_dependencies(ign_rviz
   ament_index_cpp
