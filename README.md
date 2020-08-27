@@ -1,20 +1,21 @@
 # Ignition RViz
 
-RViz is a 3D visualization program for robots using ROS.
+[RViz](http://wiki.ros.org/rviz) is a 3D visualization tool for robots using ROS.
 
-This version of RViz is developed using Ignition Rendering Library.
+Ignition RViz offers functionality similar to RViz, and is developed using
+[Ignition](https://ignitionrobotics.org/) libraries.
 
 ![Ignition RViz CI](https://github.com/Sarath18/ign-rviz/workflows/Ignition%20RViz%20CI/badge.svg)
 
 ### Requirements
 
-- ROS2
-- ignition libraries
-	- ign-common3
-	- ign-gui4
-	- ign-rendering4
-	- ign-math6
-- Qt5
+- [ROS 2 Foxy](https://index.ros.org/doc/ros2/Releases/Release-Foxy-Fitzroy/)
+- [Ignition Dome](https://ignitionrobotics.org/docs/dome) (under development)
+	- [Ignition Common](https://ignitionrobotics.org/libs/common) 3
+	- [Ignition GUI](https://ignitionrobotics.org/libs/gui) 4
+	- [Ignition Math](https://ignitionrobotics.org/libs/math) 6
+	- [Ignition Rendering](https://ignitionrobotics.org/libs/rendering) 4
+- [Qt5](https://www.qt.io/)
 
 ### Setup the repository
 
@@ -25,7 +26,7 @@ cd ~/colcon_ws/src
 ```
 - **Clone the repository**
 ```bash
-git clone https://github.com/Sarath18/ign-rviz.git
+git clone https://github.com/ignitionrobotics/ign-rviz.git
 ```
 
 - **Build ign-rviz**

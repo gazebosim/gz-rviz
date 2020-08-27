@@ -11,6 +11,8 @@
 
   <depend>rclcpp</depend>
   <depend>geometry_msgs</depend>
+  <depend>ignition-common3</depend>
+  <depend>ignition-math6</depend>
   <depend>tf2_geometry_msgs</depend>
   <depend>tf2_msgs</depend>
   <depend>tf2_ros</depend>

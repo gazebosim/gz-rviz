@@ -14,11 +14,12 @@
 
 #include "ignition/rviz/plugins/TFDisplay.hpp"
 
-#include <ignition/math.hh>
-#include <ignition/math/Color.hh>
-#include <ignition/plugin/Register.hh>
 #include <ignition/gui/Application.hh>
 #include <ignition/gui/GuiEvents.hh>
+#include <ignition/math/Pose3.hh>
+#include <ignition/math/Quaternion.hh>
+#include <ignition/math/Vector3.hh>
+#include <ignition/plugin/Register.hh>
 
 #include <algorithm>
 #include <memory>
