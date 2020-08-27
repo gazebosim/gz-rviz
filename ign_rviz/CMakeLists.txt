@@ -36,7 +36,6 @@ find_package(ign_rviz_plugins REQUIRED)
 find_package(ignition-common3 REQUIRED)
 find_package(ignition-gui4 REQUIRED)
 find_package(ignition-math6 REQUIRED)
-find_package(ignition-rendering4 REQUIRED)
 
 qt5_add_resources(resources_RCC include/ignition/rviz/rviz.qrc)
 

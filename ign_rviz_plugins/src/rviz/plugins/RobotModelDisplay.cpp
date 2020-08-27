@@ -14,11 +14,11 @@
 
 #include "ignition/rviz/plugins/RobotModelDisplay.hpp"
 
-#include <ignition/math.hh>
-#include <ignition/math/Color.hh>
-#include <ignition/plugin/Register.hh>
 #include <ignition/gui/Application.hh>
 #include <ignition/gui/GuiEvents.hh>
+#include <ignition/math/Color.hh>
+#include <ignition/math/Pose3.hh>
+#include <ignition/plugin/Register.hh>
 
 #include <ament_index_cpp/get_package_prefix.hpp>
 #include <ament_index_cpp/get_package_share_directory.hpp>

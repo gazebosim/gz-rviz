@@ -14,15 +14,15 @@
 
 #include "ignition/rviz/plugins/PoseArrayDisplay.hpp"
 
-#include <ignition/math.hh>
-#include <ignition/math/Color.hh>
-#include <ignition/plugin/Register.hh>
 #include <ignition/gui/Application.hh>
 #include <ignition/gui/GuiEvents.hh>
+#include <ignition/math/Pose3.hh>
+#include <ignition/math/Quaternion.hh>
+#include <ignition/plugin/Register.hh>
 
+#include <memory>
 #include <string>
 #include <utility>
-#include <memory>
 #include <vector>
 
 namespace ignition
