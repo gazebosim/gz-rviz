@@ -7,6 +7,8 @@ Ignition RViz offers functionality similar to RViz, and is developed using
 
 ![Ignition RViz CI](https://github.com/Sarath18/ign-rviz/workflows/Ignition%20RViz%20CI/badge.svg)
 
+Head over to the [wiki](https://github.com/ignitionrobotics/ign-rviz/wiki) to get detailed description of the project.
+
 ### Requirements
 
 - [ROS 2 Foxy](https://index.ros.org/doc/ros2/Releases/Release-Foxy-Fitzroy/)
