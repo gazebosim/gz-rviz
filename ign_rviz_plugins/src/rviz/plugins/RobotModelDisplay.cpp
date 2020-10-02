@@ -314,15 +314,25 @@ void RobotModelDisplay::createLink(const urdf::Link * _link)
     robotLink.visual = createLinkGeometry(_link->visual->geometry);
     if (robotLink.visual != nullptr) {
       if (_link->visual->material == nullptr) {
-        // Use default material
-        const auto & mat = this->scene->Material("RobotModel/Red");
-        // Update alpha
-        auto color = mat->Ambient();
-        color.A(this->alpha);
-        mat->SetAmbient(color);
-        mat->SetDiffuse(color);
-        mat->SetEmissive(color);
-        robotLink.visual->SetMaterial(mat);
+        // Set default material only if the visual mesh doeesn't have textures
+        bool meshWithTexture = false;
+        const auto meshInfo = std::dynamic_pointer_cast<urdf::Mesh>(_link->visual->geometry);
+        if (meshInfo != nullptr) {
+          const auto fileExtension = meshInfo->filename.substr(meshInfo->filename.size() - 4);
+          meshWithTexture = (fileExtension == ".dae" || fileExtension == ".obj");
+        }
+
+        if (!meshWithTexture) {
+          // Use default material
+          const auto & mat = this->scene->Material("RobotModel/Red");
+          // Update alpha
+          auto color = mat->Ambient();
+          color.A(this->alpha);
+          mat->SetAmbient(color);
+          mat->SetDiffuse(color);
+          mat->SetEmissive(color);
+          robotLink.visual->SetMaterial(mat);
+        }
       } else if (!_link->visual->material_name.empty()) {
         // Use registered material
         const auto & mat = this->scene->Material(_link->visual->material_name);
