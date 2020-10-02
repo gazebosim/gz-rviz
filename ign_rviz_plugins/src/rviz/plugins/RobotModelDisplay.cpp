@@ -86,7 +86,7 @@ QHash<int, QByteArray> RobotLinkModel::roleNames() const
 ////////////////////////////////////////////////////////////////////////////////
 RobotModelDisplay::RobotModelDisplay()
 : MessageDisplay(), modelLoaded(true), destroyModel(false), showVisual(true), showCollision(false),
-  alpha(1.0)
+  dirty(false), alpha(1.0)
 {
   // Get reference to scene
   this->engine = ignition::rendering::engine("ogre");
@@ -233,6 +233,30 @@ void RobotModelDisplay::update()
 
       link.second.visual->SetLocalPose(linkPose + framePose);
       link.second.visual->SetVisible(showVisual && link.second.visible);
+
+      // Update alpha if dirty
+      if (dirty) {
+        auto mat = link.second.visual->Material();
+
+        if (mat == nullptr) {
+          // Update alpha of mesh with textures
+          auto geometry = link.second.visual->GeometryByIndex(0);
+          if (geometry != nullptr) {
+            auto geometryMat = geometry->Material();
+            if (geometryMat != nullptr) {
+              geometryMat->SetTransparency(1 - this->alpha);
+              geometry->SetMaterial(geometryMat);
+            }
+          }
+          continue;
+        }
+        auto color = mat->Ambient();
+        color.A(this->alpha);
+        mat->SetAmbient(color);
+        mat->SetDiffuse(color);
+        mat->SetEmissive(color);
+        link.second.visual->SetMaterial(mat);
+      }
     }
 
     // Update link collision pose and visibility
@@ -249,6 +273,7 @@ void RobotModelDisplay::update()
       link.second.collision->SetVisible(showCollision && link.second.visible);
     }
   }
+  dirty = false;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -313,29 +338,37 @@ void RobotModelDisplay::createLink(const urdf::Link * _link)
   if (_link->visual != nullptr && _link->visual->geometry != nullptr) {
     robotLink.visual = createLinkGeometry(_link->visual->geometry);
     if (robotLink.visual != nullptr) {
-      if (_link->visual->material == nullptr) {
-        // Set default material only if the visual mesh doeesn't have textures
-        bool meshWithTexture = false;
-        const auto meshInfo = std::dynamic_pointer_cast<urdf::Mesh>(_link->visual->geometry);
-        if (meshInfo != nullptr) {
-          const auto fileExtension = meshInfo->filename.substr(meshInfo->filename.size() - 4);
-          meshWithTexture = (fileExtension == ".dae" || fileExtension == ".obj");
-        }
+      // Set material only if the visual mesh doesn't have textures
+      bool meshWithTexture = false;
+      const auto meshInfo = std::dynamic_pointer_cast<urdf::Mesh>(_link->visual->geometry);
+      if (meshInfo != nullptr) {
+        const auto fileExtension = meshInfo->filename.substr(meshInfo->filename.size() - 4);
+        meshWithTexture = (fileExtension == ".dae" || fileExtension == ".obj");
+      }
 
-        if (!meshWithTexture) {
-          // Use default material
-          const auto & mat = this->scene->Material("RobotModel/Red");
-          // Update alpha
-          auto color = mat->Ambient();
-          color.A(this->alpha);
-          mat->SetAmbient(color);
-          mat->SetDiffuse(color);
-          mat->SetEmissive(color);
-          robotLink.visual->SetMaterial(mat);
+      if (meshWithTexture) {
+        // Set alpha of mesh with textures
+        auto geometry = robotLink.visual->GeometryByIndex(0);
+        if (geometry != nullptr) {
+          auto mat = geometry->Material();
+          if (mat != nullptr) {
+            mat->SetTransparency(1 - this->alpha);
+            geometry->SetMaterial(mat);
+          }
         }
+      } else if (_link->visual->material == nullptr) {
+        // Use default material
+        const auto mat = this->scene->Material("RobotModel/Red");
+        // Update alpha
+        auto color = mat->Ambient();
+        color.A(this->alpha);
+        mat->SetAmbient(color);
+        mat->SetDiffuse(color);
+        mat->SetEmissive(color);
+        robotLink.visual->SetMaterial(mat);
       } else if (!_link->visual->material_name.empty()) {
         // Use registered material
-        const auto & mat = this->scene->Material(_link->visual->material_name);
+        const auto mat = this->scene->Material(_link->visual->material_name);
         // Update alpha
         auto color = mat->Ambient();
         color.A(this->alpha);
@@ -414,7 +447,6 @@ rendering::VisualPtr RobotModelDisplay::createLinkGeometry(
             ignition::common::MeshManager * meshManager = ignition::common::MeshManager::Instance();
             descriptor.mesh = meshManager->Load(descriptor.meshName);
             rendering::MeshPtr mesh = this->scene->CreateMesh(descriptor);
-
             visual->AddGeometry(mesh);
             visual->SetLocalScale(meshInfo->scale.x, meshInfo->scale.y, meshInfo->scale.z);
           } catch (ament_index_cpp::PackageNotFoundError & e) {
@@ -513,18 +545,7 @@ void RobotModelDisplay::setAlpha(const float & _alpha)
 {
   std::lock_guard<std::recursive_mutex>(this->lock);
   this->alpha = _alpha;
-
-  for (const auto & link : this->robotVisualLinks) {
-    if (link.second.visual != nullptr) {
-      auto mat = link.second.visual->Material();
-      auto color = mat->Ambient();
-      color.A(this->alpha);
-      mat->SetAmbient(color);
-      mat->SetDiffuse(color);
-      mat->SetEmissive(color);
-      link.second.visual->SetMaterial(mat);
-    }
-  }
+  this->dirty = true;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
