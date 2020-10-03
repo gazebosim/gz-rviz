@@ -82,12 +82,13 @@ bool GlobalOptions::eventFilter(QObject * _object, QEvent * _event)
         this->scene = this->engine->SceneByName("scene");
 
         // Configure scene lighting
-        this->scene->SetAmbientLight(0.5, 0.5, 0.5);
         auto light = this->scene->CreatePointLight();
         light->SetDiffuseColor(0.8, 0.8, 0.8);
         light->SetSpecularColor(0.8, 0.8, 0.8);
         light->SetLocalPosition(0, 0, 8);
         this->scene->RootVisual()->AddChild(light);
+
+        initialized = true;
       }
     }
 
