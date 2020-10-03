@@ -173,6 +173,9 @@ private:
   // Handle image with mono8 encoding
   void updateFromMONO8();
 
+  // Handle image with float32 encoding
+  void updateFromFloat32();
+
 public:
   ImageProvider * provider{nullptr};
 
