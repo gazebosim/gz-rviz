@@ -17,6 +17,7 @@
 #include <ignition/gui/Application.hh>
 #include <ignition/plugin/Register.hh>
 
+#include <limits>
 #include <string>
 #include <utility>
 
@@ -90,6 +91,8 @@ void ImageDisplay::callback(const sensor_msgs::msg::Image::SharedPtr _msg)
     updateFromRGB8();
   } else if (_msg->encoding == "mono8") {
     updateFromMONO8();
+  } else if (_msg->encoding == "mono16") {
+    updateFromMONO16();
   } else if (_msg->encoding == "32FC1") {
     updateFromFloat32();
   } else {
@@ -122,6 +125,58 @@ void ImageDisplay::updateFromMONO8()
   QImage image(&msg->data[0], msg->width, msg->height, msg->step, QImage::Format_Grayscale8);
   this->provider->SetImage(image);
   this->newImage();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void ImageDisplay::updateFromMONO16()
+{
+  unsigned int height = msg->height;
+  unsigned int width = msg->width;
+
+  QImage image = QImage(width, height, QImage::Format_RGB888);
+
+  unsigned int samples = width * height;
+
+  unsigned int bufferSize = samples * sizeof(uint16_t);
+
+  uint16_t * buffer = new uint16_t[samples];
+  memcpy(buffer, &msg->data[0], bufferSize);
+
+  // Get min and max of temperature values
+  uint16_t min = std::numeric_limits<uint16_t>::max();
+  uint16_t max = 0;
+  for (unsigned int i = 0; i < samples; ++i) {
+    uint16_t temp = buffer[i];
+    if (temp > max) {
+      max = temp;
+    }
+    if (temp < min) {
+      min = temp;
+    }
+  }
+
+  // Convert temperature to grayscale image
+  double range = static_cast<double>(max - min);
+  if (ignition::math::equal(range, 0.0)) {
+    range = 1.0;
+  }
+  unsigned int idx = 0;
+  for (unsigned int j = 0; j < height; ++j) {
+    for (unsigned int i = 0; i < width; ++i) {
+      uint16_t temp = buffer[idx++];
+      double t = static_cast<double>(temp - min) / range;
+      int r = 255 * t;
+      int g = r;
+      int b = r;
+      QRgb value = qRgb(r, g, b);
+      image.setPixel(i, j, value);
+    }
+  }
+
+  this->provider->SetImage(image);
+  this->newImage();
+
+  delete[] buffer;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
