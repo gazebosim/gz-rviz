@@ -291,6 +291,7 @@ private:
   bool destroyModel;
   bool showVisual;
   bool showCollision;
+  bool dirty;
   float alpha;
   QStandardItem * parentRow;
 };

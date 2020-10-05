@@ -124,6 +124,7 @@ private:
   rendering::RenderEngine * engine;
   rendering::ScenePtr scene;
   bool dirty;
+  bool initialized;
   bool populated;
   QColor color;
 };

@@ -33,7 +33,7 @@ namespace plugins
 {
 ////////////////////////////////////////////////////////////////////////////////
 GlobalOptions::GlobalOptions()
-: dirty(false), populated(false)
+: dirty(false), initialized(false), populated(false), color("#303030")
 {
   // TODO(Sarathkrishnan Ramesh)
   // Add support to select render engine using config file
@@ -77,11 +77,23 @@ bool GlobalOptions::eventFilter(QObject * _object, QEvent * _event)
 {
   if (_event->type() == gui::events::Render::kType) {
     std::lock_guard(this->lock);
-    // Update background color
-    if (dirty) {
+    if (!initialized) {
       if (this->scene == nullptr) {
         this->scene = this->engine->SceneByName("scene");
+
+        // Configure scene lighting
+        auto light = this->scene->CreatePointLight();
+        light->SetDiffuseColor(0.8, 0.8, 0.8);
+        light->SetSpecularColor(0.8, 0.8, 0.8);
+        light->SetLocalPosition(0, 0, 8);
+        this->scene->RootVisual()->AddChild(light);
+
+        initialized = true;
       }
+    }
+
+    // Update background color
+    if (dirty) {
       this->scene->SetBackgroundColor(math::Color(color.redF(), color.greenF(), color.blue()));
       this->dirty = false;
     }
