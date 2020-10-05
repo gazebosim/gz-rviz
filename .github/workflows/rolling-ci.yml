@@ -1,4 +1,4 @@
-name: Ignition RViz CI (foxy)
+name: Ignition RViz CI (rolling)
 
 on:
   pull_request:
@@ -9,7 +9,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     container:
-      image: osrf/ros:foxy-desktop
+      image: osrf/ros:rolling-desktop
     steps:
     - uses: actions/checkout@v2
     - name: Install Dependencies
@@ -34,12 +34,12 @@ jobs:
       id: build
       run: |
         cd /home/colcon_ws/
-        . /opt/ros/foxy/setup.sh
+        . /opt/ros/rolling/setup.sh
         colcon build
     - name: Run tests
       id: test
       run: |
         cd /home/colcon_ws/
-        . /opt/ros/foxy/setup.sh
+        . /opt/ros/rolling/setup.sh
         colcon test --event-handlers console_direct+
         colcon test-result
