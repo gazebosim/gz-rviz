@@ -5,7 +5,11 @@
 Ignition RViz offers functionality similar to RViz, and is developed using
 [Ignition](https://ignitionrobotics.org/) libraries.
 
-![Ignition RViz CI](https://github.com/Sarath18/ign-rviz/workflows/Ignition%20RViz%20CI/badge.svg)
+### Build Status
+|ROS2 Distro|Status|
+|---|---|
+|Foxy|![Ignition RViz CI (foxy)](https://github.com/ignitionrobotics/ign-rviz/workflows/Ignition%20RViz%20CI%20(foxy)/badge.svg)|
+|Rolling|![Ignition RViz CI (rolling)](https://github.com/ignitionrobotics/ign-rviz/workflows/Ignition%20RViz%20CI%20(rolling)/badge.svg)|
 
 Head over to the [wiki](https://github.com/ignitionrobotics/ign-rviz/wiki) to get detailed description of the project.
 
