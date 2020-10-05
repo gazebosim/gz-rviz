@@ -1,4 +1,4 @@
-name: Ignition RViz CI
+name: Ignition RViz CI (foxy)
 
 on:
   pull_request:
@@ -9,16 +9,27 @@ jobs:
   build:
     runs-on: ubuntu-latest
     container:
-      image: sarath18/ros_ign:latest
+      image: osrf/ros:foxy-desktop
     steps:
     - uses: actions/checkout@v2
+    - name: Install Dependencies
+      run: |
+        apt update -y
+        apt install -y wget
+        sh -c 'echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-stable `lsb_release -cs` main" > /etc/apt/sources.list.d/gazebo-stable.list'
+        wget http://packages.osrfoundation.org/gazebo.key -O - | sudo apt-key add -
+        apt update -y
+        apt install -y libignition-common3-dev \
+                       libignition-math6-dev \
+                       libignition-rendering4-dev \
+                       libignition-gui4-dev \
+        
     - name: Setup colcon workspace
       id: configure
       run: |
         cd ..
         mkdir -p /home/colcon_ws/src
         cp -r ign-rviz /home/colcon_ws/src/
-
     - name: Build project
       id: build
       run: |
