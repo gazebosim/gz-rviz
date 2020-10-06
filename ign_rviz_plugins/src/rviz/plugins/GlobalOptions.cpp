@@ -158,6 +158,10 @@ void GlobalOptions::LoadConfig(const tinyxml2::XMLElement * /*_pluginElem*/)
   if (this->title.empty()) {
     this->title = "Global Options";
   }
+
+  auto cardItem = this->CardItem();
+  cardItem->setProperty("showCloseButton", false);
+  cardItem->setProperty("showDockButton", false);
 }
 
 }  // namespace plugins
