@@ -151,6 +151,24 @@ void RViz::addLaserScanDisplay(const QString & _topic) const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+void RViz::addMarkerDisplay(const QString & _topic) const
+{
+  // Load plugin
+  if (ignition::gui::App()->LoadPlugin("MarkerDisplay")) {
+    auto markerDisplay =
+      ignition::gui::App()->findChildren<DisplayPlugin<geometry_msgs::msg::PointStamped> *>();
+    int pluginCount = markerDisplay.size() - 1;
+
+    // Set frame manager and install event filter for recently added plugin
+    markerDisplay[pluginCount]->initialize(this->node);
+    markerDisplay[pluginCount]->setTopic(_topic.toStdString());
+    markerDisplay[pluginCount]->setFrameManager(this->frameManager);
+    ignition::gui::App()->findChild<ignition::gui::MainWindow *>()->installEventFilter(
+      markerDisplay[pluginCount]);
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////
 void RViz::addPointStampedDisplay(const QString & _topic) const
 {
   // Load plugin

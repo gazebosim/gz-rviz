@@ -21,6 +21,7 @@ find_package(std_msgs REQUIRED)
 find_package(tf2_msgs REQUIRED)
 find_package(tf2_ros REQUIRED)
 find_package(urdf REQUIRED)
+find_package(visualization_msgs REQUIRED)
 
 # Ignition libraries
 find_package(ignition-common3 REQUIRED)
@@ -113,6 +114,19 @@ add_ign_rviz_plugin(
   DEPENDENCIES
     tf2_ros
     sensor_msgs
+    ignition-gui4
+    ignition-math6
+    ignition-rendering4
+    ign_rviz_common
+)
+
+########################################################################
+add_ign_rviz_plugin(
+  NAME MarkerDisplay
+  DEPENDENCIES
+    tf2_ros
+    geometry_msgs
+    visualization_msgs
     ignition-gui4
     ignition-math6
     ignition-rendering4
@@ -247,6 +261,7 @@ ament_export_libraries(
   GlobalOptions
   ImageDisplay
   LaserScanDisplay
+  MarkerDisplay
   PathDisplay
   PointStampedDisplay
   PolygonDisplay
@@ -262,6 +277,7 @@ install(
     GlobalOptions
     ImageDisplay
     LaserScanDisplay
+    MarkerDisplay
     PathDisplay
     PointStampedDisplay
     PolygonDisplay
