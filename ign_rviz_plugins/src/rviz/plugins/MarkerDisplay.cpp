@@ -32,23 +32,15 @@ namespace plugins
 {
 ////////////////////////////////////////////////////////////////////////////////
 MarkerDisplay::MarkerDisplay()
-: MessageDisplay()
-{
-  // Get reference to scene
-  this->engine = ignition::rendering::engine("ogre");
-  this->scene = this->engine->SceneByName("scene");
-
-  this->rootVisual = this->scene->CreateVisual();
-  this->scene->RootVisual()->AddChild(this->rootVisual);
-}
+: MessageDisplay(), markerManager(std::make_unique<MarkerManager>()) {}
 
 ////////////////////////////////////////////////////////////////////////////////
 MarkerDisplay::~MarkerDisplay()
 {
   std::lock_guard<std::mutex>(this->lock);
   // Delete visual
-  ignition::gui::App()->findChild<ignition::gui::MainWindow *>()->removeEventFilter(this);
-  this->scene->DestroyVisual(this->rootVisual, true);
+  // ignition::gui::App()->findChild<ignition::gui::MainWindow *>()->removeEventFilter(this);
+  // this->scene->DestroyVisual(this->rootVisual, true);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -126,6 +118,8 @@ void MarkerDisplay::update()
   if (!this->msg) {
     return;
   }
+
+  markerManager->processMessage(this->msg);
 
   // Avoid visualizing same data again
   this->msg.reset();

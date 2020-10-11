@@ -45,13 +45,14 @@ qt5_add_resources(resources_RCC res/Plugins.qrc)
 ########################################################################
 macro(add_ign_rviz_plugin)
   set(oneValueArgs NAME)
-  set(multiValueArgs DEPENDENCIES)
+  set(multiValueArgs EXTRA_FILES DEPENDENCIES)
   cmake_parse_arguments(IGN_RVIZ_PLUGIN "" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
   add_library(${IGN_RVIZ_PLUGIN_NAME} SHARED ${headers_MOC}
     include/ignition/rviz/plugins/${IGN_RVIZ_PLUGIN_NAME}.hpp
     include/ignition/rviz/plugins/message_display_base.hpp
     src/rviz/plugins/${IGN_RVIZ_PLUGIN_NAME}.cpp
+    ${IGN_RVIZ_PLUGIN_EXTRA_FILES}
     ${resources_RCC}
   )
 
@@ -123,6 +124,8 @@ add_ign_rviz_plugin(
 ########################################################################
 add_ign_rviz_plugin(
   NAME MarkerDisplay
+  EXTRA_FILES
+    src/rviz/plugins/MarkerManager.cpp
   DEPENDENCIES
     tf2_ros
     geometry_msgs

@@ -24,6 +24,7 @@
 #include <string>
 #include <vector>
 
+#include "ignition/rviz/plugins/MarkerManager.hpp"
 #include "ignition/rviz/plugins/message_display_base.hpp"
 
 namespace ignition
@@ -133,12 +134,10 @@ protected:
   void update() override;
 
 private:
-  ignition::rendering::RenderEngine * engine;
-  ignition::rendering::ScenePtr scene;
-  ignition::rendering::VisualPtr rootVisual;
   std::mutex lock;
   visualization_msgs::msg::Marker::SharedPtr msg;
   QStringList topicList;
+  std::unique_ptr<MarkerManager> markerManager;
 };
 
 }  // namespace plugins
