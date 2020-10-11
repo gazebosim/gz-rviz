@@ -38,6 +38,8 @@ public:
   void createBasicGeometry(
     const visualization_msgs::msg::Marker::SharedPtr _msg, rendering::MarkerType _geometryType);
   rendering::MaterialPtr createMaterial(const std_msgs::msg::ColorRGBA & _color);
+  void deleteMarker(unsigned int id);
+  void deleteAllMarkers();
 
 private:
   ignition::rendering::RenderEngine * engine;

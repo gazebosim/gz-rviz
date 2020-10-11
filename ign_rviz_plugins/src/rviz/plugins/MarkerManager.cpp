@@ -14,6 +14,9 @@
 
 #include "ignition/rviz/plugins/MarkerManager.hpp"
 
+#include <rclcpp/logger.hpp>
+#include <rclcpp/logging.hpp>
+
 namespace ignition
 {
 namespace rviz
@@ -40,11 +43,11 @@ void MarkerManager::processMessage(const visualization_msgs::msg::Marker::Shared
         break;
       }
     case visualization_msgs::msg::Marker::DELETE: {
-        // TODO(Sarathkrishnan Ramesh): Delete marker
+        deleteMarker(_msg->id);
         break;
       }
     case visualization_msgs::msg::Marker::DELETEALL: {
-        // TODO(Sarathkrishnan Ramesh): Delete all markers
+        deleteAllMarkers();
         break;
       }
   }
@@ -148,6 +151,27 @@ void MarkerManager::insertOrUpdateVisual(unsigned int id, rendering::VisualPtr _
   } else {
     visuals.insert({id, _visual});
   }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void MarkerManager::deleteMarker(unsigned int id)
+{
+  auto it = visuals.find(id);
+  if (it != visuals.end()) {
+    this->scene->DestroyVisual(it->second, true);
+    visuals.erase(id);
+  } else {
+    RCLCPP_WARN(rclcpp::get_logger("MarkerManager"), "Marker with id %d not found", id);
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void MarkerManager::deleteAllMarkers()
+{
+  for (auto visual : visuals) {
+    this->scene->DestroyVisual(visual.second, true);
+  }
+  visuals.clear();
 }
 
 }  // namespace plugins
