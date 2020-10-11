@@ -79,29 +79,33 @@ void MarkerManager::createMarker(const visualization_msgs::msg::Marker::SharedPt
         createBasicGeometry(_msg, rendering::MarkerType::MT_CYLINDER);
         break;
       }
-    // TODO(Sarathkrishnan Ramesh): Add support for following marker types
     case visualization_msgs::msg::Marker::LINE_STRIP: {
+        createListGeometry(_msg, rendering::MarkerType::MT_LINE_STRIP);
         break;
       }
     case visualization_msgs::msg::Marker::LINE_LIST: {
+        createListGeometry(_msg, rendering::MarkerType::MT_LINE_LIST);
         break;
       }
+    case visualization_msgs::msg::Marker::TRIANGLE_LIST: {
+        createListGeometry(_msg, rendering::MarkerType::MT_TRIANGLE_LIST);
+        break;
+      }
+    case visualization_msgs::msg::Marker::POINTS: {
+        createListGeometry(_msg, rendering::MarkerType::MT_POINTS);
+        break;
+      }
+    // TODO(Sarathkrishnan Ramesh): Add support for following marker types
     case visualization_msgs::msg::Marker::CUBE_LIST: {
         break;
       }
     case visualization_msgs::msg::Marker::SPHERE_LIST: {
         break;
       }
-    case visualization_msgs::msg::Marker::POINTS: {
-        break;
-      }
     case visualization_msgs::msg::Marker::TEXT_VIEW_FACING: {
         break;
       }
     case visualization_msgs::msg::Marker::MESH_RESOURCE: {
-        break;
-      }
-    case visualization_msgs::msg::Marker::TRIANGLE_LIST: {
         break;
       }
   }
@@ -125,6 +129,44 @@ void MarkerManager::createBasicGeometry(
   // Add geometry and set scale
   visual->AddGeometry(marker);
   visual->SetLocalScale(_msg->scale.x, _msg->scale.y, _msg->scale.z);
+
+  this->rootVisual->AddChild(visual);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void MarkerManager::createListGeometry(
+  const visualization_msgs::msg::Marker::SharedPtr _msg,
+  rendering::MarkerType _geometryType)
+{
+  rendering::VisualPtr visual = this->scene->CreateVisual();
+  insertOrUpdateVisual(_msg->id, visual);
+
+  auto marker = this->scene->CreateMarker();
+  marker->SetType(_geometryType);
+
+  if (_msg->colors.size() == _msg->points.size()) {
+    for (unsigned int i = 0; i < _msg->points.size(); ++i) {
+      const auto & point = _msg->points[i];
+      const auto color = math::Color(
+        _msg->colors[i].r, _msg->colors[i].g, _msg->colors[i].b, _msg->colors[i].a);
+      marker->AddPoint(point.x, point.y, point.z, color);
+    }
+  } else {
+    if (_msg->colors.size() != 0) {
+      RCLCPP_WARN(
+        rclcpp::get_logger("MarkerManager"), "Marker color and point array size doesn't.");
+    }
+    const auto color = math::Color(_msg->color.r, _msg->color.g, _msg->color.b, _msg->color.a);
+    for (const auto & point : _msg->points) {
+      marker->AddPoint(point.x, point.y, point.z, color);
+    }
+  }
+
+  // This material is not used anywhere but is required to set
+  // point color in marker AddPoint method
+  marker->SetMaterial(this->scene->Material("Default/TransGreen"));
+
+  visual->AddGeometry(marker);
 
   this->rootVisual->AddChild(visual);
 }

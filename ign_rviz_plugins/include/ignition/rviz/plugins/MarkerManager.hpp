@@ -37,6 +37,8 @@ public:
   void createMarker(const visualization_msgs::msg::Marker::SharedPtr _msg);
   void createBasicGeometry(
     const visualization_msgs::msg::Marker::SharedPtr _msg, rendering::MarkerType _geometryType);
+  void createListGeometry(
+    const visualization_msgs::msg::Marker::SharedPtr _msg, rendering::MarkerType _geometryType);
   rendering::MaterialPtr createMaterial(const std_msgs::msg::ColorRGBA & _color);
   void deleteMarker(unsigned int id);
   void deleteAllMarkers();
