@@ -127,13 +127,13 @@ add_ign_rviz_plugin(
   EXTRA_FILES
     src/rviz/plugins/MarkerManager.cpp
   DEPENDENCIES
-    tf2_ros
     geometry_msgs
-    visualization_msgs
+    ign_rviz_common
     ignition-gui4
     ignition-math6
     ignition-rendering4
-    ign_rviz_common
+    tf2_ros
+    visualization_msgs
 )
 
 ########################################################################

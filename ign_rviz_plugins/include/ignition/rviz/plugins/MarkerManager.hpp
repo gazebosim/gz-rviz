@@ -31,17 +31,70 @@ namespace plugins
 class MarkerManager
 {
 public:
+  // Constructor
   MarkerManager();
+
+  // Destructor
   ~MarkerManager();
-  void insertOrUpdateVisual(unsigned int id, rendering::VisualPtr _visual);
+
+  /**
+   * @brief Insert or Update a new marker visual with same ID
+   * @param[in] _id Marker ID
+   * @param[in] _visual Marker visual
+   */
+  void insertOrUpdateVisual(unsigned int _id, rendering::VisualPtr _visual);
+
+  /**
+   * @brief Processes message to handle Add/Modify, Delete and Delete All marker actions
+   * @param[in] _msg Marker message
+   */
   void processMessage(const visualization_msgs::msg::Marker::SharedPtr _msg);
+
+  /**
+   * @brief Creates marker visual using message
+   * @param[in] _msg Marker message
+   */
   void createMarker(const visualization_msgs::msg::Marker::SharedPtr _msg);
+
+  /**
+   * @brief Creates basic marker geometry
+   *
+   * Handles the following geometry types: Cube, Sphere, Cyinder
+   *
+   * @param[in] _msg Marker message
+   * @param[in] _geometryType Marker geometry type
+   */
   void createBasicGeometry(
     const visualization_msgs::msg::Marker::SharedPtr _msg, rendering::MarkerType _geometryType);
+
+  /**
+   * @brief Creates marker list geometry
+   *
+   * Create marker geometry using points array availabe in message.
+   * Handles the following geometry types:
+   * Line List, Line Strip, Points, Triangle List
+   *
+   * @param[in] _msg Marker message
+   * @param[in] _geometryType Marker geometry type
+   */
   void createListGeometry(
     const visualization_msgs::msg::Marker::SharedPtr _msg, rendering::MarkerType _geometryType);
+
+  /**
+   * @brief Create a new material from message
+   * @param[in] _color Color message
+   */
   rendering::MaterialPtr createMaterial(const std_msgs::msg::ColorRGBA & _color);
-  void deleteMarker(unsigned int id);
+
+  /**
+   * @brief Delete a specific marker from scene
+   * @param[in] _id Marker ID
+   */
+  void deleteMarker(unsigned int _id);
+
+  /**
+   * @brief Delete all the markers from scene
+   */
   void deleteAllMarkers();
 
 private:

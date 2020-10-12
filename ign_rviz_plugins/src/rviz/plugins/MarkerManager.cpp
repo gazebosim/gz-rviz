@@ -206,27 +206,27 @@ rendering::MaterialPtr MarkerManager::createMaterial(const std_msgs::msg::ColorR
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void MarkerManager::insertOrUpdateVisual(unsigned int id, rendering::VisualPtr _visual)
+void MarkerManager::insertOrUpdateVisual(unsigned int _id, rendering::VisualPtr _visual)
 {
-  auto it = visuals.find(id);
+  auto it = visuals.find(_id);
   if (it != visuals.end()) {
     // Destroy previously created visual with same ID
     this->scene->DestroyVisual(it->second, true);
     it->second = _visual;
   } else {
-    visuals.insert({id, _visual});
+    visuals.insert({_id, _visual});
   }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void MarkerManager::deleteMarker(unsigned int id)
+void MarkerManager::deleteMarker(unsigned int _id)
 {
-  auto it = visuals.find(id);
+  auto it = visuals.find(_id);
   if (it != visuals.end()) {
     this->scene->DestroyVisual(it->second, true);
-    visuals.erase(id);
+    visuals.erase(_id);
   } else {
-    RCLCPP_WARN(rclcpp::get_logger("MarkerManager"), "Marker with id %d not found", id);
+    RCLCPP_WARN(rclcpp::get_logger("MarkerManager"), "Marker with id %d not found", _id);
   }
 }
 
