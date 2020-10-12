@@ -32,6 +32,7 @@ class MarkerManager
 {
 public:
   MarkerManager();
+  ~MarkerManager();
   void insertOrUpdateVisual(unsigned int id, rendering::VisualPtr _visual);
   void processMessage(const visualization_msgs::msg::Marker::SharedPtr _msg);
   void createMarker(const visualization_msgs::msg::Marker::SharedPtr _msg);

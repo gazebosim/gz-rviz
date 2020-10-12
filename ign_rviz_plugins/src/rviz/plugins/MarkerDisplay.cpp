@@ -38,9 +38,7 @@ MarkerDisplay::MarkerDisplay()
 MarkerDisplay::~MarkerDisplay()
 {
   std::lock_guard<std::mutex>(this->lock);
-  // Delete visual
-  // ignition::gui::App()->findChild<ignition::gui::MainWindow *>()->removeEventFilter(this);
-  // this->scene->DestroyVisual(this->rootVisual, true);
+  ignition::gui::App()->findChild<ignition::gui::MainWindow *>()->removeEventFilter(this);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

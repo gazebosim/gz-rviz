@@ -35,6 +35,13 @@ MarkerManager::MarkerManager()
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+MarkerManager::~MarkerManager()
+{
+  // Delete all markers
+  this->scene->DestroyVisual(this->rootVisual, true);
+}
+
+////////////////////////////////////////////////////////////////////////////////
 void MarkerManager::processMessage(const visualization_msgs::msg::Marker::SharedPtr _msg)
 {
   switch (_msg->action) {
@@ -62,8 +69,14 @@ void MarkerManager::createMarker(const visualization_msgs::msg::Marker::SharedPt
         insertOrUpdateVisual(_msg->id, visual);
 
         visual->SetMaterial(createMaterial(_msg->color));
-        visual->SetLocalPose(math::Pose3d(0.0, 0.0, 0.0, 0.0, 1.57, 0.0));
         visual->SetLocalScale(_msg->scale.x, _msg->scale.y, _msg->scale.z);
+
+        math::Pose3d pose(_msg->pose.position.x, _msg->pose.position.y, _msg->pose.position.z,
+          _msg->pose.orientation.w, _msg->pose.orientation.x, _msg->pose.orientation.y,
+          _msg->pose.orientation.z);
+        visual->SetLocalPosition(pose.Pos());
+        visual->SetLocalRotation(pose.Rot() * math::Quaterniond(0, 1.57, 0));
+
         this->rootVisual->AddChild(visual);
         break;
       }
@@ -129,6 +142,11 @@ void MarkerManager::createBasicGeometry(
   // Add geometry and set scale
   visual->AddGeometry(marker);
   visual->SetLocalScale(_msg->scale.x, _msg->scale.y, _msg->scale.z);
+  visual->SetLocalPose(
+    math::Pose3d(
+      _msg->pose.position.x, _msg->pose.position.y, _msg->pose.position.z,
+      _msg->pose.orientation.w, _msg->pose.orientation.x, _msg->pose.orientation.y,
+      _msg->pose.orientation.z));
 
   this->rootVisual->AddChild(visual);
 }
@@ -167,6 +185,11 @@ void MarkerManager::createListGeometry(
   marker->SetMaterial(this->scene->Material("Default/TransGreen"));
 
   visual->AddGeometry(marker);
+  visual->SetLocalPose(
+    math::Pose3d(
+      _msg->pose.position.x, _msg->pose.position.y, _msg->pose.position.z,
+      _msg->pose.orientation.w, _msg->pose.orientation.x, _msg->pose.orientation.y,
+      _msg->pose.orientation.z));
 
   this->rootVisual->AddChild(visual);
 }
