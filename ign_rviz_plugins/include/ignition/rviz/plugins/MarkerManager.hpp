@@ -81,6 +81,12 @@ public:
     const visualization_msgs::msg::Marker::SharedPtr _msg, rendering::MarkerType _geometryType);
 
   /**
+   * @brief Create a text marker
+   * @param[in] _msg Marker message
+   */
+  void createTextMarker(const visualization_msgs::msg::Marker::SharedPtr _msg);
+
+  /**
    * @brief Create a new material from message
    * @param[in] _color Color message
    */
