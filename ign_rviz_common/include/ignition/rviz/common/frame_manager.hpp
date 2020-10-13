@@ -90,23 +90,12 @@ public:
    */
   std::string getFixedFrame();
 
-protected:
-  /**
-   * @brief Callback function to received transform messages
-   * @param[in] _msg: Transform message
-   */
-  void tf_callback(const tf2_msgs::msg::TFMessage::SharedPtr _msg);
-
 private:
   rclcpp::Node::SharedPtr node;
   std::mutex tf_mutex_;
   std::string fixedFrame;
   std::shared_ptr<tf2_ros::Buffer> tfBuffer;
   std::shared_ptr<tf2_ros::TransformListener> tfListener;
-  rclcpp::Subscription<tf2_msgs::msg::TFMessage>::SharedPtr subscriber;
-  std::unordered_map<std::string, ignition::math::Pose3d> tfTree;
-  tf2::TimePoint timePoint;
-  unsigned int frameCount;
 };
 }  // namespace common
 }  // namespace rviz
