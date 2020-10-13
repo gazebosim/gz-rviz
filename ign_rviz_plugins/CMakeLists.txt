@@ -21,6 +21,7 @@ find_package(std_msgs REQUIRED)
 find_package(tf2_msgs REQUIRED)
 find_package(tf2_ros REQUIRED)
 find_package(urdf REQUIRED)
+find_package(visualization_msgs REQUIRED)
 
 # Ignition libraries
 find_package(ignition-common3 REQUIRED)
@@ -44,13 +45,14 @@ qt5_add_resources(resources_RCC res/Plugins.qrc)
 ########################################################################
 macro(add_ign_rviz_plugin)
   set(oneValueArgs NAME)
-  set(multiValueArgs DEPENDENCIES)
+  set(multiValueArgs EXTRA_FILES DEPENDENCIES)
   cmake_parse_arguments(IGN_RVIZ_PLUGIN "" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
   add_library(${IGN_RVIZ_PLUGIN_NAME} SHARED ${headers_MOC}
     include/ignition/rviz/plugins/${IGN_RVIZ_PLUGIN_NAME}.hpp
     include/ignition/rviz/plugins/message_display_base.hpp
     src/rviz/plugins/${IGN_RVIZ_PLUGIN_NAME}.cpp
+    ${IGN_RVIZ_PLUGIN_EXTRA_FILES}
     ${resources_RCC}
   )
 
@@ -117,6 +119,21 @@ add_ign_rviz_plugin(
     ignition-math6
     ignition-rendering4
     ign_rviz_common
+)
+
+########################################################################
+add_ign_rviz_plugin(
+  NAME MarkerDisplay
+  EXTRA_FILES
+    src/rviz/plugins/MarkerManager.cpp
+  DEPENDENCIES
+    geometry_msgs
+    ign_rviz_common
+    ignition-gui4
+    ignition-math6
+    ignition-rendering4
+    tf2_ros
+    visualization_msgs
 )
 
 ########################################################################
@@ -247,6 +264,7 @@ ament_export_libraries(
   GlobalOptions
   ImageDisplay
   LaserScanDisplay
+  MarkerDisplay
   PathDisplay
   PointStampedDisplay
   PolygonDisplay
@@ -262,6 +280,7 @@ install(
     GlobalOptions
     ImageDisplay
     LaserScanDisplay
+    MarkerDisplay
     PathDisplay
     PointStampedDisplay
     PolygonDisplay

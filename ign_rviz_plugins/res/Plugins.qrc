@@ -1,26 +1,22 @@
 <!DOCTYPE RCC><RCC version="1.0">
-  <qresource prefix="GlobalOptions/">
-    <file alias="GlobalOptions.qml">qml/GlobalOptions.qml</file>
-  </qresource>
-
   <qresource prefix="AxesDisplay/">
     <file alias="AxesDisplay.qml">qml/AxesDisplay.qml</file>
   </qresource>
 
-  <qresource prefix="TFDisplay/">
-    <file alias="TFDisplay.qml">qml/TFDisplay.qml</file>
+  <qresource prefix="GlobalOptions/">
+    <file alias="GlobalOptions.qml">qml/GlobalOptions.qml</file>
   </qresource>
 
-  <qresource prefix="QoSConfig/">
-    <file alias="QoSConfig.qml">qml/QoSConfig.qml</file>
+  <qresource prefix="ImageDisplay/">
+    <file alias="ImageDisplay.qml">qml/ImageDisplay.qml</file>
   </qresource>
 
   <qresource prefix="LaserScanDisplay/">
     <file alias="LaserScanDisplay.qml">qml/LaserScanDisplay.qml</file>
   </qresource>
 
-  <qresource prefix="ImageDisplay/">
-    <file alias="ImageDisplay.qml">qml/ImageDisplay.qml</file>
+  <qresource prefix="MarkerDisplay/">
+    <file alias="MarkerDisplay.qml">qml/MarkerDisplay.qml</file>
   </qresource>
 
   <qresource prefix="PathDisplay/">
@@ -31,6 +27,10 @@
     <file alias="PointStampedDisplay.qml">qml/PointStampedDisplay.qml</file>
   </qresource>
 
+  <qresource prefix="PolygonDisplay/">
+    <file alias="PolygonDisplay.qml">qml/PolygonDisplay.qml</file>
+  </qresource>
+
   <qresource prefix="PoseDisplay/">
     <file alias="PoseDisplay.qml">qml/PoseDisplay.qml</file>
   </qresource>
@@ -39,11 +39,15 @@
     <file alias="PoseArrayDisplay.qml">qml/PoseArrayDisplay.qml</file>
   </qresource>
 
+  <qresource prefix="QoSConfig/">
+    <file alias="QoSConfig.qml">qml/QoSConfig.qml</file>
+  </qresource>
+
   <qresource prefix="RobotModelDisplay/">
     <file alias="RobotModelDisplay.qml">qml/RobotModelDisplay.qml</file>
   </qresource>
 
-  <qresource prefix="PolygonDisplay/">
-    <file alias="PolygonDisplay.qml">qml/PolygonDisplay.qml</file>
+  <qresource prefix="TFDisplay/">
+    <file alias="TFDisplay.qml">qml/TFDisplay.qml</file>
   </qresource>
 </RCC>
