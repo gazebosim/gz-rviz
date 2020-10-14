@@ -14,8 +14,12 @@
 
 #include "ignition/rviz/plugins/MarkerManager.hpp"
 
+#include <ament_index_cpp/get_package_prefix.hpp>
+#include <ament_index_cpp/get_package_share_directory.hpp>
 #include <rclcpp/logger.hpp>
 #include <rclcpp/logging.hpp>
+
+#include <string>
 
 namespace ignition
 {
@@ -120,6 +124,7 @@ void MarkerManager::createMarker(const visualization_msgs::msg::Marker::SharedPt
         break;
       }
     case visualization_msgs::msg::Marker::MESH_RESOURCE: {
+        createMeshMarker(_msg);
         break;
       }
   }
@@ -213,6 +218,62 @@ void MarkerManager::createTextMarker(const visualization_msgs::msg::Marker::Shar
 
   // Add geometry and set scale
   visual->AddGeometry(textMarker);
+  visual->SetLocalScale(_msg->scale.x, _msg->scale.y, _msg->scale.z);
+
+  visual->SetLocalPose(
+    math::Pose3d(
+      _msg->pose.position.x, _msg->pose.position.y, _msg->pose.position.z,
+      _msg->pose.orientation.w, _msg->pose.orientation.x, _msg->pose.orientation.y,
+      _msg->pose.orientation.z));
+
+  this->rootVisual->AddChild(visual);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void MarkerManager::createMeshMarker(const visualization_msgs::msg::Marker::SharedPtr _msg)
+{
+  rendering::MeshDescriptor descriptor;
+
+  if (_msg->mesh_resource.rfind("package://") == 0) {
+    int p = _msg->mesh_resource.find_first_of('/', 10);
+    auto package_name = _msg->mesh_resource.substr(10, p - 10);
+
+    try {
+      std::string filepath = ament_index_cpp::get_package_share_directory(package_name);
+      filepath += _msg->mesh_resource.substr(p);
+      descriptor.meshName = filepath;
+    } catch (ament_index_cpp::PackageNotFoundError & e) {
+      RCLCPP_ERROR(rclcpp::get_logger("MarkerManager"), e.what());
+      return;
+    }
+  } else if (_msg->mesh_resource.rfind("file://") == 0) {
+    descriptor.meshName = _msg->mesh_resource.substr(6);
+  } else {
+    RCLCPP_ERROR(
+      rclcpp::get_logger(
+        "MarkerManager"), "Unable to find file %s", _msg->mesh_resource.c_str());
+    return;
+  }
+
+  // Load Mesh
+  ignition::common::MeshManager * meshManager = ignition::common::MeshManager::Instance();
+  descriptor.mesh = meshManager->Load(descriptor.meshName);
+
+  // Error loading mesh
+  if (descriptor.mesh == nullptr) {
+    return;
+  }
+
+  rendering::MeshPtr mesh = this->scene->CreateMesh(descriptor);
+
+  rendering::VisualPtr visual = this->scene->CreateVisual();
+  insertOrUpdateVisual(_msg->id, visual);
+
+  if (!_msg->mesh_use_embedded_materials) {
+    mesh->SetMaterial(createMaterial(_msg->color));
+  }
+
+  visual->AddGeometry(mesh);
   visual->SetLocalScale(_msg->scale.x, _msg->scale.y, _msg->scale.z);
 
   visual->SetLocalPose(

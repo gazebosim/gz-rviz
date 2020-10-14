@@ -87,6 +87,12 @@ public:
   void createTextMarker(const visualization_msgs::msg::Marker::SharedPtr _msg);
 
   /**
+   * @brief Create mesh marker
+   * @param[in] _msg Marker message
+   */
+  void createMeshMarker(const visualization_msgs::msg::Marker::SharedPtr _msg);
+
+  /**
    * @brief Create a new material from message
    * @param[in] _color Color message
    */
