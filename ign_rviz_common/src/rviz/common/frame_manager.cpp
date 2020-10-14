@@ -87,8 +87,7 @@ bool FrameManager::getFramePose(const std::string & _frame, ignition::math::Pose
   try {
     geometry_msgs::msg::TransformStamped tf = tfBuffer->lookupTransform(
       fixedFrame,
-      _frame, rclcpp::Time(0),
-      tf2::Duration(1000));
+      _frame, rclcpp::Time(0));
 
     _pose = ignition::math::Pose3d(
       tf.transform.translation.x,
