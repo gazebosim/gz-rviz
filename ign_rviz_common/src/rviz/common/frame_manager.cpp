@@ -39,6 +39,9 @@ FrameManager::FrameManager(rclcpp::Node::SharedPtr _node)
 {
   tfBuffer = std::make_shared<tf2_ros::Buffer>(this->node->get_clock());
   tfListener = std::make_shared<tf2_ros::TransformListener>(*tfBuffer);
+  frameList = getFrames();
+  connect(&frameListTimer, SIGNAL(timeout()), this, SLOT(updateFrameList()));
+  frameListTimer.start(1000);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -116,6 +119,23 @@ bool FrameManager::getParentPose(const std::string & _child, ignition::math::Pos
 
   return false;
 }
+
+////////////////////////////////////////////////////////////////////////////////
+void FrameManager::updateFrameList()
+{
+  std::lock_guard<std::mutex>(this->tf_mutex_);
+  auto updatedFrameList = getFrames();
+  if (frameList != updatedFrameList) {
+    // Send frame list changed event
+    if (ignition::gui::App()) {
+      ignition::gui::App()->sendEvent(
+        ignition::gui::App()->findChild<ignition::gui::MainWindow *>(),
+        new events::FrameListChanged());
+    }
+  }
+  frameList = std::move(updatedFrameList);
+}
+
 
 }  // namespace common
 }  // namespace rviz

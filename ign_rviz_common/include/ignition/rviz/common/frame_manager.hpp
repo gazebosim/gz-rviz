@@ -18,6 +18,7 @@
 #include <ignition/math/Pose3.hh>
 
 #include <QObject>
+#include <QTimer>
 
 #include <tf2_ros/buffer.h>
 #include <tf2_ros/transform_listener.h>
@@ -90,12 +91,17 @@ public:
    */
   std::string getFixedFrame();
 
+public slots:
+  void updateFrameList();
+
 private:
   rclcpp::Node::SharedPtr node;
   std::mutex tf_mutex_;
   std::string fixedFrame;
+  std::vector<std::string> frameList;
   std::shared_ptr<tf2_ros::Buffer> tfBuffer;
   std::shared_ptr<tf2_ros::TransformListener> tfListener;
+  QTimer frameListTimer;
 };
 }  // namespace common
 }  // namespace rviz
