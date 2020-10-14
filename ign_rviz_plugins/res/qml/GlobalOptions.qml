@@ -36,7 +36,7 @@ Item {
         text: "\u21bb"
         Material.background: Material.primary
         onClicked: {
-          GlobalOptions.onRefresh();
+          GlobalOptions.refresh();
         }
       }
 
@@ -54,6 +54,13 @@ Item {
           }
 
           GlobalOptions.setFrame(textAt(currentIndex));
+        }
+
+        Connections {
+          target: combo.popup
+          onAboutToShow: {
+            GlobalOptions.refresh();
+          }
         }
 
         Connections {

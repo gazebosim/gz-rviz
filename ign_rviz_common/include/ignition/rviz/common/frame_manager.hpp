@@ -80,9 +80,9 @@ public:
 
   /**
    * @brief Get available tf frames
-   * @param[out] _frames: List of available frames
+   * @return List of available frames
    */
-  void getFrames(std::vector<std::string> & _frames);
+  std::vector<std::string> getFrames();
 
   /**
    *  @brief Get fixed frame

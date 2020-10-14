@@ -188,6 +188,7 @@ protected:
    */
   rendering::VisualPtr createVisualFrame();
 
+public slots:
   /**
    * @brief Update tree view and local frame list
    */

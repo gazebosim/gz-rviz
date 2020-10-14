@@ -104,7 +104,7 @@ public slots:
   /**
    * @brief Callback when refresh button is pressed.
    */
-  void onRefresh();
+  void refresh();
 
 private:
   void setScale();

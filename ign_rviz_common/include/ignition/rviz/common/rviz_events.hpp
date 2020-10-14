@@ -45,19 +45,6 @@ public:
   static const QEvent::Type kType = QEvent::Type(startingEventId);
 };
 
-/**
- * @brief Event is generated when the frame list is changed
- */
-class FrameListChanged : public QEvent
-{
-public:
-  FrameListChanged()
-  : QEvent(kType)
-  {}
-  /// \brief Unique type for this event.
-  static const QEvent::Type kType = QEvent::Type(startingEventId + 1);
-};
-
 }  // namespace events
 }  // namespace rviz
 }  // namespace ignition

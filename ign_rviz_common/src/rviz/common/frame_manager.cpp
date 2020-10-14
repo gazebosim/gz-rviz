@@ -63,10 +63,9 @@ std::string FrameManager::getFixedFrame()
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void FrameManager::getFrames(std::vector<std::string> & _frames)
+std::vector<std::string> FrameManager::getFrames()
 {
-  std::lock_guard<std::mutex>(this->tf_mutex_);
-  _frames = tfBuffer->getAllFrameNames();
+  return tfBuffer->getAllFrameNames();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
