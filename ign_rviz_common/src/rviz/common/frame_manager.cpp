@@ -59,7 +59,6 @@ void FrameManager::setFixedFrame(const std::string & _fixedFrame)
 ////////////////////////////////////////////////////////////////////////////////
 std::string FrameManager::getFixedFrame()
 {
-  std::lock_guard<std::mutex>(this->tf_mutex_);
   return this->fixedFrame;
 }
 
@@ -73,8 +72,6 @@ void FrameManager::getFrames(std::vector<std::string> & _frames)
 ////////////////////////////////////////////////////////////////////////////////
 bool FrameManager::getFramePose(const std::string & _frame, ignition::math::Pose3d & _pose)
 {
-  std::lock_guard<std::mutex>(this->tf_mutex_);
-
   if (this->fixedFrame.empty()) {
     RCLCPP_ERROR(this->node->get_logger(), "No fixed frame specified");
     return false;
@@ -106,8 +103,6 @@ bool FrameManager::getFramePose(const std::string & _frame, ignition::math::Pose
 ////////////////////////////////////////////////////////////////////////////////
 bool FrameManager::getParentPose(const std::string & _child, ignition::math::Pose3d & _pose)
 {
-  std::lock_guard<std::mutex>(this->tf_mutex_);
-
   std::string parent;
   // TODO(shrijitsingh99): The _getParent() API is only present for backwards compatability,
   // use some alternative method instead
