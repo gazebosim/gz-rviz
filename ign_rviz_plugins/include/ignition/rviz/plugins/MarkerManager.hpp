@@ -93,6 +93,17 @@ public:
   void createMeshMarker(const visualization_msgs::msg::Marker::SharedPtr _msg);
 
   /**
+   * @brief Create list visual
+   *
+   * Create marker geometry using points array availabe in message.
+   * Handles the following geometry types:
+   * Cube List and Sphere List
+   *
+   * @param[in] _msg Marker message
+   */
+  void createListVisual(const visualization_msgs::msg::Marker::SharedPtr _msg);
+
+  /**
    * @brief Create a new material from message
    * @param[in] _color Color message
    */

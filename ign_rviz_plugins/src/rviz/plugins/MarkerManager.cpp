@@ -112,11 +112,12 @@ void MarkerManager::createMarker(const visualization_msgs::msg::Marker::SharedPt
         createListGeometry(_msg, rendering::MarkerType::MT_POINTS);
         break;
       }
-    // TODO(Sarathkrishnan Ramesh): Add support for following marker types
     case visualization_msgs::msg::Marker::CUBE_LIST: {
+        createListVisual(_msg);
         break;
       }
     case visualization_msgs::msg::Marker::SPHERE_LIST: {
+        createListVisual(_msg);
         break;
       }
     case visualization_msgs::msg::Marker::TEXT_VIEW_FACING: {
@@ -275,6 +276,50 @@ void MarkerManager::createMeshMarker(const visualization_msgs::msg::Marker::Shar
 
   visual->AddGeometry(mesh);
   visual->SetLocalScale(_msg->scale.x, _msg->scale.y, _msg->scale.z);
+
+  visual->SetLocalPose(
+    math::Pose3d(
+      _msg->pose.position.x, _msg->pose.position.y, _msg->pose.position.z,
+      _msg->pose.orientation.w, _msg->pose.orientation.x, _msg->pose.orientation.y,
+      _msg->pose.orientation.z));
+
+  this->rootVisual->AddChild(visual);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void MarkerManager::createListVisual(const visualization_msgs::msg::Marker::SharedPtr _msg)
+{
+  rendering::VisualPtr visual = this->scene->CreateVisual();
+  insertOrUpdateVisual(_msg->id, visual);
+
+  if (_msg->colors.size() == _msg->points.size()) {
+    for (unsigned int i = 0; i < _msg->points.size(); ++i) {
+      auto geometry = (_msg->type == visualization_msgs::msg::Marker::CUBE_LIST) ?
+        this->scene->CreateBox() : this->scene->CreateSphere();
+
+      geometry->SetMaterial(createMaterial(_msg->colors[i]));
+      auto marker = this->scene->CreateVisual();
+      marker->SetLocalPosition(_msg->points[i].x, _msg->points[i].y, _msg->points[i].z);
+      marker->SetLocalScale(_msg->scale.x, _msg->scale.y, _msg->scale.z);
+      marker->AddGeometry(geometry);
+
+      visual->AddChild(marker);
+    }
+  } else {
+    auto mat = createMaterial(_msg->color);
+    for (const auto & point : _msg->points) {
+      auto geometry = (_msg->type == visualization_msgs::msg::Marker::CUBE_LIST) ?
+        this->scene->CreateBox() : this->scene->CreateSphere();
+
+      geometry->SetMaterial(mat, false);
+      auto marker = this->scene->CreateVisual();
+      marker->SetLocalPosition(point.x, point.y, point.z);
+      marker->SetLocalScale(_msg->scale.x, _msg->scale.y, _msg->scale.z);
+      marker->AddGeometry(geometry);
+
+      visual->AddChild(marker);
+    }
+  }
 
   visual->SetLocalPose(
     math::Pose3d(
