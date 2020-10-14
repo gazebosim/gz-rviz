@@ -59,6 +59,7 @@ void FrameManager::setFixedFrame(const std::string & _fixedFrame)
 ////////////////////////////////////////////////////////////////////////////////
 std::string FrameManager::getFixedFrame()
 {
+  std::lock_guard<std::mutex>(this->tf_mutex_);
   return this->fixedFrame;
 }
 
@@ -71,7 +72,11 @@ std::vector<std::string> FrameManager::getFrames()
 ////////////////////////////////////////////////////////////////////////////////
 bool FrameManager::getFramePose(const std::string & _frame, ignition::math::Pose3d & _pose)
 {
-  if (this->fixedFrame.empty()) {
+  tf_mutex_.lock();
+  std::string fixedFrame = this->fixedFrame;
+  tf_mutex_.unlock();
+
+  if (fixedFrame.empty()) {
     RCLCPP_ERROR(this->node->get_logger(), "No fixed frame specified");
     return false;
   }
