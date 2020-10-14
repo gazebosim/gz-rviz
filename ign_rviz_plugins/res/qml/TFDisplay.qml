@@ -146,7 +146,6 @@ Item {
         text: model.name
         checked: model.checked
         onClicked: {
-          TFDisplay.refresh();
           model.checked = checked;
           TFDisplay.setFrameVisibility(model.name, model.checked);
         }

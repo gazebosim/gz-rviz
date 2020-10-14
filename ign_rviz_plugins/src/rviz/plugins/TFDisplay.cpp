@@ -209,6 +209,11 @@ bool TFDisplay::eventFilter(QObject * _object, QEvent * _event)
     update();
   }
 
+  if (_event->type() == rviz::events::FrameListChanged::kType) {
+    // Refresh Tree View
+    this->refresh();
+  }
+
   return QObject::eventFilter(_object, _event);
 }
 
