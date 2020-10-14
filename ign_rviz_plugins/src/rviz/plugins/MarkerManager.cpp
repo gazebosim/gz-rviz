@@ -69,19 +69,7 @@ void MarkerManager::createMarker(const visualization_msgs::msg::Marker::SharedPt
 {
   switch (_msg->type) {
     case visualization_msgs::msg::Marker::ARROW: {
-        auto visual = this->scene->CreateArrowVisual();
-        insertOrUpdateVisual(_msg->id, visual);
-
-        visual->SetMaterial(createMaterial(_msg->color));
-        visual->SetLocalScale(_msg->scale.x, _msg->scale.y, _msg->scale.z);
-
-        math::Pose3d pose(_msg->pose.position.x, _msg->pose.position.y, _msg->pose.position.z,
-          _msg->pose.orientation.w, _msg->pose.orientation.x, _msg->pose.orientation.y,
-          _msg->pose.orientation.z);
-        visual->SetLocalPosition(pose.Pos());
-        visual->SetLocalRotation(pose.Rot() * math::Quaterniond(0, 1.57, 0));
-
-        this->rootVisual->AddChild(visual);
+        createArrowMarker(_msg);
         break;
       }
     case visualization_msgs::msg::Marker::CUBE: {
@@ -149,11 +137,7 @@ void MarkerManager::createBasicGeometry(
   // Add geometry and set scale
   visual->AddGeometry(marker);
   visual->SetLocalScale(_msg->scale.x, _msg->scale.y, _msg->scale.z);
-  visual->SetLocalPose(
-    math::Pose3d(
-      _msg->pose.position.x, _msg->pose.position.y, _msg->pose.position.z,
-      _msg->pose.orientation.w, _msg->pose.orientation.x, _msg->pose.orientation.y,
-      _msg->pose.orientation.z));
+  visual->SetLocalPose(msgToPose(_msg->pose));
 
   this->rootVisual->AddChild(visual);
 }
@@ -192,11 +176,23 @@ void MarkerManager::createListGeometry(
   marker->SetMaterial(this->scene->Material("Default/TransGreen"));
 
   visual->AddGeometry(marker);
-  visual->SetLocalPose(
-    math::Pose3d(
-      _msg->pose.position.x, _msg->pose.position.y, _msg->pose.position.z,
-      _msg->pose.orientation.w, _msg->pose.orientation.x, _msg->pose.orientation.y,
-      _msg->pose.orientation.z));
+  visual->SetLocalPose(msgToPose(_msg->pose));
+
+  this->rootVisual->AddChild(visual);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void MarkerManager::createArrowMarker(const visualization_msgs::msg::Marker::SharedPtr _msg)
+{
+  auto visual = this->scene->CreateArrowVisual();
+  insertOrUpdateVisual(_msg->id, visual);
+
+  visual->SetMaterial(createMaterial(_msg->color));
+  visual->SetLocalScale(_msg->scale.x, _msg->scale.y, _msg->scale.z);
+
+  math::Pose3d pose = msgToPose(_msg->pose);
+  visual->SetLocalPosition(pose.Pos());
+  visual->SetLocalRotation(pose.Rot() * math::Quaterniond(0, 1.57, 0));
 
   this->rootVisual->AddChild(visual);
 }
@@ -221,11 +217,7 @@ void MarkerManager::createTextMarker(const visualization_msgs::msg::Marker::Shar
   visual->AddGeometry(textMarker);
   visual->SetLocalScale(_msg->scale.x, _msg->scale.y, _msg->scale.z);
 
-  visual->SetLocalPose(
-    math::Pose3d(
-      _msg->pose.position.x, _msg->pose.position.y, _msg->pose.position.z,
-      _msg->pose.orientation.w, _msg->pose.orientation.x, _msg->pose.orientation.y,
-      _msg->pose.orientation.z));
+  visual->SetLocalPose(msgToPose(_msg->pose));
 
   this->rootVisual->AddChild(visual);
 }
@@ -277,11 +269,7 @@ void MarkerManager::createMeshMarker(const visualization_msgs::msg::Marker::Shar
   visual->AddGeometry(mesh);
   visual->SetLocalScale(_msg->scale.x, _msg->scale.y, _msg->scale.z);
 
-  visual->SetLocalPose(
-    math::Pose3d(
-      _msg->pose.position.x, _msg->pose.position.y, _msg->pose.position.z,
-      _msg->pose.orientation.w, _msg->pose.orientation.x, _msg->pose.orientation.y,
-      _msg->pose.orientation.z));
+  visual->SetLocalPose(msgToPose(_msg->pose));
 
   this->rootVisual->AddChild(visual);
 }
@@ -321,11 +309,7 @@ void MarkerManager::createListVisual(const visualization_msgs::msg::Marker::Shar
     }
   }
 
-  visual->SetLocalPose(
-    math::Pose3d(
-      _msg->pose.position.x, _msg->pose.position.y, _msg->pose.position.z,
-      _msg->pose.orientation.w, _msg->pose.orientation.x, _msg->pose.orientation.y,
-      _msg->pose.orientation.z));
+  visual->SetLocalPose(msgToPose(_msg->pose));
 
   this->rootVisual->AddChild(visual);
 }
@@ -339,6 +323,14 @@ rendering::MaterialPtr MarkerManager::createMaterial(const std_msgs::msg::ColorR
   mat->SetEmissive(_color.r, _color.g, _color.b, _color.a);
 
   return mat;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+math::Pose3d MarkerManager::msgToPose(const geometry_msgs::msg::Pose & _pose)
+{
+  return math::Pose3d(
+    _pose.position.x, _pose.position.y, _pose.position.z,
+    _pose.orientation.w, _pose.orientation.x, _pose.orientation.y, _pose.orientation.z);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

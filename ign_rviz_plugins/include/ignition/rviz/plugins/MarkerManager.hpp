@@ -17,6 +17,7 @@
 
 #include <ignition/rendering.hh>
 
+#include <geometry_msgs/msg/pose.hpp>
 #include <std_msgs/msg/color_rgba.hpp>
 #include <visualization_msgs/msg/marker.hpp>
 
@@ -81,6 +82,12 @@ public:
     const visualization_msgs::msg::Marker::SharedPtr _msg, rendering::MarkerType _geometryType);
 
   /**
+   * @brief Create arrow marker
+   * @param[in] _msg Marker message
+   */
+  void createArrowMarker(const visualization_msgs::msg::Marker::SharedPtr _msg);
+
+  /**
    * @brief Create a text marker
    * @param[in] _msg Marker message
    */
@@ -106,8 +113,16 @@ public:
   /**
    * @brief Create a new material from message
    * @param[in] _color Color message
+   * @return Material Material created using color message
    */
   rendering::MaterialPtr createMaterial(const std_msgs::msg::ColorRGBA & _color);
+
+  /**
+   * @brief Convert pose message
+   * @param[in] _pose Pose message
+   * @return Pose Converted pose
+   */
+  math::Pose3d msgToPose(const geometry_msgs::msg::Pose & _pose);
 
   /**
    * @brief Delete a specific marker from scene
