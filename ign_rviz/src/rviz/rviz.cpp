@@ -23,6 +23,7 @@
 #include <sensor_msgs/msg/laser_scan.hpp>
 #include <std_msgs/msg/string.hpp>
 #include <tf2_msgs/msg/tf_message.hpp>
+#include <visualization_msgs/msg/marker.hpp>
 
 #include <memory>
 #include <string>
@@ -82,7 +83,8 @@ RViz::RViz()
     "geometry_msgs/msg/PoseArray",
     "nav_msgs/msg/Path",
     "sensor_msgs/msg/Image",
-    "sensor_msgs/msg/LaserScan"
+    "sensor_msgs/msg/LaserScan",
+    "visualization_msgs/msg/Marker"
   };
 }
 
@@ -156,7 +158,7 @@ void RViz::addMarkerDisplay(const QString & _topic) const
   // Load plugin
   if (ignition::gui::App()->LoadPlugin("MarkerDisplay")) {
     auto markerDisplay =
-      ignition::gui::App()->findChildren<DisplayPlugin<geometry_msgs::msg::PointStamped> *>();
+      ignition::gui::App()->findChildren<DisplayPlugin<visualization_msgs::msg::Marker> *>();
     int pluginCount = markerDisplay.size() - 1;
 
     // Set frame manager and install event filter for recently added plugin

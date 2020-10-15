@@ -458,7 +458,7 @@ rendering::VisualPtr RobotModelDisplay::createLinkGeometry(
         } else if (meshInfo->filename.rfind("file://") == 0) {
           // Load Mesh
           rendering::MeshDescriptor descriptor;
-          descriptor.meshName = meshInfo->filename.substr(6);
+          descriptor.meshName = meshInfo->filename.substr(7);
           ignition::common::MeshManager * meshManager = ignition::common::MeshManager::Instance();
           descriptor.mesh = meshManager->Load(descriptor.meshName);
           rendering::MeshPtr mesh = this->scene->CreateMesh(descriptor);

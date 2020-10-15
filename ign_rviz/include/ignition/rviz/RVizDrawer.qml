@@ -239,6 +239,10 @@ Rectangle {
         RViz.addLaserScanDisplay(_name)
         break;
       }
+      case "visualization_msgs/msg/Marker": {
+        RViz.addMarkerDisplay(_name)
+        break;
+      }
     }
   }
 
