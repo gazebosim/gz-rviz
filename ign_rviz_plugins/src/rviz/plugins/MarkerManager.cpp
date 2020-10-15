@@ -240,7 +240,7 @@ void MarkerManager::createMeshMarker(const visualization_msgs::msg::Marker::Shar
       return;
     }
   } else if (_msg->mesh_resource.rfind("file://") == 0) {
-    descriptor.meshName = _msg->mesh_resource.substr(6);
+    descriptor.meshName = _msg->mesh_resource.substr(7);
   } else {
     RCLCPP_ERROR(
       rclcpp::get_logger(

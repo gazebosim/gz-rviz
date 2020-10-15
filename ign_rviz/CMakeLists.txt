@@ -29,6 +29,7 @@ find_package(nav_msgs REQUIRED)
 find_package(tf2_geometry_msgs REQUIRED)
 find_package(tf2_msgs REQUIRED)
 find_package(tf2_ros REQUIRED)
+find_package(visualization_msgs REQUIRED)
 
 # Ignition libraries
 find_package(ign_rviz_common REQUIRED)
@@ -75,6 +76,7 @@ ament_target_dependencies(ign_rviz
   sensor_msgs
   tf2_msgs
   tf2_ros
+  visualization_msgs
 )
 
 target_link_libraries(ign_rviz Qt5::Core Qt5::Qml Qt5::Quick Qt5::QuickControls2)
