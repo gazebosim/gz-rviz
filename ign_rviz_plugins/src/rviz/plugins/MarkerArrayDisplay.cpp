@@ -117,8 +117,7 @@ void MarkerArrayDisplay::update()
     return;
   }
 
-  RCLCPP_INFO(this->node->get_logger(), "Message received");
-  // TODO(Sarathkrishnan Ramesh): Process MarkerArray messages
+  markerManager->processMessage(*this->msg);
 
   // Avoid visualizing same data again
   this->msg.reset();

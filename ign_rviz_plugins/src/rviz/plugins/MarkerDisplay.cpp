@@ -117,7 +117,7 @@ void MarkerDisplay::update()
     return;
   }
 
-  markerManager->processMessage(this->msg);
+  markerManager->processMessage(*this->msg);
 
   // Avoid visualizing same data again
   this->msg.reset();

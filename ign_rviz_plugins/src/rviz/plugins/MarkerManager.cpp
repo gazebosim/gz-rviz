@@ -46,15 +46,23 @@ MarkerManager::~MarkerManager()
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void MarkerManager::processMessage(const visualization_msgs::msg::Marker::SharedPtr _msg)
+void MarkerManager::processMessage(const visualization_msgs::msg::MarkerArray & _msg)
 {
-  switch (_msg->action) {
+  for (const auto & markerMsg : _msg.markers) {
+    processMessage(markerMsg);
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void MarkerManager::processMessage(const visualization_msgs::msg::Marker & _msg)
+{
+  switch (_msg.action) {
     case visualization_msgs::msg::Marker::ADD: {
         createMarker(_msg);
         break;
       }
     case visualization_msgs::msg::Marker::DELETE: {
-        deleteMarker(_msg->id);
+        deleteMarker(_msg.id);
         break;
       }
     case visualization_msgs::msg::Marker::DELETEALL: {
@@ -65,9 +73,9 @@ void MarkerManager::processMessage(const visualization_msgs::msg::Marker::Shared
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void MarkerManager::createMarker(const visualization_msgs::msg::Marker::SharedPtr _msg)
+void MarkerManager::createMarker(const visualization_msgs::msg::Marker & _msg)
 {
-  switch (_msg->type) {
+  switch (_msg.type) {
     case visualization_msgs::msg::Marker::ARROW: {
         createArrowMarker(_msg);
         break;
@@ -121,52 +129,52 @@ void MarkerManager::createMarker(const visualization_msgs::msg::Marker::SharedPt
 
 ////////////////////////////////////////////////////////////////////////////////
 void MarkerManager::createBasicGeometry(
-  const visualization_msgs::msg::Marker::SharedPtr _msg,
+  const visualization_msgs::msg::Marker & _msg,
   rendering::MarkerType _geometryType)
 {
   rendering::VisualPtr visual = this->scene->CreateVisual();
-  insertOrUpdateVisual(_msg->id, visual);
+  insertOrUpdateVisual(_msg.id, visual);
 
   // Create marker
   auto marker = this->scene->CreateMarker();
   marker->SetType(_geometryType);
 
   // Set material
-  marker->SetMaterial(createMaterial(_msg->color));
+  marker->SetMaterial(createMaterial(_msg.color));
 
   // Add geometry and set scale
   visual->AddGeometry(marker);
-  visual->SetLocalScale(_msg->scale.x, _msg->scale.y, _msg->scale.z);
-  visual->SetLocalPose(msgToPose(_msg->pose));
+  visual->SetLocalScale(_msg.scale.x, _msg.scale.y, _msg.scale.z);
+  visual->SetLocalPose(msgToPose(_msg.pose));
 
   this->rootVisual->AddChild(visual);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void MarkerManager::createListGeometry(
-  const visualization_msgs::msg::Marker::SharedPtr _msg,
+  const visualization_msgs::msg::Marker & _msg,
   rendering::MarkerType _geometryType)
 {
   rendering::VisualPtr visual = this->scene->CreateVisual();
-  insertOrUpdateVisual(_msg->id, visual);
+  insertOrUpdateVisual(_msg.id, visual);
 
   auto marker = this->scene->CreateMarker();
   marker->SetType(_geometryType);
 
-  if (_msg->colors.size() == _msg->points.size()) {
-    for (unsigned int i = 0; i < _msg->points.size(); ++i) {
-      const auto & point = _msg->points[i];
+  if (_msg.colors.size() == _msg.points.size()) {
+    for (unsigned int i = 0; i < _msg.points.size(); ++i) {
+      const auto & point = _msg.points[i];
       const auto color = math::Color(
-        _msg->colors[i].r, _msg->colors[i].g, _msg->colors[i].b, _msg->colors[i].a);
+        _msg.colors[i].r, _msg.colors[i].g, _msg.colors[i].b, _msg.colors[i].a);
       marker->AddPoint(point.x, point.y, point.z, color);
     }
   } else {
-    if (_msg->colors.size() != 0) {
+    if (_msg.colors.size() != 0) {
       RCLCPP_WARN(
         rclcpp::get_logger("MarkerManager"), "Marker color and point array size doesn't match.");
     }
-    const auto color = math::Color(_msg->color.r, _msg->color.g, _msg->color.b, _msg->color.a);
-    for (const auto & point : _msg->points) {
+    const auto color = math::Color(_msg.color.r, _msg.color.g, _msg.color.b, _msg.color.a);
+    for (const auto & point : _msg.points) {
       marker->AddPoint(point.x, point.y, point.z, color);
     }
   }
@@ -176,21 +184,21 @@ void MarkerManager::createListGeometry(
   marker->SetMaterial(this->scene->Material("Default/TransGreen"));
 
   visual->AddGeometry(marker);
-  visual->SetLocalPose(msgToPose(_msg->pose));
+  visual->SetLocalPose(msgToPose(_msg.pose));
 
   this->rootVisual->AddChild(visual);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void MarkerManager::createArrowMarker(const visualization_msgs::msg::Marker::SharedPtr _msg)
+void MarkerManager::createArrowMarker(const visualization_msgs::msg::Marker & _msg)
 {
   auto visual = this->scene->CreateArrowVisual();
-  insertOrUpdateVisual(_msg->id, visual);
+  insertOrUpdateVisual(_msg.id, visual);
 
-  visual->SetMaterial(createMaterial(_msg->color));
-  visual->SetLocalScale(_msg->scale.x, _msg->scale.y, _msg->scale.z);
+  visual->SetMaterial(createMaterial(_msg.color));
+  visual->SetLocalScale(_msg.scale.x, _msg.scale.y, _msg.scale.z);
 
-  math::Pose3d pose = msgToPose(_msg->pose);
+  math::Pose3d pose = msgToPose(_msg.pose);
   visual->SetLocalPosition(pose.Pos());
   visual->SetLocalRotation(pose.Rot() * math::Quaterniond(0, 1.57, 0));
 
@@ -198,53 +206,53 @@ void MarkerManager::createArrowMarker(const visualization_msgs::msg::Marker::Sha
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void MarkerManager::createTextMarker(const visualization_msgs::msg::Marker::SharedPtr _msg)
+void MarkerManager::createTextMarker(const visualization_msgs::msg::Marker & _msg)
 {
   rendering::VisualPtr visual = this->scene->CreateVisual();
-  insertOrUpdateVisual(_msg->id, visual);
+  insertOrUpdateVisual(_msg.id, visual);
 
   // Create text marker
   auto textMarker = this->scene->CreateText();
-  textMarker->SetTextString(_msg->text);
+  textMarker->SetTextString(_msg.text);
   textMarker->SetShowOnTop(true);
   textMarker->SetTextAlignment(
     rendering::TextHorizontalAlign::CENTER,
     rendering::TextVerticalAlign::CENTER);
   textMarker->SetCharHeight(0.15);
-  textMarker->SetMaterial(createMaterial(_msg->color));
+  textMarker->SetMaterial(createMaterial(_msg.color));
 
   // Add geometry and set scale
   visual->AddGeometry(textMarker);
-  visual->SetLocalScale(_msg->scale.x, _msg->scale.y, _msg->scale.z);
+  visual->SetLocalScale(_msg.scale.x, _msg.scale.y, _msg.scale.z);
 
-  visual->SetLocalPose(msgToPose(_msg->pose));
+  visual->SetLocalPose(msgToPose(_msg.pose));
 
   this->rootVisual->AddChild(visual);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void MarkerManager::createMeshMarker(const visualization_msgs::msg::Marker::SharedPtr _msg)
+void MarkerManager::createMeshMarker(const visualization_msgs::msg::Marker & _msg)
 {
   rendering::MeshDescriptor descriptor;
 
-  if (_msg->mesh_resource.rfind("package://") == 0) {
-    int p = _msg->mesh_resource.find_first_of('/', 10);
-    auto package_name = _msg->mesh_resource.substr(10, p - 10);
+  if (_msg.mesh_resource.rfind("package://") == 0) {
+    int p = _msg.mesh_resource.find_first_of('/', 10);
+    auto package_name = _msg.mesh_resource.substr(10, p - 10);
 
     try {
       std::string filepath = ament_index_cpp::get_package_share_directory(package_name);
-      filepath += _msg->mesh_resource.substr(p);
+      filepath += _msg.mesh_resource.substr(p);
       descriptor.meshName = filepath;
     } catch (ament_index_cpp::PackageNotFoundError & e) {
       RCLCPP_ERROR(rclcpp::get_logger("MarkerManager"), e.what());
       return;
     }
-  } else if (_msg->mesh_resource.rfind("file://") == 0) {
-    descriptor.meshName = _msg->mesh_resource.substr(7);
+  } else if (_msg.mesh_resource.rfind("file://") == 0) {
+    descriptor.meshName = _msg.mesh_resource.substr(7);
   } else {
     RCLCPP_ERROR(
       rclcpp::get_logger(
-        "MarkerManager"), "Unable to find file %s", _msg->mesh_resource.c_str());
+        "MarkerManager"), "Unable to find file %s", _msg.mesh_resource.c_str());
     return;
   }
 
@@ -260,56 +268,56 @@ void MarkerManager::createMeshMarker(const visualization_msgs::msg::Marker::Shar
   rendering::MeshPtr mesh = this->scene->CreateMesh(descriptor);
 
   rendering::VisualPtr visual = this->scene->CreateVisual();
-  insertOrUpdateVisual(_msg->id, visual);
+  insertOrUpdateVisual(_msg.id, visual);
 
-  if (!_msg->mesh_use_embedded_materials) {
-    mesh->SetMaterial(createMaterial(_msg->color));
+  if (!_msg.mesh_use_embedded_materials) {
+    mesh->SetMaterial(createMaterial(_msg.color));
   }
 
   visual->AddGeometry(mesh);
-  visual->SetLocalScale(_msg->scale.x, _msg->scale.y, _msg->scale.z);
+  visual->SetLocalScale(_msg.scale.x, _msg.scale.y, _msg.scale.z);
 
-  visual->SetLocalPose(msgToPose(_msg->pose));
+  visual->SetLocalPose(msgToPose(_msg.pose));
 
   this->rootVisual->AddChild(visual);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void MarkerManager::createListVisual(const visualization_msgs::msg::Marker::SharedPtr _msg)
+void MarkerManager::createListVisual(const visualization_msgs::msg::Marker & _msg)
 {
   rendering::VisualPtr visual = this->scene->CreateVisual();
-  insertOrUpdateVisual(_msg->id, visual);
+  insertOrUpdateVisual(_msg.id, visual);
 
-  if (_msg->colors.size() == _msg->points.size()) {
-    for (unsigned int i = 0; i < _msg->points.size(); ++i) {
-      auto geometry = (_msg->type == visualization_msgs::msg::Marker::CUBE_LIST) ?
+  if (_msg.colors.size() == _msg.points.size()) {
+    for (unsigned int i = 0; i < _msg.points.size(); ++i) {
+      auto geometry = (_msg.type == visualization_msgs::msg::Marker::CUBE_LIST) ?
         this->scene->CreateBox() : this->scene->CreateSphere();
 
-      geometry->SetMaterial(createMaterial(_msg->colors[i]));
+      geometry->SetMaterial(createMaterial(_msg.colors[i]));
       auto marker = this->scene->CreateVisual();
-      marker->SetLocalPosition(_msg->points[i].x, _msg->points[i].y, _msg->points[i].z);
-      marker->SetLocalScale(_msg->scale.x, _msg->scale.y, _msg->scale.z);
+      marker->SetLocalPosition(_msg.points[i].x, _msg.points[i].y, _msg.points[i].z);
+      marker->SetLocalScale(_msg.scale.x, _msg.scale.y, _msg.scale.z);
       marker->AddGeometry(geometry);
 
       visual->AddChild(marker);
     }
   } else {
-    auto mat = createMaterial(_msg->color);
-    for (const auto & point : _msg->points) {
-      auto geometry = (_msg->type == visualization_msgs::msg::Marker::CUBE_LIST) ?
+    auto mat = createMaterial(_msg.color);
+    for (const auto & point : _msg.points) {
+      auto geometry = (_msg.type == visualization_msgs::msg::Marker::CUBE_LIST) ?
         this->scene->CreateBox() : this->scene->CreateSphere();
 
       geometry->SetMaterial(mat, false);
       auto marker = this->scene->CreateVisual();
       marker->SetLocalPosition(point.x, point.y, point.z);
-      marker->SetLocalScale(_msg->scale.x, _msg->scale.y, _msg->scale.z);
+      marker->SetLocalScale(_msg.scale.x, _msg.scale.y, _msg.scale.z);
       marker->AddGeometry(geometry);
 
       visual->AddChild(marker);
     }
   }
 
-  visual->SetLocalPose(msgToPose(_msg->pose));
+  visual->SetLocalPose(msgToPose(_msg.pose));
 
   this->rootVisual->AddChild(visual);
 }
