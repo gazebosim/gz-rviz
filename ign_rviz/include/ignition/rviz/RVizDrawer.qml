@@ -252,6 +252,10 @@ Rectangle {
         RViz.addMarkerDisplay(_name)
         break;
       }
+      case "visualization_msgs/msg/MarkerArray": {
+        RViz.addMarkerArrayDisplay(_name)
+        break;
+      }
     }
   }
 

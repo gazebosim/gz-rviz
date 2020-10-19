@@ -85,7 +85,8 @@ RViz::RViz()
     "nav_msgs/msg/Path",
     "sensor_msgs/msg/Image",
     "sensor_msgs/msg/LaserScan",
-    "visualization_msgs/msg/Marker"
+    "visualization_msgs/msg/Marker",
+    "visualization_msgs/msg/MarkerArray"
   };
 }
 
