@@ -19,6 +19,10 @@
     <file alias="MarkerDisplay.qml">qml/MarkerDisplay.qml</file>
   </qresource>
 
+  <qresource prefix="MarkerArrayDisplay/">
+    <file alias="MarkerArrayDisplay.qml">qml/MarkerArrayDisplay.qml</file>
+  </qresource>
+
   <qresource prefix="PathDisplay/">
     <file alias="PathDisplay.qml">qml/PathDisplay.qml</file>
   </qresource>

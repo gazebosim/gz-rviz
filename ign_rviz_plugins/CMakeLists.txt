@@ -138,6 +138,21 @@ add_ign_rviz_plugin(
 
 ########################################################################
 add_ign_rviz_plugin(
+  NAME MarkerArrayDisplay
+  EXTRA_FILES
+    src/rviz/plugins/MarkerManager.cpp
+  DEPENDENCIES
+    geometry_msgs
+    ign_rviz_common
+    ignition-gui4
+    ignition-math6
+    ignition-rendering4
+    tf2_ros
+    visualization_msgs
+)
+
+########################################################################
+add_ign_rviz_plugin(
   NAME PathDisplay
   DEPENDENCIES
     geometry_msgs
@@ -265,6 +280,7 @@ ament_export_libraries(
   ImageDisplay
   LaserScanDisplay
   MarkerDisplay
+  MarkerArrayDisplay
   PathDisplay
   PointStampedDisplay
   PolygonDisplay
@@ -281,6 +297,7 @@ install(
     ImageDisplay
     LaserScanDisplay
     MarkerDisplay
+    MarkerArrayDisplay
     PathDisplay
     PointStampedDisplay
     PolygonDisplay
