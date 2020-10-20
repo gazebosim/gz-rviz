@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "ignition/rviz/plugins/MarkerDisplay.hpp"
+#include "ignition/rviz/plugins/MarkerArrayDisplay.hpp"
 
 #include <ignition/gui/Application.hh>
 #include <ignition/gui/GuiEvents.hh>
@@ -31,36 +31,36 @@ namespace rviz
 namespace plugins
 {
 ////////////////////////////////////////////////////////////////////////////////
-MarkerDisplay::MarkerDisplay()
+MarkerArrayDisplay::MarkerArrayDisplay()
 : MessageDisplay(), markerManager(std::make_unique<MarkerManager>()) {}
 
 ////////////////////////////////////////////////////////////////////////////////
-MarkerDisplay::~MarkerDisplay()
+MarkerArrayDisplay::~MarkerArrayDisplay()
 {
   std::lock_guard<std::mutex>(this->lock);
   ignition::gui::App()->findChild<ignition::gui::MainWindow *>()->removeEventFilter(this);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void MarkerDisplay::initialize(rclcpp::Node::SharedPtr _node)
+void MarkerArrayDisplay::initialize(rclcpp::Node::SharedPtr _node)
 {
   std::lock_guard<std::mutex>(this->lock);
   this->node = std::move(_node);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void MarkerDisplay::subscribe()
+void MarkerArrayDisplay::subscribe()
 {
   std::lock_guard<std::mutex>(this->lock);
 
-  this->subscriber = this->node->create_subscription<visualization_msgs::msg::Marker>(
+  this->subscriber = this->node->create_subscription<visualization_msgs::msg::MarkerArray>(
     this->topic_name,
     this->qos,
-    std::bind(&MarkerDisplay::callback, this, std::placeholders::_1));
+    std::bind(&MarkerArrayDisplay::callback, this, std::placeholders::_1));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void MarkerDisplay::setTopic(const std::string & topic_name)
+void MarkerArrayDisplay::setTopic(const std::string & topic_name)
 {
   std::lock_guard<std::mutex>(this->lock);
   this->topic_name = topic_name;
@@ -72,7 +72,7 @@ void MarkerDisplay::setTopic(const std::string & topic_name)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void MarkerDisplay::setTopic(const QString & topic_name)
+void MarkerArrayDisplay::setTopic(const QString & topic_name)
 {
   std::lock_guard<std::mutex>(this->lock);
   this->topic_name = topic_name.toStdString();
@@ -86,14 +86,14 @@ void MarkerDisplay::setTopic(const QString & topic_name)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void MarkerDisplay::callback(const visualization_msgs::msg::Marker::SharedPtr _msg)
+void MarkerArrayDisplay::callback(const visualization_msgs::msg::MarkerArray::SharedPtr _msg)
 {
   std::lock_guard<std::mutex>(this->lock);
   this->msg = std::move(_msg);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-bool MarkerDisplay::eventFilter(QObject * _object, QEvent * _event)
+bool MarkerArrayDisplay::eventFilter(QObject * _object, QEvent * _event)
 {
   if (_event->type() == gui::events::Render::kType) {
     update();
@@ -103,13 +103,13 @@ bool MarkerDisplay::eventFilter(QObject * _object, QEvent * _event)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void MarkerDisplay::reset()
+void MarkerArrayDisplay::reset()
 {
   this->msg.reset();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void MarkerDisplay::update()
+void MarkerArrayDisplay::update()
 {
   std::lock_guard<std::mutex>(this->lock);
 
@@ -124,20 +124,20 @@ void MarkerDisplay::update()
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void MarkerDisplay::setFrameManager(std::shared_ptr<common::FrameManager> _frameManager)
+void MarkerArrayDisplay::setFrameManager(std::shared_ptr<common::FrameManager> _frameManager)
 {
   std::lock_guard<std::mutex>(this->lock);
   this->frameManager = std::move(_frameManager);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-QStringList MarkerDisplay::getTopicList() const
+QStringList MarkerArrayDisplay::getTopicList() const
 {
   return this->topicList;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void MarkerDisplay::onRefresh()
+void MarkerArrayDisplay::onRefresh()
 {
   std::lock_guard<std::mutex>(this->lock);
 
@@ -150,7 +150,7 @@ void MarkerDisplay::onRefresh()
   auto topics = this->node->get_topic_names_and_types();
   for (const auto & topic : topics) {
     for (const auto & topicType : topic.second) {
-      if (topicType == "visualization_msgs/msg/Marker") {
+      if (topicType == "visualization_msgs/msg/MarkerArray") {
         this->topicList.push_back(QString::fromStdString(topic.first));
         if (topic.first == this->topic_name) {
           position = index;
@@ -165,7 +165,7 @@ void MarkerDisplay::onRefresh()
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void MarkerDisplay::updateQoS(
+void MarkerArrayDisplay::updateQoS(
   const int & _depth, const int & _history, const int & _reliability,
   const int & _durability)
 {
@@ -182,10 +182,10 @@ void MarkerDisplay::updateQoS(
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void MarkerDisplay::LoadConfig(const tinyxml2::XMLElement * /*_pluginElem*/)
+void MarkerArrayDisplay::LoadConfig(const tinyxml2::XMLElement * /*_pluginElem*/)
 {
   if (this->title.empty()) {
-    this->title = "Marker";
+    this->title = "MarkerArray";
   }
 }
 
@@ -194,5 +194,5 @@ void MarkerDisplay::LoadConfig(const tinyxml2::XMLElement * /*_pluginElem*/)
 }  // namespace ignition
 
 IGNITION_ADD_PLUGIN(
-  ignition::rviz::plugins::MarkerDisplay,
+  ignition::rviz::plugins::MarkerArrayDisplay,
   ignition::gui::Plugin)

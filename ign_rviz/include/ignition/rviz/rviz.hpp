@@ -131,6 +131,12 @@ public:
   Q_INVOKABLE void addMarkerDisplay(const QString & _topic = "/marker") const;
 
   /**
+   * @brief Loads MarkerArray Visualization Plugin
+   * @param[in] _topic Topic name
+   */
+  Q_INVOKABLE void addMarkerArrayDisplay(const QString & _topic = "/marker_array") const;
+
+  /**
    * @brief Loads PointStamped Visualization Plugin
    * @param[in] _topic Topic name
    */

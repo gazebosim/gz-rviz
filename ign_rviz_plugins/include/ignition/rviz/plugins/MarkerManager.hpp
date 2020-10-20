@@ -20,6 +20,7 @@
 #include <geometry_msgs/msg/pose.hpp>
 #include <std_msgs/msg/color_rgba.hpp>
 #include <visualization_msgs/msg/marker.hpp>
+#include <visualization_msgs/msg/marker_array.hpp>
 
 #include <unordered_map>
 
@@ -49,13 +50,19 @@ public:
    * @brief Processes message to handle Add/Modify, Delete and Delete All marker actions
    * @param[in] _msg Marker message
    */
-  void processMessage(const visualization_msgs::msg::Marker::SharedPtr _msg);
+  void processMessage(const visualization_msgs::msg::Marker & _msg);
+
+  /**
+   * @brief Processes message to handle Add/Modify, Delete and Delete All marker actions
+   * @param[in] _msg MarkerArray message
+   */
+  void processMessage(const visualization_msgs::msg::MarkerArray & _msg);
 
   /**
    * @brief Creates marker visual using message
    * @param[in] _msg Marker message
    */
-  void createMarker(const visualization_msgs::msg::Marker::SharedPtr _msg);
+  void createMarker(const visualization_msgs::msg::Marker & _msg);
 
   /**
    * @brief Creates basic marker geometry
@@ -66,7 +73,7 @@ public:
    * @param[in] _geometryType Marker geometry type
    */
   void createBasicGeometry(
-    const visualization_msgs::msg::Marker::SharedPtr _msg, rendering::MarkerType _geometryType);
+    const visualization_msgs::msg::Marker & _msg, rendering::MarkerType _geometryType);
 
   /**
    * @brief Creates marker list geometry
@@ -79,25 +86,25 @@ public:
    * @param[in] _geometryType Marker geometry type
    */
   void createListGeometry(
-    const visualization_msgs::msg::Marker::SharedPtr _msg, rendering::MarkerType _geometryType);
+    const visualization_msgs::msg::Marker & _msg, rendering::MarkerType _geometryType);
 
   /**
    * @brief Create arrow marker
    * @param[in] _msg Marker message
    */
-  void createArrowMarker(const visualization_msgs::msg::Marker::SharedPtr _msg);
+  void createArrowMarker(const visualization_msgs::msg::Marker & _msg);
 
   /**
    * @brief Create a text marker
    * @param[in] _msg Marker message
    */
-  void createTextMarker(const visualization_msgs::msg::Marker::SharedPtr _msg);
+  void createTextMarker(const visualization_msgs::msg::Marker & _msg);
 
   /**
    * @brief Create mesh marker
    * @param[in] _msg Marker message
    */
-  void createMeshMarker(const visualization_msgs::msg::Marker::SharedPtr _msg);
+  void createMeshMarker(const visualization_msgs::msg::Marker & _msg);
 
   /**
    * @brief Create list visual
@@ -108,7 +115,7 @@ public:
    *
    * @param[in] _msg Marker message
    */
-  void createListVisual(const visualization_msgs::msg::Marker::SharedPtr _msg);
+  void createListVisual(const visualization_msgs::msg::Marker & _msg);
 
   /**
    * @brief Create a new material from message

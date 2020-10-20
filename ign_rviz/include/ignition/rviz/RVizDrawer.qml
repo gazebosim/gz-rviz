@@ -43,6 +43,9 @@ Rectangle {
       case "addMarkerDisplay":
         RViz.addMarkerDisplay();
         break;
+      case "addMarkerArrayDisplay":
+        RViz.addMarkerArrayDisplay();
+        break;
       case "addPathDisplay":
         RViz.addPathDisplay();
         break;
@@ -107,6 +110,12 @@ Rectangle {
       title: "Marker"
       icon: "icons/Marker.png"
       actionElement: "addMarkerDisplay"
+    }
+
+    ListElement {
+      title: "MarkerArray"
+      icon: "icons/MarkerArray.png"
+      actionElement: "addMarkerArrayDisplay"
     }
 
     ListElement {
@@ -241,6 +250,10 @@ Rectangle {
       }
       case "visualization_msgs/msg/Marker": {
         RViz.addMarkerDisplay(_name)
+        break;
+      }
+      case "visualization_msgs/msg/MarkerArray": {
+        RViz.addMarkerArrayDisplay(_name)
         break;
       }
     }

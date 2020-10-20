@@ -24,6 +24,7 @@
 #include <std_msgs/msg/string.hpp>
 #include <tf2_msgs/msg/tf_message.hpp>
 #include <visualization_msgs/msg/marker.hpp>
+#include <visualization_msgs/msg/marker_array.hpp>
 
 #include <memory>
 #include <string>
@@ -84,7 +85,8 @@ RViz::RViz()
     "nav_msgs/msg/Path",
     "sensor_msgs/msg/Image",
     "sensor_msgs/msg/LaserScan",
-    "visualization_msgs/msg/Marker"
+    "visualization_msgs/msg/Marker",
+    "visualization_msgs/msg/MarkerArray"
   };
 }
 
@@ -167,6 +169,24 @@ void RViz::addMarkerDisplay(const QString & _topic) const
     markerDisplay[pluginCount]->setFrameManager(this->frameManager);
     ignition::gui::App()->findChild<ignition::gui::MainWindow *>()->installEventFilter(
       markerDisplay[pluginCount]);
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void RViz::addMarkerArrayDisplay(const QString & _topic) const
+{
+  // Load plugin
+  if (ignition::gui::App()->LoadPlugin("MarkerArrayDisplay")) {
+    auto markerArrayDisplay =
+      ignition::gui::App()->findChildren<DisplayPlugin<visualization_msgs::msg::MarkerArray> *>();
+    int pluginCount = markerArrayDisplay.size() - 1;
+
+    // Set frame manager and install event filter for recently added plugin
+    markerArrayDisplay[pluginCount]->initialize(this->node);
+    markerArrayDisplay[pluginCount]->setTopic(_topic.toStdString());
+    markerArrayDisplay[pluginCount]->setFrameManager(this->frameManager);
+    ignition::gui::App()->findChild<ignition::gui::MainWindow *>()->installEventFilter(
+      markerArrayDisplay[pluginCount]);
   }
 }
 
