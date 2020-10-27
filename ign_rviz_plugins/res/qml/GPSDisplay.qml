@@ -114,6 +114,19 @@ Item {
         }
       }
     }
+
+    RowLayout {
+      width: parent.width
+      Text {
+        Layout.fillWidth: true
+        text: "<b>Lat: </b>" + lat.toFixed(6)
+      }
+
+      Text {
+        Layout.fillWidth: true
+        text: "<b>Lng: </b>" + lng.toFixed(6)
+      }
+    }
   }
 
   Map {
@@ -123,7 +136,7 @@ Item {
     anchors.left: parent.left
     anchors.right: parent.right
 
-    anchors.topMargin: 2
+    anchors.topMargin: 5
     anchors.leftMargin: -5
     anchors.rightMargin: -5
 
