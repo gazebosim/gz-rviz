@@ -7,6 +7,10 @@
     <file alias="GlobalOptions.qml">qml/GlobalOptions.qml</file>
   </qresource>
 
+  <qresource prefix="GPSDisplay/">
+    <file alias="GPSDisplay.qml">qml/GPSDisplay.qml</file>
+  </qresource>
+
   <qresource prefix="ImageDisplay/">
     <file alias="ImageDisplay.qml">qml/ImageDisplay.qml</file>
   </qresource>

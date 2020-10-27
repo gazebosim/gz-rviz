@@ -125,6 +125,12 @@ public:
   Q_INVOKABLE void addLaserScanDisplay(const QString & _topic = "/scan") const;
 
   /**
+   * @brief Loads GPS Visualization Plugin
+   * @param[in] _topic Topic name
+   */
+  Q_INVOKABLE void addGPSDisplay(const QString & _topic = "/gps") const;
+
+  /**
    * @brief Loads Marker Visualization Plugin
    * @param[in] _topic Topic name
    */

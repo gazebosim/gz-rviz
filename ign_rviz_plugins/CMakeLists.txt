@@ -99,6 +99,17 @@ add_ign_rviz_plugin(
 
 ########################################################################
 add_ign_rviz_plugin(
+  NAME GPSDisplay
+  DEPENDENCIES
+    ign_rviz_common
+    ignition-gui4
+    ignition-math6
+    sensor_msgs
+    tf2_ros
+)
+
+########################################################################
+add_ign_rviz_plugin(
   NAME ImageDisplay
   DEPENDENCIES
     ign_rviz_common
@@ -277,6 +288,7 @@ install(
 ament_export_libraries(
   AxesDisplay
   GlobalOptions
+  GPSDisplay
   ImageDisplay
   LaserScanDisplay
   MarkerDisplay
@@ -294,6 +306,7 @@ install(
   TARGETS
     AxesDisplay
     GlobalOptions
+    GPSDisplay
     ImageDisplay
     LaserScanDisplay
     MarkerDisplay

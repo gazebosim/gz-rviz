@@ -21,6 +21,7 @@
 #include <nav_msgs/msg/path.hpp>
 #include <sensor_msgs/msg/image.hpp>
 #include <sensor_msgs/msg/laser_scan.hpp>
+#include <sensor_msgs/msg/nav_sat_fix.hpp>
 #include <std_msgs/msg/string.hpp>
 #include <tf2_msgs/msg/tf_message.hpp>
 #include <visualization_msgs/msg/marker.hpp>
@@ -85,6 +86,7 @@ RViz::RViz()
     "nav_msgs/msg/Path",
     "sensor_msgs/msg/Image",
     "sensor_msgs/msg/LaserScan",
+    "sensor_msgs/msg/NavSatFix",
     "visualization_msgs/msg/Marker",
     "visualization_msgs/msg/MarkerArray"
   };
@@ -151,6 +153,20 @@ void RViz::addLaserScanDisplay(const QString & _topic) const
     laserScanPlugin[pluginCount]->setFrameManager(this->frameManager);
     ignition::gui::App()->findChild<ignition::gui::MainWindow *>()->installEventFilter(
       laserScanPlugin[pluginCount]);
+  }
+}
+////////////////////////////////////////////////////////////////////////////////
+void RViz::addGPSDisplay(const QString & _topic) const
+{
+  // Load plugin
+  if (ignition::gui::App()->LoadPlugin("GPSDisplay")) {
+    auto gpsDisplay =
+      ignition::gui::App()->findChildren<DisplayPlugin<sensor_msgs::msg::NavSatFix> *>();
+    int pluginCount = gpsDisplay.size() - 1;
+
+    // Set frame manager and install event filter for recently added plugin
+    gpsDisplay[pluginCount]->initialize(this->node);
+    gpsDisplay[pluginCount]->setTopic(_topic.toStdString());
   }
 }
 
