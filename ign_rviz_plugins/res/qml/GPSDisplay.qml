@@ -28,7 +28,7 @@ Item {
   property bool centering: true
 
   Layout.minimumWidth: 280
-  Layout.minimumHeight: 450
+  Layout.minimumHeight: 455
   anchors.topMargin: 5
   anchors.leftMargin: 5
   anchors.rightMargin: 5
@@ -144,20 +144,20 @@ Item {
     Layout.fillWidth: true
 
     MapCircle {
-        id: circle
-        center {
-          latitude: lat
-          longitude: lng
-        }
-        radius: 20.0
-        color: '#4285f4'
-        border.width: 3
-        border.color: "white"
+      id: circle
+      center {
+        latitude: lat
+        longitude: lng
+      }
+      radius: 23.0
+      color: '#4285f4'
+      border.width: 3
+      border.color: "white"
     }
 
     plugin: Plugin {
-        id: mapPlugin
-        name: "mapboxgl"
+      id: mapPlugin
+      name: "mapboxgl"
     }
     activeMapType: supportedMapTypes[2]
 
@@ -167,6 +167,12 @@ Item {
 
     gesture.onPanStarted: {
       centering = false
+    }
+
+    onZoomLevelChanged: {
+      // Scaling the location marker according to zoom level.
+      // Marker radius = meters per pixel * 10
+      circle.radius = 156543.03392 * Math.cos(lat * Math.PI / 180) / Math.pow(2, map.zoomLevel) * 10
     }
   }
 
