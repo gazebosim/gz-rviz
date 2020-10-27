@@ -122,4 +122,12 @@ Item {
     copyrightsVisible: false
     zoomLevel: 16
   }
+
+  Connections {
+    target: GPSDisplay
+    onCoordinateChanged: {
+      lat = latitude
+      lng = longitude
+    }
+  }
 }

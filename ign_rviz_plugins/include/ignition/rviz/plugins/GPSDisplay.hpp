@@ -106,6 +106,14 @@ signals:
    */
   void setCurrentIndex(const int index);
 
+signals:
+  /**
+   * @brief Set location marker coordinate
+   * @param latitude Latitude
+   * @param longitude Longitude
+   */
+  void coordinateChanged(const float latitude, const float longitude);
+
 public slots:
   /**
    * @brief Callback when refresh button is pressed.

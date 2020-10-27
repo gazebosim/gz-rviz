@@ -74,7 +74,7 @@ void GPSDisplay::setTopic(const QString & topic_name)
 void GPSDisplay::callback(const sensor_msgs::msg::NavSatFix::SharedPtr _msg)
 {
   std::lock_guard<std::mutex>(this->lock);
-  RCLCPP_INFO(this->node->get_logger(), "Message received");
+  emit coordinateChanged(_msg->latitude, _msg->longitude);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
