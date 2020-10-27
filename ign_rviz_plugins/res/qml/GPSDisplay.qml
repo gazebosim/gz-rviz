@@ -25,6 +25,7 @@ import "qrc:/QoSConfig"
 Item {
   property double lat: 0.0
   property double lng: 0.0
+  property bool centering: true
 
   Layout.minimumWidth: 280
   Layout.minimumHeight: 400
@@ -118,9 +119,37 @@ Item {
         name: "osm"
     }
 
-    center: QtPositioning.coordinate(lat, lng)
+    center: centering ? QtPositioning.coordinate(lat, lng) : center
     copyrightsVisible: false
     zoomLevel: 16
+
+    gesture.onPanStarted: {
+      centering = false
+    }
+  }
+
+  RoundButton {
+    height: 40
+    width: 40
+    anchors.top: map.top
+    anchors.right: map.right
+
+    text: "\u2316"
+    font.pixelSize: 25
+
+    Material.background: "#fafafa"
+    Material.foreground: centering ? "#4285f4" : "black"
+
+    onClicked: {
+      centering = true
+    }
+
+    hoverEnabled: true
+
+    ToolTip.delay: 1000
+    ToolTip.timeout: 5000
+    ToolTip.visible: hovered
+    ToolTip.text: qsTr("Center")
   }
 
   Connections {
