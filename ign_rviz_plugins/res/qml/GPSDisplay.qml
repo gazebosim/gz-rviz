@@ -28,69 +28,97 @@ Item {
   property bool centering: true
 
   Layout.minimumWidth: 280
-  Layout.minimumHeight: 400
+  Layout.minimumHeight: 450
   anchors.topMargin: 5
   anchors.leftMargin: 5
   anchors.rightMargin: 5
   anchors.fill: parent
   id: gpsDisplay
 
-  RowLayout {
+  ColumnLayout {
+    id: configColumn
     width: parent.width
-    id: configRow
 
-    Layout.fillWidth: true
-    Layout.fillHeight: true
+    RowLayout {
+      width: parent.width
 
-    RoundButton {
-      text: "\u21bb"
-      Material.background: Material.primary
-      onClicked: {
-        GPSDisplay.onRefresh();
-      }
-    }
-
-    ComboBox {
-      id: combo
       Layout.fillWidth: true
-      model: GPSDisplay.topicList
-      currentIndex: 0
-      editable: true
-      editText: currentText
-      displayText: currentText
-      onCurrentIndexChanged: {
-        if (currentIndex < 0) {
-          return;
+      Layout.fillHeight: true
+
+      RoundButton {
+        text: "\u21bb"
+        Material.background: Material.primary
+        onClicked: {
+          GPSDisplay.onRefresh();
+        }
+      }
+
+      ComboBox {
+        id: combo
+        Layout.fillWidth: true
+        model: GPSDisplay.topicList
+        currentIndex: 0
+        editable: true
+        editText: currentText
+        displayText: currentText
+        onCurrentIndexChanged: {
+          if (currentIndex < 0) {
+            return;
+          }
+
+          GPSDisplay.setTopic(textAt(currentIndex));
         }
 
-        GPSDisplay.setTopic(textAt(currentIndex));
-      }
+        Component.onCompleted: {
+          combo.editText = "/gps"
+          combo.displayText = "/gps"
+        }
 
-      Component.onCompleted: {
-        combo.editText = "/gps"
-        combo.displayText = "/gps"
-      }
-
-      Connections {
-        target: GPSDisplay
-        onSetCurrentIndex: {
-          combo.currentIndex = index
+        Connections {
+          target: GPSDisplay
+          onSetCurrentIndex: {
+            combo.currentIndex = index
+          }
         }
       }
     }
-  }
 
-  QoSConfig {
-    id: qos
-    anchors.top: configRow.bottom
-    onProfileUpdate: {
-      GPSDisplay.updateQoS(depth, history, reliability, durability)
+    QoSConfig {
+      id: qos
+      onProfileUpdate: {
+        GPSDisplay.updateQoS(depth, history, reliability, durability)
+      }
+    }
+
+    RowLayout {
+      width: parent.width
+
+      Text {
+        width: 75
+        Layout.minimumWidth: 75
+        text: "Map Type"
+        font.pointSize: 10.5
+      }
+
+      ComboBox {
+        id: typeCombo
+        Layout.fillWidth: true
+        currentIndex: 0
+        model: [ "Default", "Satellite" ]
+        onCurrentIndexChanged: {
+          if (currentIndex == 0) {
+            map.activeMapType = map.supportedMapTypes[2]
+          } else if (currentIndex == 1) {
+            map.activeMapType = map.supportedMapTypes[5]
+          }
+        }
+      }
     }
   }
 
   Map {
     id: map
-    anchors.top: qos.bottom
+    anchors.top: configColumn.bottom
     anchors.bottom: parent.bottom
     anchors.left: parent.left
     anchors.right: parent.right
@@ -116,8 +144,9 @@ Item {
 
     plugin: Plugin {
         id: mapPlugin
-        name: "osm"
+        name: "mapboxgl"
     }
+    activeMapType: supportedMapTypes[2]
 
     center: centering ? QtPositioning.coordinate(lat, lng) : center
     copyrightsVisible: false
