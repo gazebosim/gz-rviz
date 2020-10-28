@@ -87,9 +87,9 @@ bool AxesDisplay::eventFilter(QObject * object, QEvent * event)
   }
 
   // Update combo-box on frame list change
-  if (event->type() == rviz::events::FrameListChanged::kType) {
-    this->onRefresh();
-  }
+  // if (event->type() == rviz::events::FrameListChanged::kType) {
+  // this->onRefresh();
+  // }
 
   return QObject::eventFilter(object, event);
 }
@@ -148,7 +148,7 @@ void AxesDisplay::setFrameManager(std::shared_ptr<common::FrameManager> _frameMa
   this->frame = this->frameManager->getFixedFrame();
 
   // Update frame list
-  this->onRefresh();
+  this->refresh();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -158,14 +158,13 @@ QStringList AxesDisplay::getFrameList() const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void AxesDisplay::onRefresh()
+void AxesDisplay::refresh()
 {
   // Clear
   this->frameList.clear();
 
   // Get updated list
-  std::vector<std::string> allFrames;
-  this->frameManager->getFrames(allFrames);
+  std::vector<std::string> allFrames = this->frameManager->getFrames();
   std::sort(allFrames.begin(), allFrames.end());
 
   this->frameList.push_back(QString::fromStdString("<Fixed Frame>"));

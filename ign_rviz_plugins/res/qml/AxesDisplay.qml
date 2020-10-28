@@ -35,7 +35,7 @@ Item {
         text: "\u21bb"
         Material.background: Material.primary
         onClicked: {
-          AxesDisplay.onRefresh();
+          AxesDisplay.refresh();
         }
       }
 
@@ -50,6 +50,13 @@ Item {
             return;
 
           AxesDisplay.setFrame(textAt(currentIndex));
+        }
+
+        Connections {
+          target: combo.popup
+          onAboutToShow: {
+            AxesDisplay.refresh();
+          }
         }
       }
     }

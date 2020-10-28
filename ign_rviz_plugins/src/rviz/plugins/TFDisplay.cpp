@@ -309,11 +309,10 @@ void TFDisplay::refresh()
 {
   std::lock_guard<std::mutex>(this->lock);
 
-  std::vector<std::string> frames;
-  this->frameManager->getFrames(frames);
+  std::vector<std::string> allFrames = this->frameManager->getFrames();
 
-  if (frames.size() > 0) {
-    for (const auto frame : frames) {
+  if (allFrames.size() > 0) {
+    for (const auto frame : allFrames) {
       this->frameInfo.insert({frame, true});
     }
 

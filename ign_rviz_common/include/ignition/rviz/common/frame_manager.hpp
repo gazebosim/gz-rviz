@@ -18,6 +18,7 @@
 #include <ignition/math/Pose3.hh>
 
 #include <QObject>
+#include <QTimer>
 
 #include <tf2_ros/buffer.h>
 #include <tf2_ros/transform_listener.h>
@@ -80,9 +81,9 @@ public:
 
   /**
    * @brief Get available tf frames
-   * @param[out] _frames: List of available frames
+   * @return List of available frames
    */
-  void getFrames(std::vector<std::string> & _frames);
+  std::vector<std::string> getFrames();
 
   /**
    *  @brief Get fixed frame
@@ -90,23 +91,17 @@ public:
    */
   std::string getFixedFrame();
 
-protected:
-  /**
-   * @brief Callback function to received transform messages
-   * @param[in] _msg: Transform message
-   */
-  void tf_callback(const tf2_msgs::msg::TFMessage::SharedPtr _msg);
+public slots:
+  void updateFrameList();
 
 private:
   rclcpp::Node::SharedPtr node;
   std::mutex tf_mutex_;
   std::string fixedFrame;
+  std::vector<std::string> frameList;
   std::shared_ptr<tf2_ros::Buffer> tfBuffer;
   std::shared_ptr<tf2_ros::TransformListener> tfListener;
-  rclcpp::Subscription<tf2_msgs::msg::TFMessage>::SharedPtr subscriber;
-  std::unordered_map<std::string, ignition::math::Pose3d> tfTree;
-  tf2::TimePoint timePoint;
-  unsigned int frameCount;
+  QTimer frameListTimer;
 };
 }  // namespace common
 }  // namespace rviz

@@ -69,7 +69,7 @@ void GlobalOptions::setFrameManager(std::shared_ptr<common::FrameManager> _frame
   this->frameList.clear();
 
   // Update frame list
-  this->onRefresh();
+  this->refresh();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -99,11 +99,6 @@ bool GlobalOptions::eventFilter(QObject * _object, QEvent * _event)
     }
   }
 
-  // Update combo-box on frame list change
-  if (_event->type() == rviz::events::FrameListChanged::kType) {
-    this->onRefresh();
-  }
-
   return QObject::eventFilter(_object, _event);
 }
 
@@ -121,11 +116,10 @@ QStringList GlobalOptions::getFrameList() const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void GlobalOptions::onRefresh()
+void GlobalOptions::refresh()
 {
   // Get updated list
-  std::vector<std::string> allFrames;
-  this->frameManager->getFrames(allFrames);
+  std::vector<std::string> allFrames = this->frameManager->getFrames();
 
   if (allFrames.size() != 0) {
     // Clear
