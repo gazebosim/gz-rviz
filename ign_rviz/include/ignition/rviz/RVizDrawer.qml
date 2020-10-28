@@ -34,6 +34,9 @@ Rectangle {
       case "addGrid3D":
         RViz.addGrid3D();
         break;
+      case "addGPSDisplay":
+        RViz.addGPSDisplay();
+        break;
       case "addImageDisplay":
         RViz.addImageDisplay();
         break;
@@ -92,6 +95,12 @@ Rectangle {
       title: "Grid"
       icon: "icons/Grid.png"
       actionElement: "addGrid3D"
+    }
+
+    ListElement {
+      title: "GPS"
+      icon: "icons/NavSatFix.png"
+      actionElement: "addGPSDisplay"
     }
 
     ListElement {
@@ -254,6 +263,10 @@ Rectangle {
       }
       case "visualization_msgs/msg/MarkerArray": {
         RViz.addMarkerArrayDisplay(_name)
+        break;
+      }
+      case "sensor_msgs/msg/NavSatFix": {
+        RViz.addGPSDisplay(_name)
         break;
       }
     }

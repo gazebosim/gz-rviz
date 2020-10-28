@@ -8,6 +8,7 @@
 	<file>icons/LaserScan.png</file>
 	<file>icons/Marker.png</file>
 	<file>icons/MarkerArray.png</file>
+	<file>icons/NavSatFix.png</file>
 	<file>icons/Path.png</file>
 	<file>icons/PointStamped.png</file>
 	<file>icons/Polygon.png</file>
