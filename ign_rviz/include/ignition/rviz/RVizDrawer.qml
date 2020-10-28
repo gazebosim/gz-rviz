@@ -99,7 +99,7 @@ Rectangle {
 
     ListElement {
       title: "GPS"
-      icon: ""
+      icon: "icons/NavSatFix.png"
       actionElement: "addGPSDisplay"
     }
 
