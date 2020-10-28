@@ -111,8 +111,9 @@ signals:
    * @brief Set location marker coordinate
    * @param latitude Latitude
    * @param longitude Longitude
+   * @param covariance Position covariance
    */
-  void coordinateChanged(const float latitude, const float longitude);
+  void coordinateChanged(const float latitude, const float longitude, const float covariance);
 
 public slots:
   /**

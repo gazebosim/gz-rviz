@@ -144,6 +144,19 @@ Item {
     Layout.fillWidth: true
 
     MapCircle {
+      id: outerCircle
+      center {
+        latitude: lat
+        longitude: lng
+      }
+      radius: 0.0
+      color: '#4285f4'
+      opacity: 0.25
+      border.width: 3
+      border.color: "#4285f4"
+    }
+
+    MapCircle {
       id: circle
       center {
         latitude: lat
@@ -205,6 +218,7 @@ Item {
     onCoordinateChanged: {
       lat = latitude
       lng = longitude
+      outerCircle.radius = Math.sqrt(covariance)
     }
   }
 }

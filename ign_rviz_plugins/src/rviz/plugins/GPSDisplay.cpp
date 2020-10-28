@@ -16,6 +16,7 @@
 
 #include <ignition/plugin/Register.hh>
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <utility>
@@ -74,7 +75,11 @@ void GPSDisplay::setTopic(const QString & topic_name)
 void GPSDisplay::callback(const sensor_msgs::msg::NavSatFix::SharedPtr _msg)
 {
   std::lock_guard<std::mutex>(this->lock);
-  emit coordinateChanged(_msg->latitude, _msg->longitude);
+  float covariance = 0;
+  if (_msg->position_covariance_type != sensor_msgs::msg::NavSatFix::COVARIANCE_TYPE_UNKNOWN) {
+    covariance = std::max(_msg->position_covariance[0], _msg->position_covariance[4]);
+  }
+  emit coordinateChanged(_msg->latitude, _msg->longitude, covariance);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
