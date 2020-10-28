@@ -22,6 +22,9 @@ Head over to the [wiki](https://github.com/ignitionrobotics/ign-rviz/wiki) to ge
 	- [Ignition Math](https://ignitionrobotics.org/libs/math) 6
 	- [Ignition Rendering](https://ignitionrobotics.org/libs/rendering) 4
 - [Qt5](https://www.qt.io/)
+- Additional qml modules required for GPS Plugin
+  - [QtPositioning](https://doc.qt.io/qt-5/qtpositioning-index.html) (`qml-module-qtpositioning`)
+  - [QtLocation](https://doc.qt.io/qt-5/qtlocation-index.html) (`qml-module-qtlocation`)
 
 ### Setup the repository
 
