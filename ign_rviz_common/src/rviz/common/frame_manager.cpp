@@ -144,6 +144,10 @@ bool FrameManager::getFramePose(const std::string & _frame, ignition::math::Pose
 
   _pose = math::Pose3d::Zero;
 
+  if(this->fixedFrame == _frame) {
+    return true;
+  }
+
   auto it = this->tfTree.find(_frame);
   if (it != tfTree.end()) {
     _pose = it->second;
