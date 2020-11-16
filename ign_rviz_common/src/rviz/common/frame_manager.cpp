@@ -144,7 +144,7 @@ bool FrameManager::getFramePose(const std::string & _frame, ignition::math::Pose
 
   _pose = math::Pose3d::Zero;
 
-  if(this->fixedFrame == _frame) {
+  if (this->fixedFrame == _frame) {
     return true;
   }
 
