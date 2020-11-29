@@ -56,6 +56,33 @@ class GlobalOptions : public MessageDisplayBase
     NOTIFY frameListChanged
   )
 
+  /**
+   *  @brief TF status
+   */
+  Q_PROPERTY(
+    QString tfStatus
+    READ getTfStatus
+    NOTIFY tfStatusChanged
+  )
+
+  /**
+   *  @brief TF status message
+   */
+  Q_PROPERTY(
+    QString tfStatusMessage
+    READ getTfStatusMessage
+    NOTIFY tfStatusMessageChanged
+  )
+
+  /**
+   *  @brief TF status color
+   */
+  Q_PROPERTY(
+    QString tfStatusColor
+    READ getTfStatusColor
+    NOTIFY tfStatusColorChanged
+  )
+
 public:
   // Constructor
   GlobalOptions();
@@ -68,6 +95,11 @@ public:
 
   // Documentation Inherited
   void setFrameManager(std::shared_ptr<common::FrameManager> _frameManager) override;
+
+  /**
+   * @brief Update tf status and message
+   */
+  void updateTfStatus();
 
   /**
    * @brief Qt eventFilters. Original documentation can be found
@@ -99,6 +131,24 @@ public:
    */
   Q_INVOKABLE void setFrameList(const QStringList & _frameList);
 
+  /**
+   * @brief Get the tf status as a string
+   * @return Tf status
+   */
+  Q_INVOKABLE QString getTfStatus() const;
+
+  /**
+   * @brief Get the tf status message as a string
+   * @return Tf status message
+   */
+  Q_INVOKABLE QString getTfStatusMessage() const;
+
+  /**
+   * @brief Get the tf status color as a string
+   * @return Tf status color
+   */
+  Q_INVOKABLE QString getTfStatusColor() const;
+
 signals:
   /**
    * @brief Notify that frame list has changed
@@ -111,6 +161,24 @@ signals:
    * @param index Combo box index
    */
   void setCurrentIndex(const int index);
+
+signals:
+  /**
+   * @brief Notify that tf status has changed
+   */
+  void tfStatusChanged();
+
+signals:
+  /**
+   * @brief Notify that tf status message has changed
+   */
+  void tfStatusMessageChanged();
+
+signals:
+  /**
+   * @brief Notify that tf status message has changed
+   */
+  void tfStatusColorChanged();
 
 public slots:
   /**
@@ -127,6 +195,9 @@ private:
   bool initialized;
   bool populated;
   QColor color;
+  QString tfStatus;
+  QString tfStatusMessage;
+  QString tfStatusColor;
 };
 
 }  // namespace plugins

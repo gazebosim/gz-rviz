@@ -43,6 +43,10 @@ GlobalOptions::GlobalOptions()
     return;
   }
 
+  this->tfStatus = QString::fromStdString(" ");
+  this->tfStatusMessage = QString::fromStdString(" ");
+  this->tfStatusColor = QString::fromStdString("green");
+
   this->frameList.push_back("world");
 }
 
@@ -70,6 +74,43 @@ void GlobalOptions::setFrameManager(std::shared_ptr<common::FrameManager> _frame
 
   // Update frame list
   this->onRefresh();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void GlobalOptions::updateTfStatus()
+{
+  std::lock_guard(this->lock);
+
+  // Check for tf data
+  std::string fixedFrame = this->frameManager->getFixedFrame();
+  math::Pose3d pose;
+  std::vector<std::string> allFrames;
+  this->frameManager->getFrames(allFrames);
+  auto framePosition = std::find(allFrames.begin(), allFrames.end(), fixedFrame);
+
+  if (!allFrames.size()) {
+    std::string message = "No tf data. Frame [" + fixedFrame + "] does not exist";
+
+    this->tfStatus = QString::fromStdString("Fixed Frame [Warn]");
+    this->tfStatusMessage = QString::fromStdString(message);
+    this->tfStatusColor = QString::fromStdString("orange");
+  } else if (framePosition == allFrames.end()) {
+    std::string message = "Frame [" + fixedFrame + "] does not exist";
+
+    this->tfStatus = QString::fromStdString("Fixed Frame [Error]");
+    this->tfStatusMessage = QString::fromStdString(message);
+    this->tfStatusColor = QString::fromStdString("red");
+  } else {
+    std::string message = "OK";
+
+    this->tfStatus = QString::fromStdString("Fixed Frame");
+    this->tfStatusMessage = QString::fromStdString(message);
+    this->tfStatusColor = QString::fromStdString("green");
+  }
+
+  emit tfStatusChanged();
+  emit tfStatusMessageChanged();
+  emit tfStatusColorChanged();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -104,6 +145,9 @@ bool GlobalOptions::eventFilter(QObject * _object, QEvent * _event)
     this->onRefresh();
   }
 
+  // Update tf status and message
+  this->updateTfStatus();
+
   return QObject::eventFilter(_object, _event);
 }
 
@@ -118,6 +162,24 @@ void GlobalOptions::setFrameList(const QStringList & _frameList)
 QStringList GlobalOptions::getFrameList() const
 {
   return this->frameList;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+QString GlobalOptions::getTfStatusMessage() const
+{
+  return this->tfStatusMessage;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+QString GlobalOptions::getTfStatus() const
+{
+  return this->tfStatus;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+QString GlobalOptions::getTfStatusColor() const
+{
+  return this->tfStatusColor;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
