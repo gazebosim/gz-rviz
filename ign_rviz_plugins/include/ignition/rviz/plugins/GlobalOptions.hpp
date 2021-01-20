@@ -40,7 +40,7 @@ namespace plugins
 {
 /**
  * @brief TF status and message
- * 
+ *
  * Displays tf status and message under GlobalOptions
  */
 class TFStatus : public QObject
