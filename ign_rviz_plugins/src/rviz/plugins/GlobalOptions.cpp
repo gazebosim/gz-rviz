@@ -166,7 +166,6 @@ bool GlobalOptions::eventFilter(QObject * _object, QEvent * _event)
     std::vector<std::string> allFrames;
     this->frameManager->getFrames(allFrames);
     std::string fixedFrame = this->frameManager->getFixedFrame();
-    
     if (this->tfStatus->update(fixedFrame, allFrames)) {
       emit tfStatusChanged();
     }
