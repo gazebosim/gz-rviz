@@ -110,15 +110,15 @@ Item {
       spacing: 10
 
       Label {
-        id: "tfStatus"
-        text: GlobalOptions.tfStatus
-        color: GlobalOptions.tfStatusColor
+        id: "status"
+        text: GlobalOptions.tfStatus.status
+        color: GlobalOptions.tfStatus.color
       }
 
       Label {
-        id: "tfStatusMessage"
-        text: GlobalOptions.tfStatusMessage
-        color: GlobalOptions.tfStatusColor
+        id: "message"
+        text: GlobalOptions.tfStatus.message
+        color: GlobalOptions.tfStatus.color
       }
     }
   }

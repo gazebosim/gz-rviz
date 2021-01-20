@@ -24,6 +24,7 @@
 #include <ignition/math/Color.hh>
 #include <QColor>
 #include <string>
+#include <vector>
 #include <memory>
 #include <utility>
 
@@ -37,6 +38,100 @@ namespace rviz
 {
 namespace plugins
 {
+/**
+ * @brief TF status and message
+ * 
+ * Displays tf status and message under GlobalOptions
+ */
+class TFStatus : public QObject
+{
+  Q_OBJECT
+
+  /**
+   *  @brief TF status
+   */
+  Q_PROPERTY(
+    QString status
+    READ getStatus
+    NOTIFY statusChanged
+  )
+
+  /**
+   *  @brief TF status message
+   */
+  Q_PROPERTY(
+    QString message
+    READ getMessage
+    NOTIFY messageChanged
+  )
+
+  /**
+   *  @brief TF status color
+   */
+  Q_PROPERTY(
+    QString color
+    READ getColor
+    NOTIFY colorChanged
+  )
+
+public:
+  // Constructor
+  TFStatus();
+
+  // Destructor
+  ~TFStatus() {}
+
+  /**
+   * @brief Update tf status and message
+   * @param[in] _fixedFrame FixedFrame name
+   * @param[in] _allFrames List of all frames
+   * @return True if status has changed else false
+   */
+  bool update(std::string & _fixedFrame, std::vector<std::string> & _allFrames);
+
+  /**
+   * @brief Get the TF status as a string
+   * @return TF status
+   */
+  Q_INVOKABLE QString getStatus() const;
+
+  /**
+   * @brief Get the TF status message as a string
+   * @return TF status message
+   */
+  Q_INVOKABLE QString getMessage() const;
+
+  /**
+   * @brief Get the TF status color as a string
+   * @return TF status color
+   */
+  Q_INVOKABLE QString getColor() const;
+
+signals:
+  /**
+   * @brief Notify that TF status has changed
+   */
+  void statusChanged();
+
+signals:
+  /**
+   * @brief Notify that TF message has changed
+   */
+  void messageChanged();
+
+signals:
+  /**
+   * @brief Notify that TF color has changed
+   */
+  void colorChanged();
+
+private:
+  QString status;
+  QString message;
+  QString color;
+  int currentState;
+};
+
 /**
  * @brief Configure global option of ignition rviz
  *
@@ -60,27 +155,9 @@ class GlobalOptions : public MessageDisplayBase
    *  @brief TF status
    */
   Q_PROPERTY(
-    QString tfStatus
+    TFStatus * tfStatus
     READ getTfStatus
     NOTIFY tfStatusChanged
-  )
-
-  /**
-   *  @brief TF status message
-   */
-  Q_PROPERTY(
-    QString tfStatusMessage
-    READ getTfStatusMessage
-    NOTIFY tfStatusMessageChanged
-  )
-
-  /**
-   *  @brief TF status color
-   */
-  Q_PROPERTY(
-    QString tfStatusColor
-    READ getTfStatusColor
-    NOTIFY tfStatusColorChanged
   )
 
 public:
@@ -95,11 +172,6 @@ public:
 
   // Documentation Inherited
   void setFrameManager(std::shared_ptr<common::FrameManager> _frameManager) override;
-
-  /**
-   * @brief Update tf status and message
-   */
-  void updateTfStatus();
 
   /**
    * @brief Qt eventFilters. Original documentation can be found
@@ -126,28 +198,16 @@ public:
   Q_INVOKABLE QStringList getFrameList() const;
 
   /**
+   * @brief Get the TF status as a TFStatus object
+   * @return TFStatus object
+   */
+  Q_INVOKABLE TFStatus * getTfStatus() const;
+
+  /**
    * @brief Set the frame list from a string
    * @param[in] _frameList List of frames
    */
   Q_INVOKABLE void setFrameList(const QStringList & _frameList);
-
-  /**
-   * @brief Get the tf status as a string
-   * @return Tf status
-   */
-  Q_INVOKABLE QString getTfStatus() const;
-
-  /**
-   * @brief Get the tf status message as a string
-   * @return Tf status message
-   */
-  Q_INVOKABLE QString getTfStatusMessage() const;
-
-  /**
-   * @brief Get the tf status color as a string
-   * @return Tf status color
-   */
-  Q_INVOKABLE QString getTfStatusColor() const;
 
 signals:
   /**
@@ -157,28 +217,16 @@ signals:
 
 signals:
   /**
-   * @brief Set combo box index
-   * @param index Combo box index
-   */
-  void setCurrentIndex(const int index);
-
-signals:
-  /**
-   * @brief Notify that tf status has changed
+   * @brief Notify that TF status has changed
    */
   void tfStatusChanged();
 
 signals:
   /**
-   * @brief Notify that tf status message has changed
+   * @brief Set combo box index
+   * @param index Combo box index
    */
-  void tfStatusMessageChanged();
-
-signals:
-  /**
-   * @brief Notify that tf status message has changed
-   */
-  void tfStatusColorChanged();
+  void setCurrentIndex(const int index);
 
 public slots:
   /**
@@ -195,9 +243,7 @@ private:
   bool initialized;
   bool populated;
   QColor color;
-  QString tfStatus;
-  QString tfStatusMessage;
-  QString tfStatusColor;
+  TFStatus * tfStatus;
 };
 
 }  // namespace plugins

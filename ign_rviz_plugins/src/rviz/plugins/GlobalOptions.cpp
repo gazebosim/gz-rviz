@@ -32,6 +32,70 @@ namespace rviz
 namespace plugins
 {
 ////////////////////////////////////////////////////////////////////////////////
+TFStatus::TFStatus()
+: status(" "), message(" "), color("green"), currentState(0)
+{}
+
+////////////////////////////////////////////////////////////////////////////////
+bool TFStatus::update(std::string & _fixedFrame, std::vector<std::string> & _allFrames)
+{
+  // Check for tf data
+  auto framePosition = std::find(_allFrames.begin(), _allFrames.end(), _fixedFrame);
+
+  if (!_allFrames.size()) {
+    std::string msg = "No tf data. Frame [" + _fixedFrame + "] does not exist";
+
+    this->status = QString::fromStdString("Fixed Frame [Warn]");
+    this->message = QString::fromStdString(msg);
+    this->color = QString::fromStdString("orange");
+    if (currentState != 1) {
+      currentState = 1;
+      return true;
+    }
+  } else if (framePosition == _allFrames.end()) {
+    std::string msg = "Frame [" + _fixedFrame + "] does not exist";
+
+    this->status = QString::fromStdString("Fixed Frame [Error]");
+    this->message = QString::fromStdString(msg);
+    this->color = QString::fromStdString("red");
+
+    if (currentState != 2) {
+      currentState = 2;
+      return true;
+    }
+  } else {
+    std::string msg = "OK";
+
+    this->status = QString::fromStdString("Fixed Frame");
+    this->message = QString::fromStdString(msg);
+    this->color = QString::fromStdString("green");
+    if (currentState != 3) {
+      currentState = 3;
+      return true;
+    }
+  }
+  return false;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+QString TFStatus::getStatus() const
+{
+  return this->status;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+QString TFStatus::getMessage() const
+{
+  return this->message;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+QString TFStatus::getColor() const
+{
+  return this->color;
+}
+
+////////////////////////////////////////////////////////////////////////////////
 GlobalOptions::GlobalOptions()
 : dirty(false), initialized(false), populated(false), color("#303030")
 {
@@ -42,11 +106,7 @@ GlobalOptions::GlobalOptions()
     igndbg << "Engine '" << "ogre" << "' is not supported" << std::endl;
     return;
   }
-
-  this->tfStatus = QString::fromStdString(" ");
-  this->tfStatusMessage = QString::fromStdString(" ");
-  this->tfStatusColor = QString::fromStdString("green");
-
+  this->tfStatus = new TFStatus();
   this->frameList.push_back("world");
 }
 
@@ -77,43 +137,6 @@ void GlobalOptions::setFrameManager(std::shared_ptr<common::FrameManager> _frame
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void GlobalOptions::updateTfStatus()
-{
-  std::lock_guard(this->lock);
-
-  // Check for tf data
-  std::string fixedFrame = this->frameManager->getFixedFrame();
-  math::Pose3d pose;
-  std::vector<std::string> allFrames;
-  this->frameManager->getFrames(allFrames);
-  auto framePosition = std::find(allFrames.begin(), allFrames.end(), fixedFrame);
-
-  if (!allFrames.size()) {
-    std::string message = "No tf data. Frame [" + fixedFrame + "] does not exist";
-
-    this->tfStatus = QString::fromStdString("Fixed Frame [Warn]");
-    this->tfStatusMessage = QString::fromStdString(message);
-    this->tfStatusColor = QString::fromStdString("orange");
-  } else if (framePosition == allFrames.end()) {
-    std::string message = "Frame [" + fixedFrame + "] does not exist";
-
-    this->tfStatus = QString::fromStdString("Fixed Frame [Error]");
-    this->tfStatusMessage = QString::fromStdString(message);
-    this->tfStatusColor = QString::fromStdString("red");
-  } else {
-    std::string message = "OK";
-
-    this->tfStatus = QString::fromStdString("Fixed Frame");
-    this->tfStatusMessage = QString::fromStdString(message);
-    this->tfStatusColor = QString::fromStdString("green");
-  }
-
-  emit tfStatusChanged();
-  emit tfStatusMessageChanged();
-  emit tfStatusColorChanged();
-}
-
-////////////////////////////////////////////////////////////////////////////////
 bool GlobalOptions::eventFilter(QObject * _object, QEvent * _event)
 {
   if (_event->type() == gui::events::Render::kType) {
@@ -138,15 +161,21 @@ bool GlobalOptions::eventFilter(QObject * _object, QEvent * _event)
       this->scene->SetBackgroundColor(math::Color(color.redF(), color.greenF(), color.blue()));
       this->dirty = false;
     }
+
+    // Update tf status and message
+    std::vector<std::string> allFrames;
+    this->frameManager->getFrames(allFrames);
+    std::string fixedFrame = this->frameManager->getFixedFrame();
+    
+    if (this->tfStatus->update(fixedFrame, allFrames)) {
+      emit tfStatusChanged();
+    }
   }
 
   // Update combo-box on frame list change
   if (_event->type() == rviz::events::FrameListChanged::kType) {
     this->onRefresh();
   }
-
-  // Update tf status and message
-  this->updateTfStatus();
 
   return QObject::eventFilter(_object, _event);
 }
@@ -165,21 +194,9 @@ QStringList GlobalOptions::getFrameList() const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-QString GlobalOptions::getTfStatusMessage() const
-{
-  return this->tfStatusMessage;
-}
-
-////////////////////////////////////////////////////////////////////////////////
-QString GlobalOptions::getTfStatus() const
+TFStatus * GlobalOptions::getTfStatus() const
 {
   return this->tfStatus;
-}
-
-////////////////////////////////////////////////////////////////////////////////
-QString GlobalOptions::getTfStatusColor() const
-{
-  return this->tfStatusColor;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
