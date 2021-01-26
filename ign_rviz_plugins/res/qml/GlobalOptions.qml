@@ -113,12 +113,16 @@ Item {
         id: "status"
         text: GlobalOptions.tfStatus.status
         color: GlobalOptions.tfStatus.color
+        font.pointSize: 11
       }
 
       Label {
         id: "message"
         text: GlobalOptions.tfStatus.message
         color: GlobalOptions.tfStatus.color
+        font.pointSize: 11
+        Layout.fillWidth: true
+        elide: Label.ElideRight
       }
     }
   }
