@@ -24,9 +24,9 @@
 #include <ignition/math/Color.hh>
 #include <QColor>
 #include <string>
-#include <vector>
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include "ignition/rviz/plugins/message_display_base.hpp"
 
@@ -85,9 +85,8 @@ public:
    * @brief Update tf status and message
    * @param[in] _fixedFrame FixedFrame name
    * @param[in] _allFrames List of all frames
-   * @return True if status has changed else false
    */
-  bool update(std::string & _fixedFrame, std::vector<std::string> & _allFrames);
+  void update(std::string & _fixedFrame, std::vector<std::string> & _allFrames);
 
   /**
    * @brief Get the TF status as a string
@@ -129,7 +128,6 @@ private:
   QString status;
   QString message;
   QString color;
-  int currentState;
 };
 
 /**

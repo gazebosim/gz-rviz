@@ -33,48 +33,34 @@ namespace plugins
 {
 ////////////////////////////////////////////////////////////////////////////////
 TFStatus::TFStatus()
-: status(" "), message(" "), color("green"), currentState(0)
+: status(" "), message(" "), color("green")
 {}
 
 ////////////////////////////////////////////////////////////////////////////////
-bool TFStatus::update(std::string & _fixedFrame, std::vector<std::string> & _allFrames)
+void TFStatus::update(std::string & _fixedFrame, std::vector<std::string> & _allFrames)
 {
   // Check for tf data
   auto framePosition = std::find(_allFrames.begin(), _allFrames.end(), _fixedFrame);
 
-  if (!_allFrames.size()) {
+  if (_allFrames.empty()) {
     std::string msg = "No tf data. Frame [" + _fixedFrame + "] does not exist";
 
     this->status = QString::fromStdString("Fixed Frame [Warn]");
     this->message = QString::fromStdString(msg);
     this->color = QString::fromStdString("orange");
-    if (currentState != 1) {
-      currentState = 1;
-      return true;
-    }
   } else if (framePosition == _allFrames.end()) {
     std::string msg = "Frame [" + _fixedFrame + "] does not exist";
 
     this->status = QString::fromStdString("Fixed Frame [Error]");
     this->message = QString::fromStdString(msg);
     this->color = QString::fromStdString("red");
-
-    if (currentState != 2) {
-      currentState = 2;
-      return true;
-    }
   } else {
     std::string msg = "OK";
 
     this->status = QString::fromStdString("Fixed Frame");
     this->message = QString::fromStdString(msg);
     this->color = QString::fromStdString("green");
-    if (currentState != 3) {
-      currentState = 3;
-      return true;
-    }
   }
-  return false;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -166,9 +152,8 @@ bool GlobalOptions::eventFilter(QObject * _object, QEvent * _event)
     std::vector<std::string> allFrames;
     this->frameManager->getFrames(allFrames);
     std::string fixedFrame = this->frameManager->getFixedFrame();
-    if (this->tfStatus->update(fixedFrame, allFrames)) {
-      emit tfStatusChanged();
-    }
+    this->tfStatus->update(fixedFrame, allFrames);
+    emit tfStatusChanged();
   }
 
   // Update combo-box on frame list change
