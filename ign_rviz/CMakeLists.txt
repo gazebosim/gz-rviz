@@ -34,9 +34,27 @@ find_package(visualization_msgs REQUIRED)
 # Ignition libraries
 find_package(ign_rviz_common REQUIRED)
 find_package(ign_rviz_plugins REQUIRED)
-find_package(ignition-common3 REQUIRED)
-find_package(ignition-gui4 REQUIRED)
 find_package(ignition-math6 REQUIRED)
+
+# Dome
+if("$ENV{IGNITION_VERSION}" STREQUAL "dome")
+  find_package(ignition-gui4 REQUIRED)
+  set(IGN_GUI_VER ${ignition-gui4_VERSION_MAJOR})
+
+  find_package(ignition-common3 REQUIRED)
+  set(IGN_COMMON_VER ${ignition-common3_VERSION_MAJOR})
+
+  message(STATUS "Compiling against Ignition Dome")
+# Default to Edifice
+else()
+  find_package(ignition-gui5 REQUIRED)
+  set(IGN_GUI_VER ${ignition-gui5_VERSION_MAJOR})
+
+  find_package(ignition-common4 REQUIRED)
+  set(IGN_COMMON_VER ${ignition-common4_VERSION_MAJOR})
+
+  message(STATUS "Compiling against Ignition Edifice")
+endif()
 
 qt5_add_resources(resources_RCC include/ignition/rviz/rviz.qrc)
 
@@ -69,7 +87,7 @@ ament_target_dependencies(ign_rviz
   ign_rviz_common
   ign_rviz_plugins
   ignition-math6
-  ignition-gui4
+  ignition-gui${IGN_GUI_VER}
   geometry_msgs
   nav_msgs
   rclcpp

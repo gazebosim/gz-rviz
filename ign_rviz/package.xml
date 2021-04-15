@@ -12,8 +12,6 @@
   <depend>geometry_msgs</depend>
   <depend>ign_rviz_common</depend>
   <depend>ign_rviz_plugins</depend>
-  <depend>ignition-common3</depend>
-  <depend>ignition-gui4</depend>
   <depend>ignition-math6</depend>
   <depend>nav_msgs</depend>
   <depend>rclcpp</depend>
@@ -22,6 +20,13 @@
   <depend>tf2_msgs</depend>
   <depend>tf2_ros</depend>
   <depend>visualization_msgs</depend>
+
+  <!-- Edifice (default) -->
+  <depend condition="$IGNITION_VERSION != 'dome'">ignition-common4</depend>
+  <depend condition="$IGNITION_VERSION != 'dome'">ignition-gui5</depend>
+  <!-- Dome -->
+  <depend condition="$IGNITION_VERSION == dome">ignition-common3</depend>
+  <depend condition="$IGNITION_VERSION == dome">ignition-gui4</depend>
 
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>

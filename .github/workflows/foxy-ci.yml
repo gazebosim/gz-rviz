@@ -1,4 +1,4 @@
-name: Ignition RViz CI (foxy)
+name: Ignition RViz CI
 
 on:
   pull_request:
@@ -8,8 +8,12 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        ignition: ['dome', 'edifice']
+        ros: ['foxy', 'rolling']
     container:
-      image: osrf/ros:foxy-desktop
+      image: osrf/ros:${{ matrix.ros }}-desktop
     steps:
     - uses: actions/checkout@v2
     - name: Install Dependencies
@@ -19,11 +23,18 @@ jobs:
         sh -c 'echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-stable `lsb_release -cs` main" > /etc/apt/sources.list.d/gazebo-stable.list'
         wget http://packages.osrfoundation.org/gazebo.key -O - | sudo apt-key add -
         apt update -y
-        apt install -y libignition-common3-dev \
-                       libignition-math6-dev \
-                       libignition-rendering4-dev \
-                       libignition-gui4-dev \
-        
+        if [ "${{ matrix.ignition }}" = "dome" ]
+          apt install -y libignition-common3-dev \
+                         libignition-math6-dev \
+                         libignition-rendering4-dev \
+                         libignition-gui4-dev
+        else
+          apt install -y libignition-common4-dev \
+                         libignition-math6-dev \
+                         libignition-rendering5-dev \
+                         libignition-gui5-dev
+        endif
+
     - name: Setup colcon workspace
       id: configure
       run: |
@@ -34,12 +45,12 @@ jobs:
       id: build
       run: |
         cd /home/colcon_ws/
-        . /opt/ros/foxy/setup.sh
+        . /opt/ros/${{ matrix.ros }}/setup.sh
         colcon build
     - name: Run tests
       id: test
       run: |
         cd /home/colcon_ws/
-        . /opt/ros/foxy/setup.sh
+        . /opt/ros/${{ matrix.ros }}/setup.sh
         colcon test --event-handlers console_direct+
         colcon test-result
