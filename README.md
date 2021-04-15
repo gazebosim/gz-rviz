@@ -7,8 +7,8 @@ Ignition RViz offers functionality similar to RViz, and is developed using
 
 ### Build Status
 
-ROS versions: Foxy and Rolling
-Ignition versions: Dome and Edifice
+* ROS versions: Foxy and Rolling
+* Ignition versions: Dome and Edifice
 
 [![Ignition RViz CI](https://github.com/ignitionrobotics/ign-rviz/actions/workflows/ci.yml/badge.svg)](https://github.com/ignitionrobotics/ign-rviz/actions/workflows/ci.yml)
 
@@ -106,5 +106,5 @@ firefox ./html/index.html
        # Source ROS2
        ros2 run image_tools cam2image
        ```
-    2. Launch ign-rviz as mention above
-    3. Load an ImageDisplay plugin and select the published topic.
+    2. Launch ign-rviz as mentioned above
+    3. Load an `ImageDisplay` plugin and select the published topic.
