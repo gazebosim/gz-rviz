@@ -30,7 +30,7 @@ jobs:
                          libignition-math6-dev \
                          libignition-rendering5-dev \
                          libignition-gui5-dev
-        endif
+        fi
 
     - name: Setup colcon workspace
       id: configure
