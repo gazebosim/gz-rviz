@@ -11,6 +11,8 @@ jobs:
         ros: ['foxy', 'rolling']
     container:
       image: osrf/ros:${{ matrix.ros }}-desktop
+    env:
+      IGNITION_VERSION: ${{ matrix.ignition }}
     steps:
     - uses: actions/checkout@v2
     - name: Install Dependencies
