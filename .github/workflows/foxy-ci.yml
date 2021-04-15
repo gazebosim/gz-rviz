@@ -20,7 +20,7 @@ jobs:
         sh -c 'echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-stable `lsb_release -cs` main" > /etc/apt/sources.list.d/gazebo-stable.list'
         wget http://packages.osrfoundation.org/gazebo.key -O - | sudo apt-key add -
         apt update -y
-        if [ "${{ matrix.ignition }}" = "dome" ]
+        if [ "${{ matrix.ignition }}" = "dome" ]; then
           apt install -y libignition-common3-dev \
                          libignition-math6-dev \
                          libignition-rendering4-dev \
