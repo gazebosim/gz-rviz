@@ -2,8 +2,8 @@
 Changelog for package ign_rviz
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.0.1 (2021-04-16)
+------------------
 * Edifice support (`#71 <https://github.com/ignitionrobotics/ign-rviz/issues/71>`_)
 * Add GPS Plugin (`#66 <https://github.com/ignitionrobotics/ign-rviz/issues/66>`_)
 * Add MarkerArray display plugin (`#64 <https://github.com/ignitionrobotics/ign-rviz/issues/64>`_)

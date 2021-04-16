@@ -2,8 +2,8 @@
 Changelog for package ign_rviz_common
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.0.1 (2021-04-16)
+------------------
 * Edifice support (`#71 <https://github.com/ignitionrobotics/ign-rviz/issues/71>`_)
 * Update getFramePose from FrameManager (`#67 <https://github.com/ignitionrobotics/ign-rviz/issues/67>`_)
 * Merge pull request `#52 <https://github.com/ignitionrobotics/ign-rviz/issues/52>`_ from ignitionrobotics/chapulina/readme
