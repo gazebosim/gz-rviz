@@ -6,48 +6,70 @@ Ignition RViz offers functionality similar to RViz, and is developed using
 [Ignition](https://ignitionrobotics.org/) libraries.
 
 ### Build Status
-|ROS2 Distro|Status|
-|---|---|
-|Foxy|![Ignition RViz CI (foxy)](https://github.com/ignitionrobotics/ign-rviz/workflows/Ignition%20RViz%20CI%20(foxy)/badge.svg)|
-|Rolling|![Ignition RViz CI (rolling)](https://github.com/ignitionrobotics/ign-rviz/workflows/Ignition%20RViz%20CI%20(rolling)/badge.svg)|
+
+* ROS versions: Foxy and Rolling
+* Ignition versions: Dome and Edifice
+
+[![Ignition RViz CI](https://github.com/ignitionrobotics/ign-rviz/actions/workflows/ci.yml/badge.svg)](https://github.com/ignitionrobotics/ign-rviz/actions/workflows/ci.yml)
 
 Head over to the [wiki](https://github.com/ignitionrobotics/ign-rviz/wiki) to get detailed description of the project.
 
 ### Requirements
 
-- [ROS 2 Foxy](https://index.ros.org/doc/ros2/Releases/Release-Foxy-Fitzroy/)
-- [Ignition Dome](https://ignitionrobotics.org/docs/dome) (under development)
-	- [Ignition Common](https://ignitionrobotics.org/libs/common) 3
-	- [Ignition GUI](https://ignitionrobotics.org/libs/gui) 4
-	- [Ignition Math](https://ignitionrobotics.org/libs/math) 6
-	- [Ignition Rendering](https://ignitionrobotics.org/libs/rendering) 4
+- [ROS 2 Foxy or Rolling](https://docs.ros.org/en/rolling/Releases.html)
+- [Ignition Dome or Edifice](https://ignitionrobotics.org/docs/)
+	- [Ignition Common](https://ignitionrobotics.org/libs/common)
+	- [Ignition GUI](https://ignitionrobotics.org/libs/gui)
+	- [Ignition Math](https://ignitionrobotics.org/libs/math)
+	- [Ignition Rendering](https://ignitionrobotics.org/libs/rendering)
 - [Qt5](https://www.qt.io/)
-- Additional qml modules required for GPS Plugin
+- Additional QML modules required for GPS Plugin
   - [QtPositioning](https://doc.qt.io/qt-5/qtpositioning-index.html) (`qml-module-qtpositioning`)
   - [QtLocation](https://doc.qt.io/qt-5/qtlocation-index.html) (`qml-module-qtlocation`)
 
 ### Setup the repository
 
-- **Create a colcon workspace**
+**Create a colcon workspace**
+
 ```bash
 mkdir -p ~/colcon_ws/src
 cd ~/colcon_ws/src
 ```
-- **Clone the repository**
+
+**Clone the repository**
+
 ```bash
 git clone https://github.com/ignitionrobotics/ign-rviz.git
 ```
 
-- **Build ign-rviz**
+**Choose an Ignition version**
+
 ```bash
-# Go to the root of your colcon workspace
+export IGNITION_VERSION=<ignition>
+```
+
+Where `<ignition>` can be `dome` or `edifice`. Defaults to Edifice if not set.
+
+> You only need to set this variable when compiling, not when running.
+
+**Build ign-rviz**
+
+Go to the root of your colcon workspace
+
+```bash
 cd ../
+```
 
-# Source ROS2
-source /opt/ros/foxy/setup.bash  # If using bash
-source /opt/ros/foxy/setup.zsh   # If using zsh
+Source ROS2, where `<distro>` is `foxy` or `rolling`:
 
-# Build ign-rviz
+```bash
+source /opt/ros/<distro>/setup.bash  # If using bash
+source /opt/ros/<distro>/setup.zsh   # If using zsh
+```
+
+Build ign-rviz
+
+```bash
 colcon build
 ```
 
@@ -84,5 +106,5 @@ firefox ./html/index.html
        # Source ROS2
        ros2 run image_tools cam2image
        ```
-    2. Launch ign-rviz as mention above
-    3. Load an ImageDisplay plugin and select the published topic.
+    2. Launch ign-rviz as mentioned above
+    3. Load an `ImageDisplay` plugin and select the published topic.

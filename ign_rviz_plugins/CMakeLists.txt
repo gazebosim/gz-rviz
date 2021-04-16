@@ -24,10 +24,34 @@ find_package(urdf REQUIRED)
 find_package(visualization_msgs REQUIRED)
 
 # Ignition libraries
-find_package(ignition-common3 REQUIRED)
-find_package(ignition-rendering4 REQUIRED)
-find_package(ignition-gui4 REQUIRED)
 find_package(ignition-math6 REQUIRED)
+
+# Dome
+if("$ENV{IGNITION_VERSION}" STREQUAL "dome")
+  find_package(ignition-gui4 REQUIRED)
+  set(IGN_GUI_VER ${ignition-gui4_VERSION_MAJOR})
+
+  find_package(ignition-common3 REQUIRED)
+  set(IGN_COMMON_VER ${ignition-common3_VERSION_MAJOR})
+
+  find_package(ignition-rendering4 REQUIRED)
+  set(IGN_RENDERING_VER ${ignition-rendering4_VERSION_MAJOR})
+
+  message(STATUS "Compiling against Ignition Dome")
+# Default to Edifice
+else()
+  find_package(ignition-gui5 REQUIRED)
+  set(IGN_GUI_VER ${ignition-gui5_VERSION_MAJOR})
+
+  find_package(ignition-common4 REQUIRED)
+  set(IGN_COMMON_VER ${ignition-common4_VERSION_MAJOR})
+
+  find_package(ignition-rendering5 REQUIRED)
+  set(IGN_RENDERING_VER ${ignition-rendering5_VERSION_MAJOR})
+
+  message(STATUS "Compiling against Ignition Edifice")
+endif()
+
 find_package(Qt5Widgets CONFIG REQUIRED)
 
 find_package(ign_rviz_common REQUIRED)
@@ -80,9 +104,9 @@ add_ign_rviz_plugin(
   NAME AxesDisplay
   DEPENDENCIES
     ign_rviz_common
-    ignition-gui4
+    ignition-gui${IGN_GUI_VER}
     ignition-math6
-    ignition-rendering4
+    ignition-rendering${IGN_RENDERING_VER}
     tf2_ros
 )
 
@@ -91,9 +115,9 @@ add_ign_rviz_plugin(
   NAME GlobalOptions
   DEPENDENCIES
     ign_rviz_common
-    ignition-gui4
+    ignition-gui${IGN_GUI_VER}
     ignition-math6
-    ignition-rendering4
+    ignition-rendering${IGN_RENDERING_VER}
     tf2_ros
 )
 
@@ -102,7 +126,7 @@ add_ign_rviz_plugin(
   NAME GPSDisplay
   DEPENDENCIES
     ign_rviz_common
-    ignition-gui4
+    ignition-gui${IGN_GUI_VER}
     ignition-math6
     sensor_msgs
     tf2_ros
@@ -113,9 +137,9 @@ add_ign_rviz_plugin(
   NAME ImageDisplay
   DEPENDENCIES
     ign_rviz_common
-    ignition-gui4
+    ignition-gui${IGN_GUI_VER}
     ignition-math6
-    ignition-rendering4
+    ignition-rendering${IGN_RENDERING_VER}
     sensor_msgs
     tf2_ros
 )
@@ -126,9 +150,9 @@ add_ign_rviz_plugin(
   DEPENDENCIES
     tf2_ros
     sensor_msgs
-    ignition-gui4
+    ignition-gui${IGN_GUI_VER}
     ignition-math6
-    ignition-rendering4
+    ignition-rendering${IGN_RENDERING_VER}
     ign_rviz_common
 )
 
@@ -140,9 +164,9 @@ add_ign_rviz_plugin(
   DEPENDENCIES
     geometry_msgs
     ign_rviz_common
-    ignition-gui4
+    ignition-gui${IGN_GUI_VER}
     ignition-math6
-    ignition-rendering4
+    ignition-rendering${IGN_RENDERING_VER}
     tf2_ros
     visualization_msgs
 )
@@ -155,9 +179,9 @@ add_ign_rviz_plugin(
   DEPENDENCIES
     geometry_msgs
     ign_rviz_common
-    ignition-gui4
+    ignition-gui${IGN_GUI_VER}
     ignition-math6
-    ignition-rendering4
+    ignition-rendering${IGN_RENDERING_VER}
     tf2_ros
     visualization_msgs
 )
@@ -168,9 +192,9 @@ add_ign_rviz_plugin(
   DEPENDENCIES
     geometry_msgs
     ign_rviz_common
-    ignition-gui4
+    ignition-gui${IGN_GUI_VER}
     ignition-math6
-    ignition-rendering4
+    ignition-rendering${IGN_RENDERING_VER}
     nav_msgs
     tf2_ros
 )
@@ -181,9 +205,9 @@ add_ign_rviz_plugin(
   DEPENDENCIES
     geometry_msgs
     ign_rviz_common
-    ignition-gui4
+    ignition-gui${IGN_GUI_VER}
     ignition-math6
-    ignition-rendering4
+    ignition-rendering${IGN_RENDERING_VER}
     tf2_ros
 )
 
@@ -193,9 +217,9 @@ add_ign_rviz_plugin(
   DEPENDENCIES
     geometry_msgs
     ign_rviz_common
-    ignition-gui4
+    ignition-gui${IGN_GUI_VER}
     ignition-math6
-    ignition-rendering4
+    ignition-rendering${IGN_RENDERING_VER}
     tf2_ros
 )
 
@@ -205,9 +229,9 @@ add_ign_rviz_plugin(
   DEPENDENCIES
     geometry_msgs
     ign_rviz_common
-    ignition-gui4
+    ignition-gui${IGN_GUI_VER}
     ignition-math6
-    ignition-rendering4
+    ignition-rendering${IGN_RENDERING_VER}
     tf2_ros
 )
 
@@ -217,9 +241,9 @@ add_ign_rviz_plugin(
   DEPENDENCIES
     geometry_msgs
     ign_rviz_common
-    ignition-gui4
+    ignition-gui${IGN_GUI_VER}
     ignition-math6
-    ignition-rendering4
+    ignition-rendering${IGN_RENDERING_VER}
     tf2_ros
 )
 
@@ -228,9 +252,9 @@ add_ign_rviz_plugin(
   NAME RobotModelDisplay
   DEPENDENCIES
     ign_rviz_common
-    ignition-gui4
+    ignition-gui${IGN_GUI_VER}
     ignition-math6
-    ignition-rendering4
+    ignition-rendering${IGN_RENDERING_VER}
     std_msgs
     tf2_ros
     urdf
@@ -241,9 +265,9 @@ add_ign_rviz_plugin(
   NAME TFDisplay
   DEPENDENCIES
     tf2_ros
-    ignition-gui4
+    ignition-gui${IGN_GUI_VER}
     ignition-math6
-    ignition-rendering4
+    ignition-rendering${IGN_RENDERING_VER}
     ign_rviz_common
 )
 
@@ -254,7 +278,7 @@ add_library(ign_rviz_plugins SHARED
 
 ament_target_dependencies(ign_rviz_plugins
   ign_rviz_common
-  ignition-gui4
+  ignition-gui${IGN_GUI_VER}
   rclcpp
   tf2_ros
 )

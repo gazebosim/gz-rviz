@@ -24,7 +24,20 @@ find_package(Qt5Widgets CONFIG REQUIRED)
 
 # Igntiion Libraries
 find_package(ignition-math6)
-find_package(ignition-gui4)
+
+# Dome
+if("$ENV{IGNITION_VERSION}" STREQUAL "dome")
+  find_package(ignition-gui4 REQUIRED)
+  set(IGN_GUI_VER ${ignition-gui4_VERSION_MAJOR})
+
+  message(STATUS "Compiling against Ignition Dome")
+# Default to Edifice
+else()
+  find_package(ignition-gui5 REQUIRED)
+  set(IGN_GUI_VER ${ignition-gui5_VERSION_MAJOR})
+
+  message(STATUS "Compiling against Ignition Edifice")
+endif()
 
 include_directories(include)
 
@@ -44,7 +57,7 @@ ament_target_dependencies(ign_rviz_common
   geometry_msgs
   tf2_geometry_msgs
   ignition-math6
-  ignition-gui4
+  ignition-gui${IGN_GUI_VER}
 )
 
 target_include_directories(ign_rviz_common
