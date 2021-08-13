@@ -22,7 +22,7 @@ import QtQuick.Dialogs 1.0
 
 Item {
   Layout.minimumWidth: 280
-  Layout.minimumHeight: 200
+  Layout.minimumHeight: 220
   anchors.fill: parent
   anchors.margins: 10
 
@@ -102,6 +102,27 @@ Item {
           bgColor.color = text
           GlobalOptions.setSceneBackground(text);
         }
+      }
+    }
+
+    RowLayout {
+      width: parent.width
+      spacing: 10
+
+      Label {
+        id: "status"
+        text: GlobalOptions.tfStatus.status
+        color: GlobalOptions.tfStatus.color
+        font.pointSize: 11
+      }
+
+      Label {
+        id: "message"
+        text: GlobalOptions.tfStatus.message
+        color: GlobalOptions.tfStatus.color
+        font.pointSize: 11
+        Layout.fillWidth: true
+        elide: Label.ElideRight
       }
     }
   }
