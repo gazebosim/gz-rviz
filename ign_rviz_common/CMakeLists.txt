@@ -31,12 +31,17 @@ if("$ENV{IGNITION_VERSION}" STREQUAL "dome")
   set(IGN_GUI_VER ${ignition-gui4_VERSION_MAJOR})
 
   message(STATUS "Compiling against Ignition Dome")
-# Default to Edifice
-else()
+elseif("$ENV{IGNITION_VERSION}" STREQUAL "edifice")
   find_package(ignition-gui5 REQUIRED)
   set(IGN_GUI_VER ${ignition-gui5_VERSION_MAJOR})
 
   message(STATUS "Compiling against Ignition Edifice")
+# Default to Fortress
+else()
+  find_package(ignition-gui6 REQUIRED)
+  set(IGN_GUI_VER ${ignition-gui6_VERSION_MAJOR})
+
+  message(STATUS "Compiling against Ignition Fortress")
 endif()
 
 include_directories(include)

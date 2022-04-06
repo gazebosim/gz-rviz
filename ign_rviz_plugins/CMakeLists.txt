@@ -38,8 +38,7 @@ if("$ENV{IGNITION_VERSION}" STREQUAL "dome")
   set(IGN_RENDERING_VER ${ignition-rendering4_VERSION_MAJOR})
 
   message(STATUS "Compiling against Ignition Dome")
-# Default to Edifice
-else()
+elseif("$ENV{IGNITION_VERSION}" STREQUAL "edifice")
   find_package(ignition-gui5 REQUIRED)
   set(IGN_GUI_VER ${ignition-gui5_VERSION_MAJOR})
 
@@ -50,6 +49,18 @@ else()
   set(IGN_RENDERING_VER ${ignition-rendering5_VERSION_MAJOR})
 
   message(STATUS "Compiling against Ignition Edifice")
+# Default to Fortress
+else()
+  find_package(ignition-gui6 REQUIRED)
+  set(IGN_GUI_VER ${ignition-gui6_VERSION_MAJOR})
+
+  find_package(ignition-common4 REQUIRED)
+  set(IGN_COMMON_VER ${ignition-common4_VERSION_MAJOR})
+
+  find_package(ignition-rendering6 REQUIRED)
+  set(IGN_RENDERING_VER ${ignition-rendering6_VERSION_MAJOR})
+
+  message(STATUS "Compiling against Ignition Fortress")
 endif()
 
 find_package(Qt5Widgets CONFIG REQUIRED)
