@@ -23,7 +23,7 @@ import "qrc:/QoSConfig"
 
 Item {
   Layout.minimumWidth: 250
-  Layout.minimumHeight: 475
+  Layout.minimumHeight: 1175
   anchors.fill: parent
   anchors.margins: 10
   Column {
@@ -56,8 +56,8 @@ Item {
         }
 
         Component.onCompleted: {
-          combo.editText = "/pose"
-          combo.displayText = "/pose"
+          combo.editText = "/posewithcov"
+          combo.displayText = "/posewithcov"
         }
 
         Connections {
@@ -340,6 +340,290 @@ Item {
         onClicked: { PoseWithCovarianceDisplay.setAxisHeadVisibility(checked) }
       }
     }
+    
+    // position covariance visibility
+    CheckBox {
+      checked: true
+      text: qsTr("Visualize position covariance")
+      onClicked: { PoseWithCovarianceDisplay.setPosCovVisibility(checked) }
+    }
+    
+    // Local/Fixed frame position cov
+    RowLayout {
+      width: parent.width
+
+      Text {
+        width: 110
+        Layout.minimumWidth: 110
+        text: "Frame"
+        font.pointSize: 10.5
+      }
+
+      ComboBox {
+        id: posCovFrameCombo
+        Layout.fillWidth: true
+        currentIndex: 0
+        model: [ "Local", "Fixed" ]
+        onCurrentIndexChanged: {
+          if (currentIndex < 0) {
+            console.log("invalid position covariance combobox index " + currentIndex);
+            return;
+          }
+          PoseWithCovarianceDisplay.setPosCovFrame(currentIndex === 0)
+        }
+      }
+    }
+
+    // Position covariance ellipse color
+    RowLayout {
+      Layout.fillWidth: true
+      spacing: 10
+
+      Text {
+        width: 80
+        Layout.minimumWidth: 80
+        text: "Color"
+        font.pointSize: 10.5
+      }
+
+      Button {
+        Layout.preferredWidth: 20
+        Layout.preferredHeight: 20
+        onClicked: posCovColorDialog.open()
+        background: Rectangle {
+          width: 20
+          height: 20
+          id: posCovColorBtn
+          color: "#cc33cc"
+          border.color: "#000000"
+          border.width: 2
+        }
+      }
+
+      TextField {
+        id: posCovColorTxt
+        text: "#ff1900"
+        Layout.fillWidth: true
+        validator: RegExpValidator {
+          regExp: /#([\da-f]{3}){1,2}/ig
+        }
+        onAccepted: {
+          posCovColorDialog.color = text
+          posCovColorBtn.color = text
+          PoseWithCovarianceDisplay.setPosCovColor(text);
+        }
+      }
+    }
+
+    // Position covariance ellipse alpha
+    RowLayout {
+      Layout.fillWidth: true
+      spacing: 10
+      Text {
+        width: 110
+        Layout.minimumWidth: 110
+        text: "Alpha"
+        font.pointSize: 10.5
+      }
+
+      TextField {
+        id: posCovColorAlpha
+        Layout.fillWidth: true
+        text: "0.3"
+        validator: RegExpValidator {
+          // Integer and floating point numbers
+          regExp: /^([0-9]*\.[0-9]+|[0-9]+)$/g
+        }
+        onAccepted: {
+          posCovColorDialog.color.a = posCovColorAlpha.text;
+          posCovColorBtn.color = posCovColorDialog.color
+          PoseWithCovarianceDisplay.setPosCovColor(posCovColorDialog.color);
+        }
+      }
+    }
+
+    // position covariance ellipse scale
+    RowLayout {
+      Layout.fillWidth: true
+      spacing: 10
+
+      Text {
+        width: 110
+        Layout.minimumWidth: 110
+        text: "Scale"
+        font.pointSize: 10.5
+      }
+
+      TextField {
+        id: posCovScale
+        Layout.fillWidth: true
+        width: 150
+        text: "1"
+        validator: RegExpValidator {
+          // Integer and floating point numbers
+          regExp: /^([0-9]*\.[0-9]+|[0-9]+)$/g
+        }
+        onAccepted: {
+          PoseWithCovarianceDisplay.setPosCovScale(posCovScale.text)
+        }
+      }
+    }
+
+    // orientation covariance visibility
+    CheckBox {
+      checked: true
+      text: qsTr("Visualize orientation covariance")
+      onClicked: { PoseWithCovarianceDisplay.setRotCovVisibility(checked) }
+    }
+
+    // Local/Fixed frame orientation cov
+    RowLayout {
+      width: parent.width
+
+      Text {
+        width: 110
+        Layout.minimumWidth: 110
+        text: "Frame"
+        font.pointSize: 10.5
+      }
+
+      ComboBox {
+        id: rotCovFrameCombo
+        Layout.fillWidth: true
+        currentIndex: 0
+        model: [ "Local", "Fixed" ]
+        onCurrentIndexChanged: {
+          if (currentIndex < 0) {
+            console.log("invalid orientation covariance combobox index " + currentIndex);
+            return;
+          }
+          PoseWithCovarianceDisplay.setRotCovFrame(currentIndex === 0)
+        }
+      }
+    }
+    
+    // Orientation covariance ellipse color
+    RowLayout {
+      Layout.fillWidth: true
+      spacing: 10
+
+      Text {
+        width: 80
+        Layout.minimumWidth: 80
+        text: "Color"
+        font.pointSize: 10.5
+      }
+
+      Button {
+        Layout.preferredWidth: 20
+        Layout.preferredHeight: 20
+        onClicked: rotCovColorDialog.open()
+        background: Rectangle {
+          width: 20
+          height: 20
+          id: rotCovColorBtn
+          color: "#ffff7f"
+          border.color: "#000000"
+          border.width: 2
+        }
+      }
+
+      TextField {
+        id: rotCovColorTxt
+        text: "#ff1900"
+        Layout.fillWidth: true
+        validator: RegExpValidator {
+          regExp: /#([\da-f]{3}){1,2}/ig
+        }
+        onAccepted: {
+          rotCovColorDialog.color = text
+          rotCovColorBtn.color = text
+          PoseWithCovarianceDisplay.setRotCovColor(text);
+        }
+      }
+    }
+
+    // Orientation covariance ellipse alpha
+    RowLayout {
+      Layout.fillWidth: true
+      spacing: 10
+      Text {
+        width: 110
+        Layout.minimumWidth: 110
+        text: "Alpha"
+        font.pointSize: 10.5
+      }
+
+      TextField {
+        id: rotCovColorAlpha
+        Layout.fillWidth: true
+        text: "0.3"
+        validator: RegExpValidator {
+          // Integer and floating point numbers
+          regExp: /^([0-9]*\.[0-9]+|[0-9]+)$/g
+        }
+        onAccepted: {
+          rotCovColorDialog.color.a = rotCovColorAlpha.text;
+          rotCovColorBtn.color = rotCovColorDialog.color
+          PoseWithCovarianceDisplay.setRotCovColor(rotCovColorDialog.color);
+        }
+      }
+    }
+    
+    // orientation covariance ellipse offset
+    RowLayout {
+      Layout.fillWidth: true
+      spacing: 10
+
+      Text {
+        width: 110
+        Layout.minimumWidth: 110
+        text: "Offset"
+        font.pointSize: 10.5
+      }
+
+      TextField {
+        id: rotCovOffset
+        Layout.fillWidth: true
+        width: 150
+        text: "1"
+        validator: RegExpValidator {
+          // Integer and floating point numbers
+          regExp: /^([0-9]*\.[0-9]+|[0-9]+)$/g
+        }
+        onAccepted: {
+          PoseWithCovarianceDisplay.setRotCovOffset(rotCovOfset.text)
+        }
+      }
+    }
+    
+    // orientation covariance ellipse scale
+    RowLayout {
+      Layout.fillWidth: true
+      spacing: 10
+
+      Text {
+        width: 110
+        Layout.minimumWidth: 110
+        text: "Scale"
+        font.pointSize: 10.5
+      }
+
+      TextField {
+        id: rotCovScale
+        Layout.fillWidth: true
+        width: 150
+        text: "1"
+        validator: RegExpValidator {
+          // Integer and floating point numbers
+          regExp: /^([0-9]*\.[0-9]+|[0-9]+)$/g
+        }
+        onAccepted: {
+          PoseWithCovarianceDisplay.setRotCovScale(rotCovScale.text)
+        }
+      }
+    }
+
   }
 
   ColorDialog {
@@ -352,6 +636,40 @@ Item {
       colorTextField.text = colorDialog.color
       colorDialog.color.a = alphaTextField.text
       PoseWithCovarianceDisplay.setColor(colorDialog.color);
+    }
+    onRejected: {
+      console.log("Canceled")
+    }
+    Component.onCompleted: visible = false
+  }
+
+  ColorDialog {
+    id: posCovColorDialog
+    title: "Select position covariance ellipse visual color"
+    color: "#cc33cc"
+    showAlphaChannel: false
+    onAccepted: {
+      posCovColorBtn.color = posCovColorDialog.color
+      posCovColorTxt.text = posCovColorDialog.color
+      posCovColorDialog.color.a = posCovColorAlpha.text
+      PoseWithCovarianceDisplay.setPosCovColor(posCovColorDialog.color);
+    }
+    onRejected: {
+      console.log("Canceled")
+    }
+    Component.onCompleted: visible = false
+  }
+
+  ColorDialog {
+    id: rotCovColorDialog
+    title: "Select orientation covariance ellipse visual color"
+    color: "#ffff7f"
+    showAlphaChannel: false
+    onAccepted: {
+      rotCovColorBtn.color = rotCovColorDialog.color
+      rotCovColorTxt.text = rotCovColorDialog.color
+      rotCovColorDialog.color.a = rotCovColorAlpha.text
+      PoseWithCovarianceDisplay.setRotCovColor(rotCovColorDialog.color);
     }
     onRejected: {
       console.log("Canceled")
