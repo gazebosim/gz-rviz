@@ -249,6 +249,18 @@ add_ign_rviz_plugin(
 
 ########################################################################
 add_ign_rviz_plugin(
+  NAME PoseWithCovarianceDisplay
+  DEPENDENCIES
+    geometry_msgs
+    ign_rviz_common
+    ignition-gui${IGN_GUI_VER}
+    ignition-math6
+    ignition-rendering${IGN_RENDERING_VER}
+    tf2_ros
+)
+
+########################################################################
+add_ign_rviz_plugin(
   NAME RobotModelDisplay
   DEPENDENCIES
     ign_rviz_common
@@ -322,6 +334,7 @@ ament_export_libraries(
   PolygonDisplay
   PoseDisplay
   PoseArrayDisplay
+  PoseWithCovarianceDisplay
   RobotModelDisplay
   TFDisplay
 )
@@ -340,6 +353,7 @@ install(
     PolygonDisplay
     PoseDisplay
     PoseArrayDisplay
+    PoseWithCovarianceDisplay
     RobotModelDisplay
     TFDisplay
   ARCHIVE DESTINATION lib
