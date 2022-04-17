@@ -20,6 +20,8 @@
 
 #include <Eigen/Dense>
 
+#include <rclcpp/rclcpp.hpp>
+
 namespace Eigen
 {
 using Matrix6d = Matrix<double, 6, 6>;
@@ -36,10 +38,8 @@ enum Frame
 {
   Local, // Renders covariances w.r.t. local frame
   Fixed, // Renders covariances w.r.t. fixed frame
-  // Maybe add parent frame option?
 };
 
-// TODO: support unique color style
 enum ColorStyle
 {
   Unique,
@@ -92,7 +92,7 @@ public:
     kNumMaterials
   };
 
-  CovarianceVisual(ignition::rendering::VisualPtr parent_visual, CovarianceUserData user_data);
+  CovarianceVisual(ignition::rendering::VisualPtr parent_visual, CovarianceUserData user_data, std::string);
 
   virtual ~CovarianceVisual();
 
@@ -101,93 +101,58 @@ public:
    */
   void createMaterials();
 
-  void setCovariance(const Eigen::Matrix6d& cov);
-
-  inline void setCovVisible(bool visible) {
-    user_data_.visible = visible;
-    setPosCovVisible(visible);
-    setRotCovVisible(visible);
-  }
-
-  inline void setPosCovVisible(bool visible) {
-    user_data_.position_visible = visible;
-    position_root_visual_->SetVisible(visible);
-  }
-
-  inline void setRotCovVisible(bool visible) {
-    user_data_.orientation_visible = visible;
-    orientation_root_visual_->SetVisible(visible);
-  }
-  
+  //////////////////// functions safe to call outside render thread //////////////////////////////
+  inline void setCovVisible(bool visible) { user_data_.visible = visible; }
+  inline bool Visible() const { return user_data_.visible && (user_data_.position_visible || user_data_.orientation_visible); }
+  inline void setPosCovVisible(bool visible) { user_data_.position_visible = visible; }
+  inline void setRotCovVisible(bool visible) { user_data_.orientation_visible = visible; }
   inline void setPosCovFrame(bool local) {
-    if (local == (user_data_.position_frame == Frame::Local)) return; // nothing to change
     if (local)
-    {
       user_data_.position_frame = Frame::Local;
-      this->root_visual_->AddChild(fixed_orientation_visual_->RemoveChild(position_root_visual_));
-    }
     else
-    {
       user_data_.position_frame = Frame::Fixed;
-      fixed_orientation_visual_->AddChild(this->root_visual_->RemoveChild(position_root_visual_));
-    }
   }
-  
   inline void setRotCovFrame(bool local) {
-    if (local == (user_data_.orientation_frame == Frame::Local)) return; // nothing to change
     if (local)
-    {
       user_data_.orientation_frame = Frame::Local;
-      this->root_visual_->AddChild(fixed_orientation_visual_->RemoveChild(orientation_root_visual_));
-    }
     else
-    {
       user_data_.orientation_frame = Frame::Fixed;
-      fixed_orientation_visual_->AddChild(this->root_visual_->RemoveChild(orientation_root_visual_));
-    }
   }
-
-  inline void updateMaterialColor(int idx, const ignition::math::Color& color)
-  {
-    this->materials_[idx]->SetAmbient(color);
-    this->materials_[idx]->SetDiffuse(color);
-    this->materials_[idx]->SetEmissive(color);
-  }
-
   inline void setRotCovColorStyle(bool unique)
   {
     if (unique)
       user_data_.orientation_color_style = ColorStyle::Unique;
     else
       user_data_.orientation_color_style = ColorStyle::RGB;
-
-    this->updateRotCovColor();
   }
+  inline void setPosCovColor(const ignition::math::Color& color) { user_data_.position_color = color; }
+  inline void setRotCovColor(const ignition::math::Color& color) { user_data_.orientation_color = color; }
+  inline void setPosCovScale(double scale) { user_data_.position_scale = scale; }
+  inline void setRotCovScale(double scale) { user_data_.orientation_scale = scale; }
+  inline void setRotCovOffset(double offset) { user_data_.orientation_offset = offset; }
 
-  inline void setPosCovColor(const ignition::math::Color& color) {
-    user_data_.position_color = color;
-    this->updatePosCovColor();
+  //////////////////// functions unsafe to call outside render thread //////////////////////////////
+  void setPose(const ignition::math::Pose3d& pose);
+  void setCovariance(const Eigen::Matrix6d& cov);
+
+  void updatePosVisual(const Eigen::Matrix6d& cov);
+  void updateRotVisual(const Eigen::Matrix6d& cov, ShapeIndex shapeIdx);
+  void updatePosVisualScale();
+  void updateRotVisualScale(ShapeIndex shapeIdx);
+  void updateRotVisualScales();
+  void updateRotVisualOffsets();
+  inline void updateMaterialColor(int idx, const ignition::math::Color& color)
+  {
+    this->materials_[idx]->SetAmbient(color);
+    this->materials_[idx]->SetDiffuse(color);
+    this->materials_[idx]->SetEmissive(color);
+  }
+  inline void updatePosCovColor()
+  { 
+    updateMaterialColor(kPos, user_data_.position_color);
     this->position_visual_->SetMaterial(this->materials_[kPos]);
   }
-
-  inline void updatePosCovColor() { updateMaterialColor(kPos, user_data_.position_color); }
-
-  inline void setRotCovColor(const ignition::math::Color& color)
-  {
-    user_data_.orientation_color = color;
-    this->updateRotCovColor();
-    this->orientation_visuals_[kRoll]->SetMaterial(this->materials_[kRotX]);
-    this->orientation_visuals_[kPitch]->SetMaterial(this->materials_[kRotY]);
-    this->orientation_visuals_[kYaw]->SetMaterial(this->materials_[kRotZ]);
-    this->orientation_visuals_[kYaw2D]->SetMaterial(this->materials_[kRotZ2D]);
-  }
-
-  inline void setRotCovColorToRGB(double alpha)
-  {
-    user_data_.orientation_color.A(alpha);
-    this->updateRotCovColor();
-  }
-  
+  void updateOrientationVisibility();
   inline void updateRotCovColor()
   {
     if (user_data_.orientation_color_style == Unique)
@@ -206,32 +171,41 @@ public:
       updateMaterialColor(kRotZ, ignition::math::Color(0.0, 0.0, 1.0, alpha));
       updateMaterialColor(kRotZ2D, ignition::math::Color(0.0, 0.0, 1.0, alpha));
     }
+    this->orientation_visuals_[kRoll]->SetMaterial(this->materials_[kRotX]);
+    this->orientation_visuals_[kPitch]->SetMaterial(this->materials_[kRotY]);
+    this->orientation_visuals_[kYaw]->SetMaterial(this->materials_[kRotZ]);
+    this->orientation_visuals_[kYaw2D]->SetMaterial(this->materials_[kRotZ2D]);
   }
 
-  inline void setPosCovScale(double scale)
-  {
-    user_data_.position_scale = scale;
-    this->position_visual_->SetLocalScale(scale * this->current_position_scale_);
+  void updateUserData() {
+    position_root_visual_->SetVisible(user_data_.position_visible && user_data_.visible);
+    this->updateOrientationVisibility();
+
+    if (user_data_.position_frame == Frame::Local && fixed_orientation_visual_->HasChild(position_root_visual_))
+    {
+      this->root_visual_->AddChild(fixed_orientation_visual_->RemoveChild(position_root_visual_));
+    }
+    else if (user_data_.position_frame == Frame::Fixed && root_visual_->HasChild(position_root_visual_))
+    {
+      fixed_orientation_visual_->AddChild(this->root_visual_->RemoveChild(position_root_visual_));
+    }
+    if (user_data_.orientation_frame == Frame::Local && fixed_orientation_visual_->HasChild(orientation_root_visual_))
+    {
+      this->root_visual_->AddChild(fixed_orientation_visual_->RemoveChild(orientation_root_visual_));
+    }
+    else if (user_data_.orientation_frame == Frame::Fixed && root_visual_->HasChild(orientation_root_visual_))
+    {
+      fixed_orientation_visual_->AddChild(this->root_visual_->RemoveChild(orientation_root_visual_));
+    }
+
+    this->updatePosCovColor();
+    this->updateRotCovColor();
+
+    this->updatePosVisualScale();
+    this->updateRotVisualScales();
+    this->updateRotVisualOffsets();
   }
   
-  inline void setRotCovScale(double scale)
-  {
-    user_data_.orientation_scale = scale;
-    // TODO: Do not scale towards the flat dimension
-    for (size_t i = 0; i < kNumOrientationShapes; i++)
-        this->orientation_visuals_[i]->SetLocalScale(scale * this->current_orientation_scales_[i]);
-  }
-
-  inline void setRotCovOffset(double offset)
-  {
-    user_data_.orientation_offset = offset;
-    // TODO: Check if offset at the desired direction
-    this->orientation_visuals_[kRoll]->SetLocalPosition(offset * ignition::math::Vector3d::UnitX);
-    this->orientation_visuals_[kPitch]->SetLocalPosition(offset * ignition::math::Vector3d::UnitY);
-    this->orientation_visuals_[kYaw]->SetLocalPosition(offset * ignition::math::Vector3d::UnitZ);
-  }
-
-  inline void setPose(const ignition::math::Pose3d& pose) { this->root_visual_->SetLocalPose(pose); }
 
 private:
   ignition::rendering::ScenePtr scene_;
@@ -262,6 +236,8 @@ private:
   bool cov_2d_;
 
   static constexpr float kMaxDegrees = 89.0f;
+
+  rclcpp::Logger logger_;
 };
 
 typedef std::shared_ptr<CovarianceVisual> CovarianceVisualPtr;

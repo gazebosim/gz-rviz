@@ -531,7 +531,7 @@ Item {
             console.log("invalid orientation covariance color style combobox index " + currentIndex);
             return;
           }
-          PoseWithCovarianceDisplay.setRotCovFrame(currentIndex === 0)
+          PoseWithCovarianceDisplay.setRotCovColorStyle(currentIndex === 0)
         }
       }
     }

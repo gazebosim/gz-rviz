@@ -162,7 +162,7 @@ void PoseWithCovarianceDisplay::update()
     covUserData.orientation_offset = 1.0;
     covUserData.orientation_scale = 1.0;
 
-    this->covVisual = std::make_shared<CovarianceVisual>(this->rootVisual, covUserData);
+    this->covVisual = std::make_shared<CovarianceVisual>(this->rootVisual, covUserData, this->node->get_logger().get_name());
   }
 
   if (this->dirty) {
@@ -204,19 +204,22 @@ void PoseWithCovarianceDisplay::update()
   this->arrow.visual->SetLocalPosition(localPose.Pos());
   this->arrow.visual->SetLocalRotation(localPose.Rot() * math::Quaterniond(0, 1.57, 0));
 
-  this->covVisual->setPose(localPose);
-  
-  // update covariance TODO: only if enabled
-  Eigen::Matrix6d cov;
-  for (unsigned i = 0; i < 36; ++i) {
-    // check for NaN in covariance
-    if (std::isnan(this->msg->pose.covariance[i])) {
-      RCLCPP_WARN(this->node->get_logger(), "covariance contains NaN at position %d", i);
-      return;
+  // update covariance 
+  this->covVisual->updateUserData();
+  if (this->covVisual->Visible())
+  {
+    this->covVisual->setPose(localPose);
+    for (unsigned i = 0; i < 36; ++i) {
+      // check for NaN in covariance
+      if (std::isnan(this->msg->pose.covariance[i])) {
+        RCLCPP_WARN(this->node->get_logger(), "covariance contains NaN at position %d", i);
+        return;
+      }
     }
-    cov(i/6,i%6) = this->msg->pose.covariance[i];
+    // Map covariance to a Eigen::Matrix
+    Eigen::Map<const Eigen::Matrix<double, 6, 6>> covariance(this->msg->pose.covariance.data());
+    this->covVisual->setCovariance(covariance);
   }
-  this->covVisual->setCovariance(cov);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
