@@ -32,6 +32,7 @@ namespace rviz
 {
 namespace plugins
 {
+
 ////////////////////////////////////////////////////////////////////////////////
 PoseWithCovarianceDisplay::PoseWithCovarianceDisplay()
 : MessageDisplay(), visualShape(true), dirty(true)
@@ -47,21 +48,6 @@ PoseWithCovarianceDisplay::PoseWithCovarianceDisplay()
   this->arrow.mat->SetAmbient(1.0, 0.098, 0.0);
   this->arrow.mat->SetDiffuse(1.0, 0.098, 0.0);
   this->arrow.mat->SetEmissive(1.0, 0.098, 0.0);
-
-  CovarianceUserData covUserData;
-  covUserData.visible = true;
-  covUserData.position_visible = true;
-  covUserData.position_frame = Frame::Local;
-  covUserData.position_color = ignition::math::Color(0.8, 0.2, 0.8, 0.3);
-  covUserData.position_scale = 1.0;
-  covUserData.orientation_visible = true;
-  covUserData.orientation_frame = Frame::Local;
-  covUserData.orientation_color_style = ColorStyle::Unique;
-  covUserData.orientation_color = ignition::math::Color(1.0, 1.0, 0.5, 0.3);
-  covUserData.orientation_offset = 1.0;
-  covUserData.orientation_scale = 1.0;
-
-  this->covVisual = std::make_shared<CovarianceVisual>(this->rootVisual, covUserData);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -161,6 +147,24 @@ void PoseWithCovarianceDisplay::update()
     this->rootVisual->AddChild(this->arrow.visual);
   }
 
+  if (this->covVisual == nullptr)
+  {
+    CovarianceUserData covUserData;
+    covUserData.visible = true;
+    covUserData.position_visible = true;
+    covUserData.position_frame = Frame::Local;
+    covUserData.position_color = ignition::math::Color(0.8, 0.2, 0.8, 0.3);
+    covUserData.position_scale = 1.0;
+    covUserData.orientation_visible = true;
+    covUserData.orientation_frame = Frame::Local;
+    covUserData.orientation_color_style = ColorStyle::Unique;
+    covUserData.orientation_color = ignition::math::Color(1.0, 1.0, 0.5, 0.3);
+    covUserData.orientation_offset = 1.0;
+    covUserData.orientation_scale = 1.0;
+
+    this->covVisual = std::make_shared<CovarianceVisual>(this->rootVisual, covUserData);
+  }
+
   if (this->dirty) {
     // Update Arrow
     this->arrow.visual->SetVisible(this->visualShape);
@@ -178,6 +182,7 @@ void PoseWithCovarianceDisplay::update()
     return;
   }
 
+  // update pose
   math::Pose3d pose;
   bool poseAvailable = this->frameManager->getFramePose(this->msg->header.frame_id, pose);
 
@@ -195,10 +200,23 @@ void PoseWithCovarianceDisplay::update()
     this->msg->pose.pose.orientation.y, this->msg->pose.pose.orientation.z);
 
   this->axis.visual->SetLocalPose(localPose);
-  this->covVisual->setPose(localPose);
 
   this->arrow.visual->SetLocalPosition(localPose.Pos());
   this->arrow.visual->SetLocalRotation(localPose.Rot() * math::Quaterniond(0, 1.57, 0));
+
+  this->covVisual->setPose(localPose);
+  
+  // update covariance TODO: only if enabled
+  Eigen::Matrix6d cov;
+  for (unsigned i = 0; i < 36; ++i) {
+    // check for NaN in covariance
+    if (std::isnan(this->msg->pose.covariance[i])) {
+      RCLCPP_WARN(this->node->get_logger(), "covariance contains NaN at position %d", i);
+      return;
+    }
+    cov(i/6,i%6) = this->msg->pose.covariance[i];
+  }
+  this->covVisual->setCovariance(cov);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

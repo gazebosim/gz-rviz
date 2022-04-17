@@ -116,6 +116,12 @@ void CovarianceVisual::createMaterials()
   this->updateRotCovColor();
 }
 
+void CovarianceVisual::setCovariance(const Eigen::Matrix6d& cov)
+{
+  // The 3rd, 4th, and 5th diagonal entries are empty for 2D case
+  cov_2d_ = (cov(3,3) <= 0 && cov(4,4) <= 0 && cov(5,5) <= 0);
+}
+
 CovarianceVisual::~CovarianceVisual()
 {
   this->scene_->DestroyVisual(this->position_root_visual_, true);

@@ -26,6 +26,9 @@ find_package(visualization_msgs REQUIRED)
 # Ignition libraries
 find_package(ignition-math6 REQUIRED)
 
+# System libraries
+find_package(Eigen3 REQUIRED)
+
 # Dome
 if("$ENV{IGNITION_VERSION}" STREQUAL "dome")
   find_package(ignition-gui4 REQUIRED)
@@ -88,9 +91,9 @@ macro(add_ign_rviz_plugin)
     ${IGN_RVIZ_PLUGIN_DEPENDENCIES}
   )
 
-  target_link_libraries(
-    ${IGN_RVIZ_PLUGIN_NAME}
+  target_link_libraries(${IGN_RVIZ_PLUGIN_NAME}
     Qt5::Core Qt5::Qml Qt5::Quick Qt5::QuickControls2
+    Eigen3::Eigen
   )
 
   target_include_directories(${IGN_RVIZ_PLUGIN_NAME}

@@ -18,6 +18,13 @@
 #include <ignition/rendering.hh>
 #include <ignition/math.hh>
 
+#include <Eigen/Dense>
+
+namespace Eigen
+{
+using Matrix6d = Matrix<double, 6, 6>;
+}
+
 namespace ignition
 {
 namespace rviz
@@ -93,6 +100,8 @@ public:
    * @brief Initializes all materials
    */
   void createMaterials();
+
+  void setCovariance(const Eigen::Matrix6d& cov);
 
   inline void setCovVisible(bool visible) {
     user_data_.visible = visible;
@@ -247,11 +256,10 @@ private:
   ignition::math::Vector3d current_position_scale_;
   std::array<ignition::math::Vector3d, kNumOrientationShapes> current_orientation_scales_;
 
-  bool local_position_;
-  bool local_rotation_;
-  bool pose_2d_;
-  bool orientation_visible_;
   CovarianceUserData user_data_;
+
+  // flag on whether we are on 2D or 3D covariance visualization mode
+  bool cov_2d_;
 
   static constexpr float kMaxDegrees = 89.0f;
 };

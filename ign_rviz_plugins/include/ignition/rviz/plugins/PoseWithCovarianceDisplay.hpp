@@ -194,32 +194,33 @@ public:
   /**
    * @brief Set covariance visual visibility
    */
-  Q_INVOKABLE inline void setCovVisible(const bool& visible) { covVisual->setCovVisible(visible); }
+  Q_INVOKABLE inline void setCovVisible(const bool& visible) { std::lock_guard<std::mutex>(this->lock); covVisual->setCovVisible(visible); }
   
   /**
    * @brief Set position covariance visual visibility
    */
-  Q_INVOKABLE inline void setPosCovVisible(const bool& visible) { covVisual->setPosCovVisible(visible); }
+  Q_INVOKABLE inline void setPosCovVisible(const bool& visible) { std::lock_guard<std::mutex>(this->lock); covVisual->setPosCovVisible(visible); }
   
   /**
    * @brief Set orientation covariance visual visible
    */
-  Q_INVOKABLE inline void setRotCovVisible(const bool& visible) { covVisual->setRotCovVisible(visible); }
+  Q_INVOKABLE inline void setRotCovVisible(const bool& visible) { std::lock_guard<std::mutex>(this->lock); covVisual->setRotCovVisible(visible); }
   
   /**
    * @brief Set position covariance frame of reference
    */
-  Q_INVOKABLE inline void setPosCovFrame(const bool& local) { covVisual->setPosCovFrame(local); }
+  Q_INVOKABLE inline void setPosCovFrame(const bool& local) { std::lock_guard<std::mutex>(this->lock); covVisual->setPosCovFrame(local); }
   
   /**
    * @brief Set orientation covariance frame of reference
    */
-  Q_INVOKABLE inline void setRotCovFrame(const bool& local) { covVisual->setRotCovFrame(local); }
+  Q_INVOKABLE inline void setRotCovFrame(const bool& local) { std::lock_guard<std::mutex>(this->lock); covVisual->setRotCovFrame(local); }
   
   /**
    * @brief Set position covariance color
    */
   Q_INVOKABLE inline void setPosCovColor(const QColor& color) { 
+    std::lock_guard<std::mutex>(this->lock); 
     covVisual->setPosCovColor(ignition::math::Color(color.redF(), color.greenF(), color.blueF(), color.alphaF()));
   }
   
@@ -227,28 +228,29 @@ public:
    * @brief Set orientation covariance color
    */
   Q_INVOKABLE inline void setRotCovColor(const QColor& color) { 
+    std::lock_guard<std::mutex>(this->lock); 
     covVisual->setRotCovColor(ignition::math::Color(color.redF(), color.greenF(), color.blueF(), color.alphaF()));
   }
   
   /**
    * @brief Set orientation covariance color style (Unique/RGB)
    */
-  Q_INVOKABLE inline void setRotCovColorStyle(const bool& unique) { covVisual->setRotCovColorStyle(unique); }
+  Q_INVOKABLE inline void setRotCovColorStyle(const bool& unique) { std::lock_guard<std::mutex>(this->lock); covVisual->setRotCovColorStyle(unique); }
   
   /**
    * @brief Set position covariance scale
    */
-  Q_INVOKABLE inline void setPosCovScale(const float& scale) { covVisual->setPosCovScale(scale); }
+  Q_INVOKABLE inline void setPosCovScale(const float& scale) { std::lock_guard<std::mutex>(this->lock); covVisual->setPosCovScale(scale); }
   
   /**
    * @brief Set orientation covariance scale
    */
-  Q_INVOKABLE inline void setRotCovScale(const float& scale) { covVisual->setRotCovScale(scale); }
+  Q_INVOKABLE inline void setRotCovScale(const float& scale) { std::lock_guard<std::mutex>(this->lock); covVisual->setRotCovScale(scale); }
   
   /**
    * @brief Set orientation covariance offset
    */
-  Q_INVOKABLE inline void setRotCovOffset(const float& offset) { covVisual->setRotCovOffset(offset); }
+  Q_INVOKABLE inline void setRotCovOffset(const float& offset) { std::lock_guard<std::mutex>(this->lock); covVisual->setRotCovOffset(offset); }
 
 signals:
   /**
