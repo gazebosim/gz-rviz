@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Open Source Robotics Foundation, Inc.
+// Copyright (c) 2022 Open Source Robotics Foundation, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -13,6 +13,7 @@
 // limitations under the License.
 
 #include "ignition/rviz/plugins/PoseWithCovarianceDisplay.hpp"
+#include "ignition/rviz/plugins/CovarianceVisual.hpp"
 
 #include <ignition/gui/Application.hh>
 #include <ignition/gui/GuiEvents.hh>
@@ -46,6 +47,21 @@ PoseWithCovarianceDisplay::PoseWithCovarianceDisplay()
   this->arrow.mat->SetAmbient(1.0, 0.098, 0.0);
   this->arrow.mat->SetDiffuse(1.0, 0.098, 0.0);
   this->arrow.mat->SetEmissive(1.0, 0.098, 0.0);
+
+  CovarianceUserData covUserData;
+  covUserData.visible = true;
+  covUserData.position_visible = true;
+  covUserData.position_frame = Frame::Local;
+  covUserData.position_color = ignition::math::Color(0.8, 0.2, 0.8, 0.3);
+  covUserData.position_scale = 1.0;
+  covUserData.orientation_visible = true;
+  covUserData.orientation_frame = Frame::Local;
+  covUserData.orientation_color_style = ColorStyle::Unique;
+  covUserData.orientation_color = ignition::math::Color(1.0, 1.0, 0.5, 0.3);
+  covUserData.orientation_offset = 1.0;
+  covUserData.orientation_scale = 1.0;
+
+  this->covVisual = std::make_shared<CovarianceVisual>(this->rootVisual, covUserData);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -179,6 +195,7 @@ void PoseWithCovarianceDisplay::update()
     this->msg->pose.pose.orientation.y, this->msg->pose.pose.orientation.z);
 
   this->axis.visual->SetLocalPose(localPose);
+  this->covVisual->setPose(localPose);
 
   this->arrow.visual->SetLocalPosition(localPose.Pos());
   this->arrow.visual->SetLocalRotation(localPose.Rot() * math::Quaterniond(0, 1.57, 0));

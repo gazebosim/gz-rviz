@@ -341,11 +341,19 @@ Item {
       }
     }
     
+    // TODO: Create proper, reusable collapsible menu
+    // covariance visibility
+    CheckBox {
+      checked: true
+      text: qsTr("Visualize covariance")
+      onClicked: { PoseWithCovarianceDisplay.setCovVisible(checked) }
+    }
+    
     // position covariance visibility
     CheckBox {
       checked: true
       text: qsTr("Visualize position covariance")
-      onClicked: { PoseWithCovarianceDisplay.setPosCovVisibility(checked) }
+      onClicked: { PoseWithCovarianceDisplay.setPosCovVisible(checked) }
     }
     
     // Local/Fixed frame position cov
@@ -402,7 +410,7 @@ Item {
 
       TextField {
         id: posCovColorTxt
-        text: "#ff1900"
+        text: "#cc33cc"
         Layout.fillWidth: true
         validator: RegExpValidator {
           regExp: /#([\da-f]{3}){1,2}/ig
@@ -473,7 +481,7 @@ Item {
     CheckBox {
       checked: true
       text: qsTr("Visualize orientation covariance")
-      onClicked: { PoseWithCovarianceDisplay.setRotCovVisibility(checked) }
+      onClicked: { PoseWithCovarianceDisplay.setRotCovVisible(checked) }
     }
 
     // Local/Fixed frame orientation cov
@@ -494,7 +502,33 @@ Item {
         model: [ "Local", "Fixed" ]
         onCurrentIndexChanged: {
           if (currentIndex < 0) {
-            console.log("invalid orientation covariance combobox index " + currentIndex);
+            console.log("invalid orientation covariance frame combobox index " + currentIndex);
+            return;
+          }
+          PoseWithCovarianceDisplay.setRotCovFrame(currentIndex === 0)
+        }
+      }
+    }
+    
+    // Unique/RGB orientation cov color
+    RowLayout {
+      width: parent.width
+
+      Text {
+        width: 110
+        Layout.minimumWidth: 110
+        text: "Color Style"
+        font.pointSize: 10.5
+      }
+
+      ComboBox {
+        id: rotCovColorStyleCombo
+        Layout.fillWidth: true
+        currentIndex: 0
+        model: [ "Unique", "RGB" ]
+        onCurrentIndexChanged: {
+          if (currentIndex < 0) {
+            console.log("invalid orientation covariance color style combobox index " + currentIndex);
             return;
           }
           PoseWithCovarianceDisplay.setRotCovFrame(currentIndex === 0)
@@ -530,7 +564,7 @@ Item {
 
       TextField {
         id: rotCovColorTxt
-        text: "#ff1900"
+        text: "#ffff7f"
         Layout.fillWidth: true
         validator: RegExpValidator {
           regExp: /#([\da-f]{3}){1,2}/ig
@@ -592,7 +626,7 @@ Item {
           regExp: /^([0-9]*\.[0-9]+|[0-9]+)$/g
         }
         onAccepted: {
-          PoseWithCovarianceDisplay.setRotCovOffset(rotCovOfset.text)
+          PoseWithCovarianceDisplay.setRotCovOffset(rotCovOffset.text)
         }
       }
     }

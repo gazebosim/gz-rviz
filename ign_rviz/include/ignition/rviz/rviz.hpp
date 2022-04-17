@@ -170,7 +170,7 @@ public:
    * @brief Loads PoseWithCovariance Visualization Plugin
    * @param[in] _topic Topic name
    */
-  Q_INVOKABLE void addPoseWithCovarianceDisplay(const QString & _topic = "/pose") const;
+  Q_INVOKABLE void addPoseWithCovarianceDisplay(const QString & _topic = "/posewithcov") const;
 
   /**
    * @brief Loads Path Visualization Plugin

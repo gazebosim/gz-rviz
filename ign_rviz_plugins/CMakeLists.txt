@@ -61,6 +61,7 @@ include_directories(include)
 include_directories(SYSTEM
   ${IGNITION-COMMON_INCLUDE_DIRS}
   ${IGNITION-GUI_INCLUDE_DIRS}
+  ${IGNITION-RENDERING_INCLUDE_DIRS}
   ${IGNITION-MATH_INCLUDE_DIRS}
 )
 
@@ -76,6 +77,8 @@ macro(add_ign_rviz_plugin)
     include/ignition/rviz/plugins/${IGN_RVIZ_PLUGIN_NAME}.hpp
     include/ignition/rviz/plugins/message_display_base.hpp
     src/rviz/plugins/${IGN_RVIZ_PLUGIN_NAME}.cpp
+    # TODO: Probably move CovarianceVisual to something like ign_rviz_rendering
+    src/rviz/plugins/CovarianceVisual.cpp
     ${IGN_RVIZ_PLUGIN_EXTRA_FILES}
     ${resources_RCC}
   )
@@ -95,6 +98,7 @@ macro(add_ign_rviz_plugin)
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:include>
     ${Qt5Widgets_INCLUDE_DIRS}
+    ${IGNITION-RENDERING_INCLUDE_DIRS}
     ${IGNITION-GUI_INCLUDE_DIRS}
   )
 endmacro()
@@ -286,10 +290,12 @@ add_ign_rviz_plugin(
 ########################################################################
 add_library(ign_rviz_plugins SHARED
   "include/ignition/rviz/plugins/message_display_base.hpp"
+  "include/ignition/rviz/plugins/CovarianceVisual.hpp"
 )
 
 ament_target_dependencies(ign_rviz_plugins
   ign_rviz_common
+  ignition-rendering${IGN_RENDERING_VER}
   ignition-gui${IGN_GUI_VER}
   rclcpp
   tf2_ros
@@ -301,6 +307,7 @@ target_include_directories(ign_rviz_plugins
   $<INSTALL_INTERFACE:include>
   ${Qt5Widgets_INCLUDE_DIRS}
   ${IGNITION-GUI_INCLUDE_DIRS}
+  ${IGNITION-RENDERING_INCLUDE_DIRS}
 )
 
 install(

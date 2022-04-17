@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Open Source Robotics Foundation, Inc.
+// Copyright (c) 2022 Open Source Robotics Foundation, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@
 #include <vector>
 
 #include "ignition/rviz/plugins/message_display_base.hpp"
+#include "ignition/rviz/plugins/CovarianceVisual.hpp"
 
 namespace ignition
 {
@@ -190,6 +191,65 @@ public:
    */
   Q_INVOKABLE void setColor(const QColor & _color);
 
+  /**
+   * @brief Set covariance visual visibility
+   */
+  Q_INVOKABLE inline void setCovVisible(const bool& visible) { covVisual->setCovVisible(visible); }
+  
+  /**
+   * @brief Set position covariance visual visibility
+   */
+  Q_INVOKABLE inline void setPosCovVisible(const bool& visible) { covVisual->setPosCovVisible(visible); }
+  
+  /**
+   * @brief Set orientation covariance visual visible
+   */
+  Q_INVOKABLE inline void setRotCovVisible(const bool& visible) { covVisual->setRotCovVisible(visible); }
+  
+  /**
+   * @brief Set position covariance frame of reference
+   */
+  Q_INVOKABLE inline void setPosCovFrame(const bool& local) { covVisual->setPosCovFrame(local); }
+  
+  /**
+   * @brief Set orientation covariance frame of reference
+   */
+  Q_INVOKABLE inline void setRotCovFrame(const bool& local) { covVisual->setRotCovFrame(local); }
+  
+  /**
+   * @brief Set position covariance color
+   */
+  Q_INVOKABLE inline void setPosCovColor(const QColor& color) { 
+    covVisual->setPosCovColor(ignition::math::Color(color.redF(), color.greenF(), color.blueF(), color.alphaF()));
+  }
+  
+  /**
+   * @brief Set orientation covariance color
+   */
+  Q_INVOKABLE inline void setRotCovColor(const QColor& color) { 
+    covVisual->setRotCovColor(ignition::math::Color(color.redF(), color.greenF(), color.blueF(), color.alphaF()));
+  }
+  
+  /**
+   * @brief Set orientation covariance color style (Unique/RGB)
+   */
+  Q_INVOKABLE inline void setRotCovColorStyle(const bool& unique) { covVisual->setRotCovColorStyle(unique); }
+  
+  /**
+   * @brief Set position covariance scale
+   */
+  Q_INVOKABLE inline void setPosCovScale(const float& scale) { covVisual->setPosCovScale(scale); }
+  
+  /**
+   * @brief Set orientation covariance scale
+   */
+  Q_INVOKABLE inline void setRotCovScale(const float& scale) { covVisual->setRotCovScale(scale); }
+  
+  /**
+   * @brief Set orientation covariance offset
+   */
+  Q_INVOKABLE inline void setRotCovOffset(const float& offset) { covVisual->setRotCovOffset(offset); }
+
 signals:
   /**
    * @brief Notify that topic list has changed
@@ -224,6 +284,7 @@ private:
   QStringList topicList;
   AxisVisualPrivate axis;
   ArrowVisualPrivate arrow;
+  CovarianceVisualPtr covVisual;
   bool visualShape;  // True: Arrow; False: Axis
   bool dirty;
 };
