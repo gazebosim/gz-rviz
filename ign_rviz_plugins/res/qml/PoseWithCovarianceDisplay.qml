@@ -341,7 +341,7 @@ Item {
       }
     }
     
-    // TODO: Create proper, reusable collapsible menu
+    // TODO(Thodoris): Create proper, reusable collapsible menu
     // covariance visibility
     CheckBox {
       checked: true

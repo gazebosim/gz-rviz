@@ -220,7 +220,7 @@ CovarianceVisual::CovarianceVisual(ignition::rendering::VisualPtr parent_node, C
     if (i != kYaw2D) {
       this->orientation_shapes_[i] = this->scene_->CreateCylinder();
     } else {
-      this->orientation_shapes_[i] = this->scene_->CreateCone(); // TODO: use pie slice instead
+      this->orientation_shapes_[i] = this->scene_->CreateCone();
     }
     this->orientation_visuals_[i]->AddGeometry(this->orientation_shapes_[i]);
     this->orientation_visuals_[i]->SetMaterial(this->materials_[i+1]);
