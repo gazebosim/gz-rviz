@@ -239,17 +239,15 @@ CovarianceVisual::CovarianceVisual(ignition::rendering::VisualPtr parent_node, C
   orientation_visuals_[kYaw]->SetLocalPosition(offset * math::Vector3d::UnitZ);
   orientation_visuals_[kYaw]->SetLocalRotation(math::Quaterniond(0, 0, 0)); // no rotation needed
   // z-axis (yaw 2D)
-  // NOTE: rviz use a cone defined by the file rviz_rendering/ogre_media/models/rviz_cone.mesh, and
-  //       it's origin is not at the top of the cone. Since we want the top to be at the origin of
+  // NOTE: cone's origin is not at the top of the cone. Since we want the top to be at the origin of
   //       the pose we need to use an offset here.
   // WARNING: This number was found by trial-and-error on rviz and it's not the correct
   //          one, so changes on scale are expected to cause the top of the cone to move
   //          from the pose origin, although it's only noticeable with big scales.
-  // TODO(anonymous): Find the right value from the cone.mesh file, or implement a class that draws
-  //        something like a 2D "pie slice" and use it instead of the cone.
+  // TODO(Thodoris): Implement something like a 2D "pie slice" and use it instead of the cone.
   static const float cone_origin_to_top = 0.49115f;
   orientation_visuals_[kYaw2D]->SetLocalPosition(cone_origin_to_top * math::Vector3d::UnitX);
-  orientation_visuals_[kYaw2D]->SetLocalRotation(math::Quaterniond(math::Vector3d::UnitZ, math::Angle::HalfPi.Radian()));
+  orientation_visuals_[kYaw2D]->SetLocalRotation(math::Quaterniond(math::Vector3d::UnitY, -math::Angle::HalfPi.Radian()));
 
   // Initialize all scales to zero
   this->current_position_scale_ = ignition::math::Vector3d::Zero;
@@ -334,10 +332,14 @@ void CovarianceVisual::updateRotVisual(const Eigen::Matrix6d& cov, ShapeIndex sh
     assert(shapeIdx == kYaw2D);
 
     // 2D poses only depend on yaw.
-    shape_scale.X(2 * std::sqrt(cov(5,5)));
-    // To display the cone shape properly the scale along y-axis has to be one.
-    shape_scale.Y(1.0);
-    // TODO: 
+    // scale cone width
+    // The computed scale is equivalent to twice the standard deviation _in radians_.
+    // So we need to convert it to the linear scale of the shape using tan().
+    // Also, we bound the maximum std. TODO: Use pie slice without metric conversion
+    shape_scale.Y(2 * std::sqrt(cov(5,5)));
+    shape_scale.Z(1.0);
+    shape_orientation = math::Quaterniond(math::Vector3d::UnitY, -math::Angle::HalfPi.Radian()); 
+    shape_scale.Y(radianScaleToMetricScaleBounded(shape_scale.Y(), kMaxDegrees));
   }
   else
   {
@@ -399,7 +401,13 @@ void CovarianceVisual::updatePosVisualScale()
 
 void CovarianceVisual::updateRotVisualScale(ShapeIndex shapeIdx)
 {
-  this->orientation_visuals_[shapeIdx]->SetLocalScale(
+  if (this->cov_2d_)
+    this->orientation_visuals_[shapeIdx]->SetLocalScale(
+    ignition::math::Vector3d(0.001,
+                              user_data_.orientation_scale * this->current_orientation_scales_[shapeIdx].Y(),
+                              user_data_.orientation_scale * this->current_orientation_scales_[shapeIdx].Z()));
+  else
+    this->orientation_visuals_[shapeIdx]->SetLocalScale(
     ignition::math::Vector3d(user_data_.orientation_scale * this->current_orientation_scales_[shapeIdx].X(),
                               user_data_.orientation_scale * this->current_orientation_scales_[shapeIdx].Y(),
                               0.001));
@@ -428,6 +436,35 @@ void CovarianceVisual::updateOrientationVisibility()
   orientation_visuals_[kPitch]->SetVisible(orientation_visible_ && !cov_2d_);
   orientation_visuals_[kYaw]->SetVisible(orientation_visible_ && !cov_2d_);
   orientation_visuals_[kYaw2D]->SetVisible(orientation_visible_ && cov_2d_);
+}
+
+void CovarianceVisual::updateUserData() {
+  position_root_visual_->SetVisible(user_data_.position_visible && user_data_.visible);
+  this->updateOrientationVisibility();
+
+  if (user_data_.position_frame == Frame::Local && fixed_orientation_visual_->HasChild(position_root_visual_))
+  {
+    this->root_visual_->AddChild(fixed_orientation_visual_->RemoveChild(position_root_visual_));
+  }
+  else if (user_data_.position_frame == Frame::Fixed && root_visual_->HasChild(position_root_visual_))
+  {
+    fixed_orientation_visual_->AddChild(this->root_visual_->RemoveChild(position_root_visual_));
+  }
+  if (user_data_.orientation_frame == Frame::Local && fixed_orientation_visual_->HasChild(orientation_root_visual_))
+  {
+    this->root_visual_->AddChild(fixed_orientation_visual_->RemoveChild(orientation_root_visual_));
+  }
+  else if (user_data_.orientation_frame == Frame::Fixed && root_visual_->HasChild(orientation_root_visual_))
+  {
+    fixed_orientation_visual_->AddChild(this->root_visual_->RemoveChild(orientation_root_visual_));
+  }
+
+  this->updatePosCovColor();
+  this->updateRotCovColor();
+
+  this->updatePosVisualScale();
+  this->updateRotVisualScales();
+  this->updateRotVisualOffsets();
 }
 
 CovarianceVisual::~CovarianceVisual()

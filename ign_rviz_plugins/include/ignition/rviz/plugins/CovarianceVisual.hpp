@@ -177,35 +177,7 @@ public:
     this->orientation_visuals_[kYaw2D]->SetMaterial(this->materials_[kRotZ2D]);
   }
 
-  void updateUserData() {
-    position_root_visual_->SetVisible(user_data_.position_visible && user_data_.visible);
-    this->updateOrientationVisibility();
-
-    if (user_data_.position_frame == Frame::Local && fixed_orientation_visual_->HasChild(position_root_visual_))
-    {
-      this->root_visual_->AddChild(fixed_orientation_visual_->RemoveChild(position_root_visual_));
-    }
-    else if (user_data_.position_frame == Frame::Fixed && root_visual_->HasChild(position_root_visual_))
-    {
-      fixed_orientation_visual_->AddChild(this->root_visual_->RemoveChild(position_root_visual_));
-    }
-    if (user_data_.orientation_frame == Frame::Local && fixed_orientation_visual_->HasChild(orientation_root_visual_))
-    {
-      this->root_visual_->AddChild(fixed_orientation_visual_->RemoveChild(orientation_root_visual_));
-    }
-    else if (user_data_.orientation_frame == Frame::Fixed && root_visual_->HasChild(orientation_root_visual_))
-    {
-      fixed_orientation_visual_->AddChild(this->root_visual_->RemoveChild(orientation_root_visual_));
-    }
-
-    this->updatePosCovColor();
-    this->updateRotCovColor();
-
-    this->updatePosVisualScale();
-    this->updateRotVisualScales();
-    this->updateRotVisualOffsets();
-  }
-  
+  void updateUserData();
 
 private:
   ignition::rendering::ScenePtr scene_;

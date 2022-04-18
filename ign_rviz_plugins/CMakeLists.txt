@@ -80,8 +80,6 @@ macro(add_ign_rviz_plugin)
     include/ignition/rviz/plugins/${IGN_RVIZ_PLUGIN_NAME}.hpp
     include/ignition/rviz/plugins/message_display_base.hpp
     src/rviz/plugins/${IGN_RVIZ_PLUGIN_NAME}.cpp
-    # TODO: Probably move CovarianceVisual to something like ign_rviz_rendering
-    src/rviz/plugins/CovarianceVisual.cpp
     ${IGN_RVIZ_PLUGIN_EXTRA_FILES}
     ${resources_RCC}
   )
@@ -257,6 +255,8 @@ add_ign_rviz_plugin(
 ########################################################################
 add_ign_rviz_plugin(
   NAME PoseWithCovarianceDisplay
+  EXTRA_FILES
+    src/rviz/plugins/CovarianceVisual.cpp
   DEPENDENCIES
     geometry_msgs
     ign_rviz_common
@@ -293,7 +293,6 @@ add_ign_rviz_plugin(
 ########################################################################
 add_library(ign_rviz_plugins SHARED
   "include/ignition/rviz/plugins/message_display_base.hpp"
-  "include/ignition/rviz/plugins/CovarianceVisual.hpp"
 )
 
 ament_target_dependencies(ign_rviz_plugins
