@@ -362,7 +362,7 @@ void CovarianceVisual::updateRotVisual(const Eigen::Matrix6d& cov, ShapeIndex sh
     }
     else if (shapeIdx == kYaw)
     {
-      covariancePlane << cov(4,4), cov(3,4), cov(4,3), cov(3,3);
+      covariancePlane = cov.block<2,2>(3,3);
     }
     std::tie(shape_scale, shape_orientation) = computeShapeScaleAndOrientation2D(covariancePlane, this->logger_);
     if (shapeIdx == kRoll)
@@ -372,6 +372,10 @@ void CovarianceVisual::updateRotVisual(const Eigen::Matrix6d& cov, ShapeIndex sh
     else if (shapeIdx == kPitch)
     {
       shape_orientation = math::Quaterniond(math::Vector3d::UnitX, -math::Angle::HalfPi.Radian()) * shape_orientation;
+    }
+    else if (shapeIdx == kYaw)
+    {
+      shape_orientation = math::Quaterniond(math::Vector3d::UnitZ, -math::Angle::HalfPi.Radian()) * shape_orientation;
     }
 
     // The computed scale is equivalent to twice the standard deviation _in radians_.
