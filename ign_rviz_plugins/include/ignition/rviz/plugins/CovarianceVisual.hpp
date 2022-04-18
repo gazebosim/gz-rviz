@@ -107,23 +107,16 @@ public:
   inline void setPosCovVisible(bool visible) { user_data_.position_visible = visible; }
   inline void setRotCovVisible(bool visible) { user_data_.orientation_visible = visible; }
   inline void setPosCovFrame(bool local) {
-    if (local)
-      user_data_.position_frame = Frame::Local;
-    else
-      user_data_.position_frame = Frame::Fixed;
+    if (local) user_data_.position_frame = Frame::Local;
+    else user_data_.position_frame = Frame::Fixed;
   }
   inline void setRotCovFrame(bool local) {
-    if (local)
-      user_data_.orientation_frame = Frame::Local;
-    else
-      user_data_.orientation_frame = Frame::Fixed;
+    if (local) user_data_.orientation_frame = Frame::Local;
+    else user_data_.orientation_frame = Frame::Fixed;
   }
-  inline void setRotCovColorStyle(bool unique)
-  {
-    if (unique)
-      user_data_.orientation_color_style = ColorStyle::Unique;
-    else
-      user_data_.orientation_color_style = ColorStyle::RGB;
+  inline void setRotCovColorStyle(bool unique) {
+    if (unique) user_data_.orientation_color_style = ColorStyle::Unique;
+    else user_data_.orientation_color_style = ColorStyle::RGB;
   }
   inline void setPosCovColor(const ignition::math::Color& color) { user_data_.position_color = color; }
   inline void setRotCovColor(const ignition::math::Color& color) { user_data_.orientation_color = color; }
@@ -141,42 +134,10 @@ public:
   void updateRotVisualScale(ShapeIndex shapeIdx);
   void updateRotVisualScales();
   void updateRotVisualOffsets();
-  inline void updateMaterialColor(int idx, const ignition::math::Color& color)
-  {
-    this->materials_[idx]->SetAmbient(color);
-    this->materials_[idx]->SetDiffuse(color);
-    this->materials_[idx]->SetEmissive(color);
-  }
-  inline void updatePosCovColor()
-  { 
-    updateMaterialColor(kPos, user_data_.position_color);
-    this->position_visual_->SetMaterial(this->materials_[kPos]);
-  }
+  void updateMaterialColor(int idx, const ignition::math::Color& color);
+  void updatePosCovColor();
   void updateOrientationVisibility();
-  inline void updateRotCovColor()
-  {
-    if (user_data_.orientation_color_style == Unique)
-    {
-      const ignition::math::Color& color = user_data_.orientation_color;
-      updateMaterialColor(kRotX, color);
-      updateMaterialColor(kRotY, color);
-      updateMaterialColor(kRotZ, color);
-      updateMaterialColor(kRotZ2D, color);
-    }
-    else
-    {
-      double alpha = user_data_.orientation_color.A();
-      updateMaterialColor(kRotX, ignition::math::Color(1.0, 0.0, 0.0, alpha));
-      updateMaterialColor(kRotY, ignition::math::Color(0.0, 1.0, 0.0, alpha));
-      updateMaterialColor(kRotZ, ignition::math::Color(0.0, 0.0, 1.0, alpha));
-      updateMaterialColor(kRotZ2D, ignition::math::Color(0.0, 0.0, 1.0, alpha));
-    }
-    this->orientation_visuals_[kRoll]->SetMaterial(this->materials_[kRotX]);
-    this->orientation_visuals_[kPitch]->SetMaterial(this->materials_[kRotY]);
-    this->orientation_visuals_[kYaw]->SetMaterial(this->materials_[kRotZ]);
-    this->orientation_visuals_[kYaw2D]->SetMaterial(this->materials_[kRotZ2D]);
-  }
-
+  void updateRotCovColor();
   void updateUserData();
 
 private:

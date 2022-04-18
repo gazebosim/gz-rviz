@@ -467,6 +467,43 @@ void CovarianceVisual::updateUserData() {
   this->updateRotVisualOffsets();
 }
 
+void CovarianceVisual::updateMaterialColor(int idx, const ignition::math::Color& color)
+{
+  this->materials_[idx]->SetAmbient(color);
+  this->materials_[idx]->SetDiffuse(color);
+  this->materials_[idx]->SetEmissive(color);
+}
+
+void CovarianceVisual::updatePosCovColor()
+{ 
+  updateMaterialColor(kPos, user_data_.position_color);
+  this->position_visual_->SetMaterial(this->materials_[kPos]);
+}
+
+void CovarianceVisual::updateRotCovColor()
+{
+  if (user_data_.orientation_color_style == Unique)
+  {
+    const ignition::math::Color& color = user_data_.orientation_color;
+    updateMaterialColor(kRotX, color);
+    updateMaterialColor(kRotY, color);
+    updateMaterialColor(kRotZ, color);
+    updateMaterialColor(kRotZ2D, color);
+  }
+  else
+  {
+    double alpha = user_data_.orientation_color.A();
+    updateMaterialColor(kRotX, ignition::math::Color(1.0, 0.0, 0.0, alpha));
+    updateMaterialColor(kRotY, ignition::math::Color(0.0, 1.0, 0.0, alpha));
+    updateMaterialColor(kRotZ, ignition::math::Color(0.0, 0.0, 1.0, alpha));
+    updateMaterialColor(kRotZ2D, ignition::math::Color(0.0, 0.0, 1.0, alpha));
+  }
+  this->orientation_visuals_[kRoll]->SetMaterial(this->materials_[kRotX]);
+  this->orientation_visuals_[kPitch]->SetMaterial(this->materials_[kRotY]);
+  this->orientation_visuals_[kYaw]->SetMaterial(this->materials_[kRotZ]);
+  this->orientation_visuals_[kYaw2D]->SetMaterial(this->materials_[kRotZ2D]);
+}
+
 CovarianceVisual::~CovarianceVisual()
 {
   this->scene_->DestroyVisual(this->position_root_visual_, true);
