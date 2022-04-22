@@ -15,8 +15,8 @@
 #ifndef IGNITION__RVIZ__PLUGINS__COVARIANCEVISUAL_HPP_
 #define IGNITION__RVIZ__PLUGINS__COVARIANCEVISUAL_HPP_
 
-#include <ignition/rendering.hh>
 #include <ignition/math.hh>
+#include <ignition/rendering.hh>
 
 #include <Eigen/Dense>
 
@@ -66,9 +66,10 @@ struct CovarianceUserData
 /**
  * @brief Visualizes the covariance of a pose (orientation+position) using 2D and 3D ellipses
  * 
- * One 3D ellipsoid indicates position covariance and 3 2D ellipsoids indicate the uncertainty of orientation along rotation at each axis.
- * In 2D mode, the position ellipsoid is flattened to a 2D ellipse and a cone is used for orientation uncertainty.
- * Choose Local/Fixed frame depending on whether the covariances are expressed w.r.t. the local or the fixed frame.
+ * One 3D ellipsoid indicates position covariance and 3 2D ellipsoids indicate the uncertainty of
+ * orientation along rotation at each axis. In 2D mode, the position ellipsoid is flattened to a
+ * 2D ellipse and a cone is used for orientation uncertainty. Choose Local/Fixed frame depending on
+ * whether the covariances are expressed w.r.t. the local or the fixed frame.
  */
 class CovarianceVisual
 {

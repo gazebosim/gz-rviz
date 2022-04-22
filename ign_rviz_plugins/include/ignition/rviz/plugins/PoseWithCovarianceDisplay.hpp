@@ -16,6 +16,7 @@
 #define IGNITION__RVIZ__PLUGINS__POSEWITHCOVARIANCEDISPLAY_HPP_
 
 #include <ignition/rendering.hh>
+#include <ignition/utils/ImplPtr.hh>
 
 #include <geometry_msgs/msg/pose_with_covariance_stamped.hpp>
 
@@ -44,19 +45,14 @@ struct ArrowVisualPrivate
   /**
    * @brief Update the arrow shaft and head visual length and radius
    */
-  void updateVisual()
-  {
-    visual->Shaft()->SetLocalScale(shaftRadius * 2.0, shaftRadius * 2.0, shaftLength);
-    visual->SetOrigin(0, 0, -shaftLength);
-    visual->Head()->SetLocalScale(headRadius * 2.0, headRadius * 2.0, headLength * 2.0);
-  }
+  void updateVisual();
 
   ignition::rendering::ArrowVisualPtr visual;
   ignition::rendering::MaterialPtr mat;
-  float shaftLength = 1.0;
-  float shaftRadius = 0.05;
-  float headLength = 0.25;
-  float headRadius = 0.1;
+  float shaftLength = 1.0f;
+  float shaftRadius = 0.05f;
+  float headLength = 0.25f;
+  float headRadius = 0.1f;
 };
 
 /**
@@ -67,17 +63,11 @@ struct AxisVisualPrivate
   /**
    * @brief Update the axis visual length and radius
    */
-  void updateVisual()
-  {
-    for (int i = 0; i < 3; ++i) {
-      auto arrow = std::dynamic_pointer_cast<rendering::ArrowVisual>(visual->ChildByIndex(i));
-      arrow->SetLocalScale(radius * 20, radius * 20, length * 2);
-    }
-  }
+  void updateVisual();
 
   ignition::rendering::AxisVisualPtr visual;
-  float length = 1.0;
-  float radius = 0.1;
+  float length = 1.0f;
+  float radius = 0.1f;
   bool headVisible = false;
 };
 
@@ -126,9 +116,9 @@ public:
 
   /**
    * @brief Set ROS Subscriber topic through GUI
-   * @param[in] topic_name ROS Topic Name
+   * @param[in] _topic_name ROS Topic Name
    */
-  Q_INVOKABLE void setTopic(const QString & topic_name);
+  Q_INVOKABLE void setTopic(const QString & _topic_name);
 
   /**
    * @brief Update subscription Quality of Service
@@ -164,6 +154,7 @@ public:
 
   /**
    * @brief Set axis arrow head visibility
+   * @param _visible Whether axis head should be visible
    */
   Q_INVOKABLE void setAxisHeadVisibility(const bool & _visible);
 
@@ -193,64 +184,69 @@ public:
 
   /**
    * @brief Set covariance visual visibility
+   * @param _visibility Visibility of covariance visual
    */
-  Q_INVOKABLE inline void setCovVisible(const bool& visible) { std::lock_guard<std::mutex>(this->lock); covVisual->setCovVisible(visible); }
+  Q_INVOKABLE void setCovVisible(const bool& _visible);
   
   /**
    * @brief Set position covariance visual visibility
+   * @param _visibility Visibility of covariance position visual
    */
-  Q_INVOKABLE inline void setPosCovVisible(const bool& visible) { std::lock_guard<std::mutex>(this->lock); covVisual->setPosCovVisible(visible); }
+  Q_INVOKABLE void setPosCovVisible(const bool& _visible);
   
   /**
    * @brief Set orientation covariance visual visible
+   * @param _visibility Visibility of covariance orientation visual
    */
-  Q_INVOKABLE inline void setRotCovVisible(const bool& visible) { std::lock_guard<std::mutex>(this->lock); covVisual->setRotCovVisible(visible); }
+  Q_INVOKABLE void setRotCovVisible(const bool& _visible);
   
   /**
    * @brief Set position covariance frame of reference
+   * @param _local True if expressed in local frame
    */
-  Q_INVOKABLE inline void setPosCovFrame(const bool& local) { std::lock_guard<std::mutex>(this->lock); covVisual->setPosCovFrame(local); }
+  Q_INVOKABLE void setPosCovFrame(const bool& _local);
   
   /**
    * @brief Set orientation covariance frame of reference
+   * @param _local True if expressed in local frame
    */
-  Q_INVOKABLE inline void setRotCovFrame(const bool& local) { std::lock_guard<std::mutex>(this->lock); covVisual->setRotCovFrame(local); }
+  Q_INVOKABLE void setRotCovFrame(const bool& _local);
   
   /**
    * @brief Set position covariance color
+   * @param _color Position covariance visual color
    */
-  Q_INVOKABLE inline void setPosCovColor(const QColor& color) { 
-    std::lock_guard<std::mutex>(this->lock); 
-    covVisual->setPosCovColor(ignition::math::Color(color.redF(), color.greenF(), color.blueF(), color.alphaF()));
-  }
+  Q_INVOKABLE void setPosCovColor(const QColor& _color);
   
   /**
    * @brief Set orientation covariance color
+   * @param _color Orientation covariance visual color
    */
-  Q_INVOKABLE inline void setRotCovColor(const QColor& color) { 
-    std::lock_guard<std::mutex>(this->lock); 
-    covVisual->setRotCovColor(ignition::math::Color(color.redF(), color.greenF(), color.blueF(), color.alphaF()));
-  }
+  Q_INVOKABLE void setRotCovColor(const QColor& _color);
   
   /**
    * @brief Set orientation covariance color style (Unique/RGB)
+   * @param _color Orientation covariance visual color style
    */
-  Q_INVOKABLE inline void setRotCovColorStyle(const bool& unique) { std::lock_guard<std::mutex>(this->lock); covVisual->setRotCovColorStyle(unique); }
+  Q_INVOKABLE void setRotCovColorStyle(const bool& _unique);
   
   /**
    * @brief Set position covariance scale
+   * @param _scale Position covariance visual scale
    */
-  Q_INVOKABLE inline void setPosCovScale(const float& scale) { std::lock_guard<std::mutex>(this->lock); covVisual->setPosCovScale(scale); }
+  Q_INVOKABLE void setPosCovScale(const float& _scale);
   
   /**
    * @brief Set orientation covariance scale
+   * @param _scale Orientation covariance visual scale
    */
-  Q_INVOKABLE inline void setRotCovScale(const float& scale) { std::lock_guard<std::mutex>(this->lock); covVisual->setRotCovScale(scale); }
+  Q_INVOKABLE void setRotCovScale(const float& _scale);
   
   /**
    * @brief Set orientation covariance offset
+   * @param _scale Orientation covariance visual offset
    */
-  Q_INVOKABLE inline void setRotCovOffset(const float& offset) { std::lock_guard<std::mutex>(this->lock); covVisual->setRotCovOffset(offset); }
+  Q_INVOKABLE void setRotCovOffset(const float& _offset);
 
 signals:
   /**
@@ -277,18 +273,7 @@ protected:
    */
   void update() override;
 
-private:
-  ignition::rendering::RenderEngine * engine;
-  ignition::rendering::ScenePtr scene;
-  ignition::rendering::VisualPtr rootVisual;
-  std::mutex lock;
-  geometry_msgs::msg::PoseWithCovarianceStamped::SharedPtr msg;
-  QStringList topicList;
-  AxisVisualPrivate axis;
-  ArrowVisualPrivate arrow;
-  CovarianceVisualPtr covVisual;
-  bool visualShape;  // True: Arrow; False: Axis
-  bool dirty;
+  IGN_UTILS_IMPL_PTR(dataPtr)
 };
 
 }  // namespace plugins

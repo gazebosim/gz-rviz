@@ -42,7 +42,7 @@
   <qresource prefix="PoseDisplay/">
     <file alias="PoseDisplay.qml">qml/PoseDisplay.qml</file>
   </qresource>
-  
+
   <qresource prefix="PoseArrayDisplay/">
     <file alias="PoseArrayDisplay.qml">qml/PoseArrayDisplay.qml</file>
   </qresource>

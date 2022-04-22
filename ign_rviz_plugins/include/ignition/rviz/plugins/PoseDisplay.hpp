@@ -52,10 +52,10 @@ struct ArrowVisualPrivate
 
   ignition::rendering::ArrowVisualPtr visual;
   ignition::rendering::MaterialPtr mat;
-  float shaftLength = 1.0;
-  float shaftRadius = 0.05;
-  float headLength = 0.25;
-  float headRadius = 0.1;
+  float shaftLength = 1.0f;
+  float shaftRadius = 0.05f;
+  float headLength = 0.25f;
+  float headRadius = 0.1f;
 };
 
 /**
@@ -68,15 +68,15 @@ struct AxisVisualPrivate
    */
   void updateVisual()
   {
-    for (int i = 0; i < 3; ++i) {
+    for (size_t i = 0; i < visual->ChildCount(); ++i) {
       auto arrow = std::dynamic_pointer_cast<rendering::ArrowVisual>(visual->ChildByIndex(i));
       arrow->SetLocalScale(radius * 20, radius * 20, length * 2);
     }
   }
 
   ignition::rendering::AxisVisualPtr visual;
-  float length = 1.0;
-  float radius = 0.1;
+  float length = 1.0f;
+  float radius = 0.1f;
   bool headVisible = false;
 };
 

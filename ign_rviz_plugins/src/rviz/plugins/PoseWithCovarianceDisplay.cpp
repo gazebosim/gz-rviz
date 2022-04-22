@@ -32,44 +32,74 @@ namespace rviz
 {
 namespace plugins
 {
+void ArrowVisualPrivate::updateVisual()
+{
+  visual->Shaft()->SetLocalScale(shaftRadius * 2.0, shaftRadius * 2.0, shaftLength);
+  visual->SetOrigin(0, 0, -shaftLength);
+  visual->Head()->SetLocalScale(headRadius * 2.0, headRadius * 2.0, headLength * 2.0);
+}
+
+void AxisVisualPrivate::updateVisual()
+{
+  for (size_t i = 0; i < visual->ChildCount(); ++i) {
+    auto arrow = std::dynamic_pointer_cast<rendering::ArrowVisual>(visual->ChildByIndex(i));
+    arrow->SetLocalScale(radius * 20, radius * 20, length * 2);
+  }
+}
+
+class PoseWithCovarianceDisplay::Implementation
+{
+  public:
+    ignition::rendering::RenderEngine * engine;
+    ignition::rendering::ScenePtr scene;
+    ignition::rendering::VisualPtr rootVisual;
+    std::mutex lock;
+    geometry_msgs::msg::PoseWithCovarianceStamped::SharedPtr msg;
+    QStringList topicList;
+    ArrowVisualPrivate arrow;
+    AxisVisualPrivate axis;
+    CovarianceVisualPtr covVisual;
+    bool visualShape = true;  // True: Arrow; False: Axis
+    bool dirty = true;
+};
 
 ////////////////////////////////////////////////////////////////////////////////
 PoseWithCovarianceDisplay::PoseWithCovarianceDisplay()
-: MessageDisplay(), visualShape(true), dirty(true)
+: MessageDisplay(), dataPtr(utils::MakeImpl<Implementation>())
 {
   // Get reference to scene
-  this->engine = ignition::rendering::engine("ogre");
-  this->scene = this->engine->SceneByName("scene");
+  this->dataPtr->engine = ignition::rendering::engine("ogre");
+  this->dataPtr->scene = this->dataPtr->engine->SceneByName("scene");
 
-  this->rootVisual = this->scene->CreateVisual();
-  this->scene->RootVisual()->AddChild(this->rootVisual);
+  this->dataPtr->rootVisual = this->dataPtr->scene->CreateVisual();
+  this->dataPtr->scene->RootVisual()->AddChild(this->dataPtr->rootVisual);
 
-  this->arrow.mat = this->scene->CreateMaterial();
-  this->arrow.mat->SetAmbient(1.0, 0.098, 0.0);
-  this->arrow.mat->SetDiffuse(1.0, 0.098, 0.0);
-  this->arrow.mat->SetEmissive(1.0, 0.098, 0.0);
+  this->dataPtr->arrow.mat = this->dataPtr->scene->CreateMaterial();
+  this->dataPtr->arrow.mat->SetAmbient(1.0, 0.098, 0.0);
+  this->dataPtr->arrow.mat->SetDiffuse(1.0, 0.098, 0.0);
+  this->dataPtr->arrow.mat->SetEmissive(1.0, 0.098, 0.0);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 PoseWithCovarianceDisplay::~PoseWithCovarianceDisplay()
 {
-  std::lock_guard<std::mutex>(this->lock);
+  std::lock_guard<std::mutex>(this->dataPtr->lock);
   // Delete visual
   ignition::gui::App()->findChild<ignition::gui::MainWindow *>()->removeEventFilter(this);
-  this->scene->DestroyVisual(this->rootVisual, true);
+  this->dataPtr->scene->DestroyVisual(this->dataPtr->rootVisual, true);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void PoseWithCovarianceDisplay::initialize(rclcpp::Node::SharedPtr _node)
 {
-  std::lock_guard<std::mutex>(this->lock);
+  std::lock_guard<std::mutex>(this->dataPtr->lock);
   this->node = std::move(_node);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void PoseWithCovarianceDisplay::subscribe()
 {
-  std::lock_guard<std::mutex>(this->lock);
+  std::lock_guard<std::mutex>(this->dataPtr->lock);
 
   this->subscriber = this->node->create_subscription<geometry_msgs::msg::PoseWithCovarianceStamped>(
     this->topic_name,
@@ -80,7 +110,7 @@ void PoseWithCovarianceDisplay::subscribe()
 ////////////////////////////////////////////////////////////////////////////////
 void PoseWithCovarianceDisplay::setTopic(const std::string & topic_name)
 {
-  std::lock_guard<std::mutex>(this->lock);
+  std::lock_guard<std::mutex>(this->dataPtr->lock);
   this->topic_name = topic_name;
 
   this->subscribe();
@@ -92,7 +122,7 @@ void PoseWithCovarianceDisplay::setTopic(const std::string & topic_name)
 ////////////////////////////////////////////////////////////////////////////////
 void PoseWithCovarianceDisplay::setTopic(const QString & topic_name)
 {
-  std::lock_guard<std::mutex>(this->lock);
+  std::lock_guard<std::mutex>(this->dataPtr->lock);
   this->topic_name = topic_name.toStdString();
 
   // Destroy previous subscription
@@ -106,8 +136,8 @@ void PoseWithCovarianceDisplay::setTopic(const QString & topic_name)
 ////////////////////////////////////////////////////////////////////////////////
 void PoseWithCovarianceDisplay::callback(const geometry_msgs::msg::PoseWithCovarianceStamped::SharedPtr _msg)
 {
-  std::lock_guard<std::mutex>(this->lock);
-  this->msg = std::move(_msg);
+  std::lock_guard<std::mutex>(this->dataPtr->lock);
+  this->dataPtr->msg = std::move(_msg);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -123,31 +153,31 @@ bool PoseWithCovarianceDisplay::eventFilter(QObject * _object, QEvent * _event)
 ////////////////////////////////////////////////////////////////////////////////
 void PoseWithCovarianceDisplay::reset()
 {
-  if (this->arrow.visual != nullptr)
-    this->arrow.visual->SetLocalPose(math::Pose3d::Zero);
-  if (this->axis.visual != nullptr)
-    this->axis.visual->SetLocalPose(math::Pose3d::Zero);
-  this->msg.reset();
+  if (this->dataPtr->arrow.visual != nullptr)
+    this->dataPtr->arrow.visual->SetLocalPose(math::Pose3d::Zero);
+  if (this->dataPtr->axis.visual != nullptr)
+    this->dataPtr->axis.visual->SetLocalPose(math::Pose3d::Zero);
+  this->dataPtr->msg.reset();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void PoseWithCovarianceDisplay::update()
 {
-  std::lock_guard<std::mutex>(this->lock);
+  std::lock_guard<std::mutex>(this->dataPtr->lock);
   // Create axis
-  if (this->axis.visual == nullptr) {
-    this->axis.visual = this->scene->CreateAxisVisual();
-    this->rootVisual->AddChild(this->axis.visual);
+  if (this->dataPtr->axis.visual == nullptr) {
+    this->dataPtr->axis.visual = this->dataPtr->scene->CreateAxisVisual();
+    this->dataPtr->rootVisual->AddChild(this->dataPtr->axis.visual);
   }
 
   // Create arrow
-  if (this->arrow.visual == nullptr) {
-    this->arrow.visual = this->scene->CreateArrowVisual();
-    this->arrow.visual->SetMaterial(this->arrow.mat);
-    this->rootVisual->AddChild(this->arrow.visual);
+  if (this->dataPtr->arrow.visual == nullptr) {
+    this->dataPtr->arrow.visual = this->dataPtr->scene->CreateArrowVisual();
+    this->dataPtr->arrow.visual->SetMaterial(this->dataPtr->arrow.mat);
+    this->dataPtr->rootVisual->AddChild(this->dataPtr->arrow.visual);
   }
 
-  if (this->covVisual == nullptr)
+  if (this->dataPtr->covVisual == nullptr)
   {
     CovarianceUserData covUserData;
     covUserData.visible = true;
@@ -162,89 +192,91 @@ void PoseWithCovarianceDisplay::update()
     covUserData.orientation_offset = 1.0;
     covUserData.orientation_scale = 1.0;
 
-    this->covVisual = std::make_shared<CovarianceVisual>(this->rootVisual, covUserData, this->node->get_logger().get_name());
+    this->dataPtr->covVisual = std::make_shared<CovarianceVisual>(this->dataPtr->rootVisual, 
+      covUserData, this->node->get_logger().get_name());
   }
 
-  if (this->dirty) {
+  if (this->dataPtr->dirty) {
     // Update Arrow
-    this->arrow.visual->SetVisible(this->visualShape);
-    this->arrow.updateVisual();
+    this->dataPtr->arrow.visual->SetVisible(this->dataPtr->visualShape);
+    this->dataPtr->arrow.updateVisual();
 
     // Update Axis
-    this->axis.visual->SetVisible(!this->visualShape);
-    this->axis.visual->ShowAxisHead(!this->visualShape && this->axis.headVisible);
-    this->axis.updateVisual();
+    this->dataPtr->axis.visual->SetVisible(!this->dataPtr->visualShape);
+    this->dataPtr->axis.visual->ShowAxisHead(!this->dataPtr->visualShape && this->dataPtr->axis.headVisible);
+    this->dataPtr->axis.updateVisual();
 
-    this->dirty = false;
+    this->dataPtr->dirty = false;
   }
 
-  if (!this->msg) {
+  if (!this->dataPtr->msg) {
     return;
   }
 
   // update pose
   math::Pose3d pose;
-  bool poseAvailable = this->frameManager->getFramePose(this->msg->header.frame_id, pose);
+  bool poseAvailable = this->frameManager->getFramePose(this->dataPtr->msg->header.frame_id, pose);
 
   if (!poseAvailable) {
     RCLCPP_ERROR(
       this->node->get_logger(), "Unable to get frame pose: %s",
-      this->msg->header.frame_id.c_str());
+      this->dataPtr->msg->header.frame_id.c_str());
     return;
   }
 
-  this->rootVisual->SetLocalPose(pose);
+  this->dataPtr->rootVisual->SetLocalPose(pose);
 
-  math::Pose3d localPose(this->msg->pose.pose.position.x, this->msg->pose.pose.position.y,
-    this->msg->pose.pose.position.z, this->msg->pose.pose.orientation.w, this->msg->pose.pose.orientation.x,
-    this->msg->pose.pose.orientation.y, this->msg->pose.pose.orientation.z);
+  math::Pose3d localPose(dataPtr->msg->pose.pose.position.x, dataPtr->msg->pose.pose.position.y,
+    dataPtr->msg->pose.pose.position.z, dataPtr->msg->pose.pose.orientation.w,
+    dataPtr->msg->pose.pose.orientation.x, dataPtr->msg->pose.pose.orientation.y, 
+    dataPtr->msg->pose.pose.orientation.z);
 
-  this->axis.visual->SetLocalPose(localPose);
+  this->dataPtr->axis.visual->SetLocalPose(localPose);
 
-  this->arrow.visual->SetLocalPosition(localPose.Pos());
-  this->arrow.visual->SetLocalRotation(localPose.Rot() * math::Quaterniond(0, 1.57, 0));
+  this->dataPtr->arrow.visual->SetLocalPosition(localPose.Pos());
+  this->dataPtr->arrow.visual->SetLocalRotation(localPose.Rot() * math::Quaterniond(0, 1.57, 0));
 
   // update covariance 
-  this->covVisual->updateUserData();
-  if (this->covVisual->Visible())
+  this->dataPtr->covVisual->updateUserData();
+  if (this->dataPtr->covVisual->Visible())
   {
-    this->covVisual->setPose(localPose);
+    this->dataPtr->covVisual->setPose(localPose);
     for (unsigned i = 0; i < 36; ++i) {
       // check for NaN in covariance
-      if (std::isnan(this->msg->pose.covariance[i])) {
+      if (std::isnan(this->dataPtr->msg->pose.covariance[i])) {
         RCLCPP_WARN(this->node->get_logger(), "covariance contains NaN at position %d", i);
         return;
       }
     }
     // Map covariance to a Eigen::Matrix
-    Eigen::Map<const Eigen::Matrix<double, 6, 6>> covariance(this->msg->pose.covariance.data());
-    this->covVisual->setCovariance(covariance);
+    Eigen::Map<const Eigen::Matrix<double, 6, 6>> covariance(this->dataPtr->msg->pose.covariance.data());
+    this->dataPtr->covVisual->setCovariance(covariance);
   }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void PoseWithCovarianceDisplay::setShape(const bool & _shape)
 {
-  std::lock_guard<std::mutex>(this->lock);
-  this->visualShape = _shape;
-  this->dirty = true;
+  std::lock_guard<std::mutex>(this->dataPtr->lock);
+  this->dataPtr->visualShape = _shape;
+  this->dataPtr->dirty = true;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void PoseWithCovarianceDisplay::setAxisHeadVisibility(const bool & _visible)
 {
-  std::lock_guard<std::mutex>(this->lock);
-  this->axis.headVisible = _visible;
-  this->dirty = true;
+  std::lock_guard<std::mutex>(this->dataPtr->lock);
+  this->dataPtr->axis.headVisible = _visible;
+  this->dataPtr->dirty = true;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void PoseWithCovarianceDisplay::setAxisDimensions(const float & _length, const float & _radius)
 {
-  std::lock_guard<std::mutex>(this->lock);
-  this->axis.length = _length;
-  this->axis.radius = _radius;
-  this->dirty = true;
+  std::lock_guard<std::mutex>(this->dataPtr->lock);
+  this->dataPtr->axis.length = _length;
+  this->dataPtr->axis.radius = _radius;
+  this->dataPtr->dirty = true;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -252,46 +284,115 @@ void PoseWithCovarianceDisplay::setArrowDimensions(
   const float & _shaftLength, const float & _shaftRadius,
   const float & _headLength, const float & _headRadius)
 {
-  std::lock_guard<std::mutex>(this->lock);
-  this->arrow.shaftLength = _shaftLength;
-  this->arrow.shaftRadius = _shaftRadius;
-  this->arrow.headLength = _headLength;
-  this->arrow.headRadius = _headRadius;
-  this->dirty = true;
+  std::lock_guard<std::mutex>(this->dataPtr->lock);
+  this->dataPtr->arrow.shaftLength = _shaftLength;
+  this->dataPtr->arrow.shaftRadius = _shaftRadius;
+  this->dataPtr->arrow.headLength = _headLength;
+  this->dataPtr->arrow.headRadius = _headRadius;
+  this->dataPtr->dirty = true;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void PoseWithCovarianceDisplay::setColor(const QColor & _color)
 {
-  std::lock_guard<std::mutex>(this->lock);
-  this->arrow.mat->SetAmbient(_color.redF(), _color.greenF(), _color.blueF(), _color.alphaF());
-  this->arrow.mat->SetDiffuse(_color.redF(), _color.greenF(), _color.blueF(), _color.alphaF());
-  this->arrow.mat->SetEmissive(_color.redF(), _color.greenF(), _color.blueF(), _color.alphaF());
+  std::lock_guard<std::mutex>(this->dataPtr->lock);
+  this->dataPtr->arrow.mat->SetAmbient(_color.redF(), _color.greenF(), _color.blueF(), _color.alphaF());
+  this->dataPtr->arrow.mat->SetDiffuse(_color.redF(), _color.greenF(), _color.blueF(), _color.alphaF());
+  this->dataPtr->arrow.mat->SetEmissive(_color.redF(), _color.greenF(), _color.blueF(), _color.alphaF());
 
-  if (this->arrow.visual != nullptr)
-    this->arrow.visual->SetMaterial(this->arrow.mat);
+  if (this->dataPtr->arrow.visual != nullptr)
+    this->dataPtr->arrow.visual->SetMaterial(this->dataPtr->arrow.mat);
 }
+  
+void PoseWithCovarianceDisplay::setCovVisible(const bool& _visible)
+{
+  std::lock_guard<std::mutex>(dataPtr->lock);
+  dataPtr->covVisual->setCovVisible(_visible);
+}
+  
+void PoseWithCovarianceDisplay::setPosCovVisible(const bool& _visible)
+{
+  std::lock_guard<std::mutex>(dataPtr->lock);
+  dataPtr->covVisual->setPosCovVisible(_visible);
+}
+
+void PoseWithCovarianceDisplay::setRotCovVisible(const bool& _visible)
+{
+  std::lock_guard<std::mutex>(dataPtr->lock);
+  dataPtr->covVisual->setRotCovVisible(_visible);
+}
+
+void PoseWithCovarianceDisplay::setPosCovFrame(const bool& _local)
+{
+  std::lock_guard<std::mutex>(dataPtr->lock);
+  dataPtr->covVisual->setPosCovFrame(_local);
+}
+
+void PoseWithCovarianceDisplay::setRotCovFrame(const bool& _local)
+{
+  std::lock_guard<std::mutex>(dataPtr->lock);
+  dataPtr->covVisual->setRotCovFrame(_local);
+}
+
+void PoseWithCovarianceDisplay::setPosCovColor(const QColor& _color)
+{ 
+  std::lock_guard<std::mutex>(dataPtr->lock); 
+  dataPtr->covVisual->setPosCovColor(ignition::math::Color(_color.redF(), _color.greenF(),
+    _color.blueF(), _color.alphaF()));
+}
+
+void PoseWithCovarianceDisplay::setRotCovColor(const QColor& _color)
+{ 
+  std::lock_guard<std::mutex>(dataPtr->lock); 
+  dataPtr->covVisual->setRotCovColor(ignition::math::Color(_color.redF(), _color.greenF(),
+    _color.blueF(), _color.alphaF()));
+}
+
+void PoseWithCovarianceDisplay::setRotCovColorStyle(const bool& _unique)
+{
+  std::lock_guard<std::mutex>(dataPtr->lock);
+  dataPtr->covVisual->setRotCovColorStyle(_unique);
+}
+
+void PoseWithCovarianceDisplay::setPosCovScale(const float& _scale)
+{
+  std::lock_guard<std::mutex>(dataPtr->lock);
+  dataPtr->covVisual->setPosCovScale(_scale);
+}
+
+void PoseWithCovarianceDisplay::setRotCovScale(const float& _scale)
+{
+  std::lock_guard<std::mutex>(dataPtr->lock);
+  dataPtr->covVisual->setRotCovScale(_scale);
+}
+
+void PoseWithCovarianceDisplay::setRotCovOffset(const float& _offset)
+{
+  std::lock_guard<std::mutex>(dataPtr->lock);
+  dataPtr->covVisual->setRotCovOffset(_offset);
+}
+
 
 ////////////////////////////////////////////////////////////////////////////////
 void PoseWithCovarianceDisplay::setFrameManager(std::shared_ptr<common::FrameManager> _frameManager)
 {
-  std::lock_guard<std::mutex>(this->lock);
+  std::lock_guard<std::mutex>(this->dataPtr->lock);
   this->frameManager = std::move(_frameManager);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 QStringList PoseWithCovarianceDisplay::getTopicList() const
 {
-  return this->topicList;
+  return this->dataPtr->topicList;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void PoseWithCovarianceDisplay::onRefresh()
 {
-  std::lock_guard<std::mutex>(this->lock);
+  std::lock_guard<std::mutex>(this->dataPtr->lock);
 
   // Clear
-  this->topicList.clear();
+  this->dataPtr->topicList.clear();
 
   int index = 0, position = 0;
 
@@ -300,7 +401,7 @@ void PoseWithCovarianceDisplay::onRefresh()
   for (const auto & topic : topics) {
     for (const auto & topicType : topic.second) {
       if (topicType == "geometry_msgs/msg/PoseWithCovarianceStamped") {
-        this->topicList.push_back(QString::fromStdString(topic.first));
+        this->dataPtr->topicList.push_back(QString::fromStdString(topic.first));
         if (topic.first == this->topic_name) {
           position = index;
         }
@@ -318,7 +419,7 @@ void PoseWithCovarianceDisplay::updateQoS(
   const int & _depth, const int & _history, const int & _reliability,
   const int & _durability)
 {
-  std::lock_guard<std::mutex>(this->lock);
+  std::lock_guard<std::mutex>(this->dataPtr->lock);
   this->setHistoryDepth(_depth);
   this->setHistoryPolicy(_history);
   this->setReliabilityPolicy(_reliability);

@@ -17,11 +17,6 @@
 // diagonalization utilities
 namespace
 {
-double deg2rad(double degrees)
-{
-  return degrees * 3.14159265358979 / 180.0;
-}
-
   // Local function to force the axis to be right handed for 3D. Taken from ecl_statistics
 void makeRightHanded(Eigen::Matrix3d & eigenvectors, Eigen::Vector3d & eigenvalues)
 {
@@ -163,8 +158,8 @@ computeShapeScaleAndOrientation2D(const Eigen::Matrix2d & covariance, rclcpp::Lo
 
 double radianScaleToMetricScaleBounded(double radian_scale, double max_degrees)
 {
-  if (radian_scale > 2.0 * deg2rad(max_degrees)) {
-    return 2.0 * tanf(deg2rad(max_degrees));
+  if (radian_scale > 2.0 * IGN_DTOR(max_degrees)) {
+    return 2.0 * tanf(IGN_DTOR(max_degrees));
   } else {
     return 2.0 * tanf(radian_scale * 0.5);
   }
