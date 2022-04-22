@@ -36,16 +36,8 @@ find_package(ign_rviz_common REQUIRED)
 find_package(ign_rviz_plugins REQUIRED)
 find_package(ignition-math6 REQUIRED)
 
-# Dome
-if("$ENV{IGNITION_VERSION}" STREQUAL "dome")
-  find_package(ignition-gui4 REQUIRED)
-  set(IGN_GUI_VER ${ignition-gui4_VERSION_MAJOR})
-
-  find_package(ignition-common3 REQUIRED)
-  set(IGN_COMMON_VER ${ignition-common3_VERSION_MAJOR})
-
-  message(STATUS "Compiling against Ignition Dome")
-elseif("$ENV{IGNITION_VERSION}" STREQUAL "edifice")
+# Edifice
+if("$ENV{IGNITION_VERSION}" STREQUAL "edifice")
   find_package(ignition-gui5 REQUIRED)
   set(IGN_GUI_VER ${ignition-gui5_VERSION_MAJOR})
 

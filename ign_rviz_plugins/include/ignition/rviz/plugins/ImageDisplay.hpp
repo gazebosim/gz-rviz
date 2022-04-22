@@ -15,8 +15,6 @@
 #ifndef IGNITION__RVIZ__PLUGINS__IMAGEDISPLAY_HPP_
 #define IGNITION__RVIZ__PLUGINS__IMAGEDISPLAY_HPP_
 
-#include <sensor_msgs/msg/image.hpp>
-
 #include <QQuickImageProvider>
 
 #include <algorithm>
@@ -25,6 +23,8 @@
 #include <string>
 #include <vector>
 #include <utility>
+
+#include <sensor_msgs/msg/image.hpp>
 
 #include "ignition/rviz/plugins/message_display_base.hpp"
 

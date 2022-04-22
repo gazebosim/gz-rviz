@@ -17,12 +17,12 @@
 
 #include <ignition/rendering.hh>
 
-#include <sensor_msgs/msg/laser_scan.hpp>
-
 #include <string>
 #include <mutex>
 #include <memory>
 #include <vector>
+
+#include <sensor_msgs/msg/laser_scan.hpp>
 
 #include "ignition/rviz/plugins/message_display_base.hpp"
 

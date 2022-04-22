@@ -17,12 +17,13 @@
 
 #include <ignition/rendering.hh>
 
-#include <visualization_msgs/msg/marker.hpp>
-
 #include <memory>
 #include <mutex>
 #include <string>
 #include <vector>
+
+#include <visualization_msgs/msg/marker.hpp>
+
 
 #include "ignition/rviz/plugins/MarkerManager.hpp"
 #include "ignition/rviz/plugins/message_display_base.hpp"
