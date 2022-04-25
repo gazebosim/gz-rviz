@@ -105,15 +105,8 @@ install(TARGETS ign_rviz
 install(DIRECTORY launch
         DESTINATION share/${PROJECT_NAME}/)
 
-if (${IGN_GUI_VER} GREATER_EQUAL 6)
-  install(FILES config/rviz_minimal_scene.config
-          DESTINATION share/${PROJECT_NAME}/
-          RENAME config/rviz.config)
-else()
-  install(FILES config/rviz_scene3d.config
-          DESTINATION share/${PROJECT_NAME}/
-          RENAME config/rviz.config)
-endif()
+install(DIRECTORY config
+        DESTINATION share/${PROJECT_NAME}/)
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
