@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        ignition: ['fortress']
+        ignition: ['fortress', 'edifice']
         ros: ['rolling']
     container:
       image: osrf/ros:${{ matrix.ros }}-desktop
