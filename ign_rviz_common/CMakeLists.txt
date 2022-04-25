@@ -25,19 +25,10 @@ find_package(Qt5Widgets CONFIG REQUIRED)
 # Igntiion Libraries
 find_package(ignition-math6)
 
-# Edifice
-if("$ENV{IGNITION_VERSION}" STREQUAL "edifice")
-  find_package(ignition-gui5 REQUIRED)
-  set(IGN_GUI_VER ${ignition-gui5_VERSION_MAJOR})
-
-  message(STATUS "Compiling against Ignition Edifice")
 # Default to Fortress
-else()
-  find_package(ignition-gui6 REQUIRED)
-  set(IGN_GUI_VER ${ignition-gui6_VERSION_MAJOR})
-
-  message(STATUS "Compiling against Ignition Fortress")
-endif()
+find_package(ignition-gui6 REQUIRED)
+set(IGN_GUI_VER ${ignition-gui6_VERSION_MAJOR})
+message(STATUS "Compiling against Ignition Fortress")
 
 include_directories(include)
 

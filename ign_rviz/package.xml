@@ -26,9 +26,6 @@
   <depend condition="$IGNITION_VERSION == ''">ignition-common4</depend>
   <depend condition="$IGNITION_VERSION == ''">ignition-gui6</depend>
 
-  <!-- Edifice -->
-  <depend condition="$IGNITION_VERSION == edifice">ignition-gui5</depend>
-
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>
 
