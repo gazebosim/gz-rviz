@@ -15,11 +15,11 @@
 #ifndef IGNITION__RVIZ__PLUGINS__GPSDISPLAY_HPP_
 #define IGNITION__RVIZ__PLUGINS__GPSDISPLAY_HPP_
 
-#include <sensor_msgs/msg/nav_sat_fix.hpp>
-
 #include <memory>
 #include <mutex>
 #include <string>
+
+#include <sensor_msgs/msg/nav_sat_fix.hpp>
 
 #include "ignition/rviz/plugins/message_display_base.hpp"
 

@@ -17,8 +17,6 @@
 
 #include <ignition/rendering.hh>
 
-#include <geometry_msgs/msg/pose_stamped.hpp>
-
 #include <QColor>
 
 #include <deque>
@@ -26,6 +24,8 @@
 #include <mutex>
 #include <string>
 #include <vector>
+
+#include <geometry_msgs/msg/pose_stamped.hpp>
 
 #include "ignition/rviz/plugins/message_display_base.hpp"
 

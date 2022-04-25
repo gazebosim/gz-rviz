@@ -15,14 +15,10 @@
 #ifndef IGNITION__RVIZ__COMMON__FRAME_MANAGER_HPP_
 #define IGNITION__RVIZ__COMMON__FRAME_MANAGER_HPP_
 
-#include <ignition/math/Pose3.hh>
-
 #include <QObject>
-
 #include <tf2_ros/buffer.h>
 #include <tf2_ros/transform_listener.h>
-#include <tf2_msgs/msg/tf_message.hpp>
-#include <rclcpp/rclcpp.hpp>
+#include <ignition/math/Pose3.hh>
 
 #include <memory>
 #include <mutex>
@@ -30,6 +26,8 @@
 #include <unordered_map>
 #include <vector>
 
+#include <tf2_msgs/msg/tf_message.hpp>
+#include <rclcpp/rclcpp.hpp>
 
 namespace ignition
 {

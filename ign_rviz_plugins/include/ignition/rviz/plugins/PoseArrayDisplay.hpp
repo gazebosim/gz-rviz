@@ -17,14 +17,14 @@
 
 #include <ignition/rendering.hh>
 
-#include <geometry_msgs/msg/pose_array.hpp>
-
 #include <QColor>
 
 #include <memory>
 #include <mutex>
 #include <string>
 #include <vector>
+
+#include <geometry_msgs/msg/pose_array.hpp>
 
 #include "ignition/rviz/plugins/message_display_base.hpp"
 

@@ -14,6 +14,10 @@
 
 #include "ignition/rviz/rviz.hpp"
 
+#include <memory>
+#include <string>
+#include <vector>
+
 #include <geometry_msgs/msg/point_stamped.hpp>
 #include <geometry_msgs/msg/polygon_stamped.hpp>
 #include <geometry_msgs/msg/pose_stamped.hpp>
@@ -26,10 +30,6 @@
 #include <tf2_msgs/msg/tf_message.hpp>
 #include <visualization_msgs/msg/marker.hpp>
 #include <visualization_msgs/msg/marker_array.hpp>
-
-#include <memory>
-#include <string>
-#include <vector>
 
 namespace ignition
 {

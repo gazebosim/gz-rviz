@@ -16,10 +16,9 @@
   <depend>tf2_msgs</depend>
   <depend>tf2_ros</depend>
 
-  <!-- Edifice (default) -->
-  <depend condition="$IGNITION_VERSION != 'dome'">ignition-gui5</depend>
-  <!-- Dome -->
-  <depend condition="$IGNITION_VERSION == dome">ignition-gui4</depend>
+  <!-- Fortress (default) -->
+  <depend condition="$IGNITION_VERSION == 'fortress'">ignition-gui6</depend>
+  <depend condition="$IGNITION_VERSION == ''">ignition-gui6</depend>
 
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>

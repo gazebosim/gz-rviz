@@ -12,10 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include <string>
+
 #include <ament_index_cpp/get_package_share_directory.hpp>
 #include <ament_index_cpp/get_package_prefix.hpp>
-#include <ignition/common/Console.hh>
-#include <string>
 
 #ifndef Q_MOC_RUN
   #include <ignition/gui/Application.hh>
@@ -24,6 +24,8 @@
 
   #include "ignition/rviz/rviz.hpp"
 #endif
+
+#include <ignition/common/Console.hh>
 
 int main(int argc, char ** argv)
 {
