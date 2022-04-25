@@ -16,6 +16,9 @@
 #define IGNITION__RVIZ__RVIZ_HPP_
 
 #include <iostream>
+#include <memory>
+#include <string>
+#include <vector>
 
 #ifndef Q_MOC_RUN
   #include <ignition/gui/qt.h>
@@ -25,10 +28,6 @@
 #include <rclcpp/rclcpp.hpp>
 
 #include <ignition/rviz/plugins/message_display_base.hpp>
-
-#include <memory>
-#include <string>
-#include <vector>
 
 namespace ignition
 {

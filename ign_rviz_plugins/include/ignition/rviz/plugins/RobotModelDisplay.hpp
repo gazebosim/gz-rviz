@@ -15,11 +15,8 @@
 #ifndef IGNITION__RVIZ__PLUGINS__ROBOTMODELDISPLAY_HPP_
 #define IGNITION__RVIZ__PLUGINS__ROBOTMODELDISPLAY_HPP_
 
-#include <urdf/model.h>
-
 #include <ignition/rendering.hh>
-
-#include <std_msgs/msg/string.hpp>
+#include <urdf/model.h>
 
 #include <QString>
 
@@ -30,6 +27,8 @@
 #include <map>
 #include <utility>
 #include <vector>
+
+#include <std_msgs/msg/string.hpp>
 
 #include "ignition/rviz/plugins/message_display_base.hpp"
 

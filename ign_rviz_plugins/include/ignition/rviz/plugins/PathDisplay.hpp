@@ -16,15 +16,14 @@
 #define IGNITION__RVIZ__PLUGINS__PATHDISPLAY_HPP_
 
 #include <ignition/rendering.hh>
-
-#include <nav_msgs/msg/path.hpp>
-
 #include <QColor>
 
 #include <memory>
 #include <mutex>
 #include <string>
 #include <vector>
+
+#include <nav_msgs/msg/path.hpp>
 
 #include "ignition/rviz/plugins/message_display_base.hpp"
 

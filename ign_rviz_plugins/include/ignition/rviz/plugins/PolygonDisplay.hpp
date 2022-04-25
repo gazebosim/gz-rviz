@@ -17,12 +17,12 @@
 
 #include <ignition/rendering.hh>
 
-#include <geometry_msgs/msg/polygon_stamped.hpp>
-
 #include <memory>
 #include <mutex>
 #include <string>
 #include <vector>
+
+#include <geometry_msgs/msg/polygon_stamped.hpp>
 
 #include "ignition/rviz/plugins/message_display_base.hpp"
 

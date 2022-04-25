@@ -16,8 +16,6 @@
 #define IGNITION__RVIZ__PLUGINS__TFDISPLAY_HPP_
 
 #include <ignition/rendering.hh>
-#include <tf2_msgs/msg/tf_message.hpp>
-
 #include <QStandardItem>
 
 #include <map>
@@ -25,6 +23,9 @@
 #include <mutex>
 #include <string>
 #include <vector>
+
+#include <tf2_msgs/msg/tf_message.hpp>
+
 
 #include "ignition/rviz/plugins/message_display_base.hpp"
 
