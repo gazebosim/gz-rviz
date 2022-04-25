@@ -22,10 +22,17 @@ jobs:
         sh -c 'echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-stable `lsb_release -cs` main" > /etc/apt/sources.list.d/gazebo-stable.list'
         wget http://packages.osrfoundation.org/gazebo.key -O - | sudo apt-key add -
         apt update -y
-        apt install -y libignition-common4-dev \
-                       libignition-math6-dev \
-                       libignition-rendering6-dev \
-                       libignition-gui6-dev
+        if [ "${{ matrix.ignition }}" = "edifice" ]; then
+          apt install -y libignition-common4-dev \
+                         libignition-math5-dev \
+                         libignition-rendering5-dev \
+                         libignition-gui5-dev
+        else
+          apt install -y libignition-common4-dev \
+                         libignition-math6-dev \
+                         libignition-rendering6-dev \
+                         libignition-gui6-dev
+        fi
 
     - name: Setup colcon workspace
       id: configure
