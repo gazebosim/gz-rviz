@@ -7,8 +7,8 @@ Ignition RViz offers functionality similar to RViz, and is developed using
 
 ### Build Status
 
-* ROS versions: Foxy and Rolling
-* Ignition versions: Dome and Edifice
+* ROS versions: Rolling (Humble)
+* Ignition versions: Fortress
 
 [![Ignition RViz CI](https://github.com/ignitionrobotics/ign-rviz/actions/workflows/ci.yml/badge.svg)](https://github.com/ignitionrobotics/ign-rviz/actions/workflows/ci.yml)
 
@@ -17,7 +17,7 @@ Head over to the [wiki](https://github.com/ignitionrobotics/ign-rviz/wiki) to ge
 ### Requirements
 
 - [ROS 2 Foxy or Rolling](https://docs.ros.org/en/rolling/Releases.html)
-- [Ignition Dome or Edifice](https://ignitionrobotics.org/docs/)
+- [Ignition Fortress](https://ignitionrobotics.org/docs/)
 	- [Ignition Common](https://ignitionrobotics.org/libs/common)
 	- [Ignition GUI](https://ignitionrobotics.org/libs/gui)
 	- [Ignition Math](https://ignitionrobotics.org/libs/math)
@@ -48,7 +48,7 @@ git clone https://github.com/ignitionrobotics/ign-rviz.git
 export IGNITION_VERSION=<ignition>
 ```
 
-Where `<ignition>` can be `dome` or `edifice`. Defaults to Edifice if not set.
+Where `<ignition>` should be `fortress`.
 
 > You only need to set this variable when compiling, not when running.
 
@@ -60,7 +60,7 @@ Go to the root of your colcon workspace
 cd ../
 ```
 
-Source ROS2, where `<distro>` is `foxy` or `rolling`:
+Source ROS2, where `<distro>` is `rolling`:
 
 ```bash
 source /opt/ros/<distro>/setup.bash  # If using bash

@@ -26,31 +26,16 @@ find_package(visualization_msgs REQUIRED)
 # Ignition libraries
 find_package(ignition-math6 REQUIRED)
 
-# Dome
-if("$ENV{IGNITION_VERSION}" STREQUAL "dome")
-  find_package(ignition-gui4 REQUIRED)
-  set(IGN_GUI_VER ${ignition-gui4_VERSION_MAJOR})
+find_package(ignition-gui6 REQUIRED)
+set(IGN_GUI_VER ${ignition-gui6_VERSION_MAJOR})
 
-  find_package(ignition-common3 REQUIRED)
-  set(IGN_COMMON_VER ${ignition-common3_VERSION_MAJOR})
+find_package(ignition-common4 REQUIRED)
+set(IGN_COMMON_VER ${ignition-common4_VERSION_MAJOR})
 
-  find_package(ignition-rendering4 REQUIRED)
-  set(IGN_RENDERING_VER ${ignition-rendering4_VERSION_MAJOR})
+find_package(ignition-rendering6 REQUIRED)
+set(IGN_RENDERING_VER ${ignition-rendering6_VERSION_MAJOR})
 
-  message(STATUS "Compiling against Ignition Dome")
-# Default to Edifice
-else()
-  find_package(ignition-gui5 REQUIRED)
-  set(IGN_GUI_VER ${ignition-gui5_VERSION_MAJOR})
-
-  find_package(ignition-common4 REQUIRED)
-  set(IGN_COMMON_VER ${ignition-common4_VERSION_MAJOR})
-
-  find_package(ignition-rendering5 REQUIRED)
-  set(IGN_RENDERING_VER ${ignition-rendering5_VERSION_MAJOR})
-
-  message(STATUS "Compiling against Ignition Edifice")
-endif()
+message(STATUS "Compiling against Ignition Fortress")
 
 find_package(Qt5Widgets CONFIG REQUIRED)
 

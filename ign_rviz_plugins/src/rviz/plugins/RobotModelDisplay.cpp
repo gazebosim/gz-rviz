@@ -20,12 +20,12 @@
 #include <ignition/math/Pose3.hh>
 #include <ignition/plugin/Register.hh>
 
-#include <ament_index_cpp/get_package_prefix.hpp>
-#include <ament_index_cpp/get_package_share_directory.hpp>
-
 #include <memory>
 #include <string>
 #include <utility>
+
+#include <ament_index_cpp/get_package_prefix.hpp>
+#include <ament_index_cpp/get_package_share_directory.hpp>
 
 namespace ignition
 {

@@ -15,9 +15,6 @@
 #ifndef IGNITION__RVIZ__PLUGINS__MESSAGE_DISPLAY_BASE_HPP_
 #define IGNITION__RVIZ__PLUGINS__MESSAGE_DISPLAY_BASE_HPP_
 
-#include <rclcpp/rclcpp.hpp>
-#include <rclcpp/qos.hpp>
-
 #include <string>
 #include <memory>
 
@@ -26,6 +23,9 @@
   #include <ignition/gui/Plugin.hh>
 #endif
 #include <ignition/gui/MainWindow.hh>
+
+#include <rclcpp/rclcpp.hpp>
+#include <rclcpp/qos.hpp>
 
 #include "ignition/rviz/common/frame_manager.hpp"
 

@@ -7,8 +7,8 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        ignition: ['dome', 'edifice']
-        ros: ['foxy', 'rolling']
+        ignition: ['fortress']
+        ros: ['rolling']
     container:
       image: osrf/ros:${{ matrix.ros }}-desktop
     env:
@@ -22,17 +22,10 @@ jobs:
         sh -c 'echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-stable `lsb_release -cs` main" > /etc/apt/sources.list.d/gazebo-stable.list'
         wget http://packages.osrfoundation.org/gazebo.key -O - | sudo apt-key add -
         apt update -y
-        if [ "${{ matrix.ignition }}" = "dome" ]; then
-          apt install -y libignition-common3-dev \
-                         libignition-math6-dev \
-                         libignition-rendering4-dev \
-                         libignition-gui4-dev
-        else
-          apt install -y libignition-common4-dev \
-                         libignition-math6-dev \
-                         libignition-rendering5-dev \
-                         libignition-gui5-dev
-        fi
+        apt install -y libignition-common4-dev \
+                       libignition-math6-dev \
+                       libignition-rendering6-dev \
+                       libignition-gui6-dev
 
     - name: Setup colcon workspace
       id: configure
