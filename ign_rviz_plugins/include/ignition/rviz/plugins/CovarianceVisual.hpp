@@ -107,42 +107,18 @@ public:
   void createMaterials();
 
   //////////////////// functions safe to call outside render thread //////////////////////////////
-  inline void setCovVisible(bool visible) {user_data_.visible = visible;}
-  inline bool Visible() const
-  {
-    return user_data_.visible && (user_data_.position_visible || user_data_.orientation_visible);
-  }
-  inline void setPosCovVisible(bool visible) {user_data_.position_visible = visible;}
-  inline void setRotCovVisible(bool visible) {user_data_.orientation_visible = visible;}
-  inline void setPosCovFrame(bool local)
-  {
-    if (local) {user_data_.position_frame = Frame::Local;} else {
-      user_data_.position_frame = Frame::Fixed;
-    }
-  }
-  inline void setRotCovFrame(bool local)
-  {
-    if (local) {user_data_.orientation_frame = Frame::Local;} else {
-      user_data_.orientation_frame = Frame::Fixed;
-    }
-  }
-  inline void setRotCovColorStyle(bool unique)
-  {
-    if (unique) {user_data_.orientation_color_style = ColorStyle::Unique;} else {
-      user_data_.orientation_color_style = ColorStyle::RGB;
-    }
-  }
-  inline void setPosCovColor(const ignition::math::Color & color)
-  {
-    user_data_.position_color = color;
-  }
-  inline void setRotCovColor(const ignition::math::Color & color)
-  {
-    user_data_.orientation_color = color;
-  }
-  inline void setPosCovScale(double scale) {user_data_.position_scale = scale;}
-  inline void setRotCovScale(double scale) {user_data_.orientation_scale = scale;}
-  inline void setRotCovOffset(double offset) {user_data_.orientation_offset = offset;}
+  void setCovVisible(bool visible);
+  bool Visible() const;
+  void setPosCovVisible(bool visible);
+  void setRotCovVisible(bool visible);
+  void setPosCovFrame(bool local);
+  void setRotCovFrame(bool local);
+  void setRotCovColorStyle(bool unique);
+  void setPosCovColor(const ignition::math::Color & color);
+  void setRotCovColor(const ignition::math::Color & color);
+  void setPosCovScale(double scale);
+  void setRotCovScale(double scale);
+  void setRotCovOffset(double offset);
 
   //////////////////// functions unsafe to call outside render thread //////////////////////////////
   void setPose(const ignition::math::Pose3d & pose);

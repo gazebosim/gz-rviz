@@ -509,6 +509,52 @@ CovarianceVisual::~CovarianceVisual()
   this->scene_->DestroyVisual(this->orientation_root_visual_, true);
   this->scene_->DestroyVisual(this->fixed_orientation_visual_, true);
 }
+
+//////////////////// functions safe to call outside render thread //////////////////////////////
+void setCovVisible(bool visible) {user_data_.visible = visible;}
+
+bool CovarianceVisual::Visible()
+{
+  return user_data_.visible && (user_data_.position_visible || user_data_.orientation_visible);
+}
+
+void setPosCovVisible(bool visible) {user_data_.position_visible = visible;}
+void setRotCovVisible(bool visible) {user_data_.orientation_visible = visible;}
+
+void setPosCovFrame(bool local)
+{
+  if (local) {user_data_.position_frame = Frame::Local;} else {
+    user_data_.position_frame = Frame::Fixed;
+  }
+}
+
+void setRotCovFrame(bool local)
+{
+  if (local) {user_data_.orientation_frame = Frame::Local;} else {
+    user_data_.orientation_frame = Frame::Fixed;
+  }
+}
+
+void setRotCovColorStyle(bool unique)
+{
+  if (unique) {user_data_.orientation_color_style = ColorStyle::Unique;} else {
+    user_data_.orientation_color_style = ColorStyle::RGB;
+  }
+}
+
+void setPosCovColor(const ignition::math::Color & color)
+{
+  user_data_.position_color = color;
+}
+
+void setRotCovColor(const ignition::math::Color & color)
+{
+  user_data_.orientation_color = color;
+}
+
+void setPosCovScale(double scale) {user_data_.position_scale = scale;}
+void setRotCovScale(double scale) {user_data_.orientation_scale = scale;}
+void setRotCovOffset(double offset) {user_data_.orientation_offset = offset;}
 }  // namespace plugins
 }  // namespace rviz
 }  // namespace ignition
