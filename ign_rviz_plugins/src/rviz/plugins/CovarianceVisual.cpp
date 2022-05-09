@@ -511,50 +511,50 @@ CovarianceVisual::~CovarianceVisual()
 }
 
 //////////////////// functions safe to call outside render thread //////////////////////////////
-void setCovVisible(bool visible) {user_data_.visible = visible;}
+void CovarianceVisual::setCovVisible(bool visible) {user_data_.visible = visible;}
 
-bool CovarianceVisual::Visible()
+bool CovarianceVisual::Visible() const
 {
   return user_data_.visible && (user_data_.position_visible || user_data_.orientation_visible);
 }
 
-void setPosCovVisible(bool visible) {user_data_.position_visible = visible;}
-void setRotCovVisible(bool visible) {user_data_.orientation_visible = visible;}
+void CovarianceVisual::setPosCovVisible(bool visible) {user_data_.position_visible = visible;}
+void CovarianceVisual::setRotCovVisible(bool visible) {user_data_.orientation_visible = visible;}
 
-void setPosCovFrame(bool local)
+void CovarianceVisual::setPosCovFrame(bool local)
 {
   if (local) {user_data_.position_frame = Frame::Local;} else {
     user_data_.position_frame = Frame::Fixed;
   }
 }
 
-void setRotCovFrame(bool local)
+void CovarianceVisual::setRotCovFrame(bool local)
 {
   if (local) {user_data_.orientation_frame = Frame::Local;} else {
     user_data_.orientation_frame = Frame::Fixed;
   }
 }
 
-void setRotCovColorStyle(bool unique)
+void CovarianceVisual::setRotCovColorStyle(bool unique)
 {
   if (unique) {user_data_.orientation_color_style = ColorStyle::Unique;} else {
     user_data_.orientation_color_style = ColorStyle::RGB;
   }
 }
 
-void setPosCovColor(const ignition::math::Color & color)
+void CovarianceVisual::setPosCovColor(const ignition::math::Color & color)
 {
   user_data_.position_color = color;
 }
 
-void setRotCovColor(const ignition::math::Color & color)
+void CovarianceVisual::setRotCovColor(const ignition::math::Color & color)
 {
   user_data_.orientation_color = color;
 }
 
-void setPosCovScale(double scale) {user_data_.position_scale = scale;}
-void setRotCovScale(double scale) {user_data_.orientation_scale = scale;}
-void setRotCovOffset(double offset) {user_data_.orientation_offset = offset;}
+void CovarianceVisual::setPosCovScale(double scale) {user_data_.position_scale = scale;}
+void CovarianceVisual::setRotCovScale(double scale) {user_data_.orientation_scale = scale;}
+void CovarianceVisual::setRotCovOffset(double offset) {user_data_.orientation_offset = offset;}
 }  // namespace plugins
 }  // namespace rviz
 }  // namespace ignition
