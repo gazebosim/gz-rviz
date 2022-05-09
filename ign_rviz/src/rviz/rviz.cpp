@@ -22,6 +22,7 @@
 #include <geometry_msgs/msg/polygon_stamped.hpp>
 #include <geometry_msgs/msg/pose_stamped.hpp>
 #include <geometry_msgs/msg/pose_array.hpp>
+#include <geometry_msgs/msg/pose_with_covariance_stamped.hpp>
 #include <nav_msgs/msg/path.hpp>
 #include <sensor_msgs/msg/image.hpp>
 #include <sensor_msgs/msg/laser_scan.hpp>
@@ -83,6 +84,7 @@ RViz::RViz()
     "geometry_msgs/msg/PolygonStamped",
     "geometry_msgs/msg/PoseStamped",
     "geometry_msgs/msg/PoseArray",
+    "geometry_msgs/msg/PoseWithCovarianceStamped",
     "nav_msgs/msg/Path",
     "sensor_msgs/msg/Image",
     "sensor_msgs/msg/LaserScan",
@@ -275,6 +277,24 @@ void RViz::addPoseArrayDisplay(const QString & _topic) const
     poseArrayPlugin[pluginCount]->setFrameManager(this->frameManager);
     ignition::gui::App()->findChild<ignition::gui::MainWindow *>()->installEventFilter(
       poseArrayPlugin[pluginCount]);
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void RViz::addPoseWithCovarianceDisplay(const QString & _topic) const
+{
+  // Load plugin
+  if (ignition::gui::App()->LoadPlugin("PoseWithCovarianceDisplay")) {
+    auto poseWithCovariancePlugin =
+      ignition::gui::App()->findChildren<DisplayPlugin<geometry_msgs::msg::PoseWithCovarianceStamped> *>();
+    int pluginCount = poseWithCovariancePlugin.size() - 1;
+
+    // Set frame manager and install event filter for recently added plugin
+    poseWithCovariancePlugin[pluginCount]->initialize(this->node);
+    poseWithCovariancePlugin[pluginCount]->setTopic(_topic.toStdString());
+    poseWithCovariancePlugin[pluginCount]->setFrameManager(this->frameManager);
+    ignition::gui::App()->findChild<ignition::gui::MainWindow *>()->installEventFilter(
+      poseWithCovariancePlugin[pluginCount]);
   }
 }
 

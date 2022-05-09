@@ -64,6 +64,9 @@ Rectangle {
       case "addPoseArrayDisplay":
         RViz.addPoseArrayDisplay();
         break;
+      case "addPoseWithCovarianceDisplay":
+        RViz.addPoseWithCovarianceDisplay();
+        break;
       case "addRobotModelDisplay":
         RViz.addRobotModelDisplay();
         break;
@@ -158,6 +161,12 @@ Rectangle {
     }
 
     ListElement {
+      title: "PoseWithCovariance"
+      icon: "icons/PoseWithCovariance.png"
+      actionElement: "addPoseWithCovarianceDisplay"
+    }
+
+    ListElement {
       title: "RobotModel"
       icon: "icons/RobotModel.png"
       actionElement: "addRobotModelDisplay"
@@ -243,6 +252,10 @@ Rectangle {
       }
       case "geometry_msgs/msg/PoseArray": {
         RViz.addPoseArrayDisplay(_name)
+        break;
+      }
+      case "geometry_msgs/msg/PoseWithCovarianceStamped": {
+        RViz.addPoseWithCovarianceDisplay(_name)
         break;
       }
       case "nav_msgs/msg/Path": {

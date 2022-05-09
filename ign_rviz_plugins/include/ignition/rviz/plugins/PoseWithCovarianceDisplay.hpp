@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Open Source Robotics Foundation, Inc.
+// Copyright (c) 2022 Open Source Robotics Foundation, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,10 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef IGNITION__RVIZ__PLUGINS__POSEDISPLAY_HPP_
-#define IGNITION__RVIZ__PLUGINS__POSEDISPLAY_HPP_
+#ifndef IGNITION__RVIZ__PLUGINS__POSEWITHCOVARIANCEDISPLAY_HPP_
+#define IGNITION__RVIZ__PLUGINS__POSEWITHCOVARIANCEDISPLAY_HPP_
 
 #include <ignition/rendering.hh>
+#include <ignition/utils/ImplPtr.hh>
+
+#include <geometry_msgs/msg/pose_with_covariance_stamped.hpp>
 
 #include <QColor>
 
@@ -25,9 +28,8 @@
 #include <string>
 #include <vector>
 
-#include <geometry_msgs/msg/pose_stamped.hpp>
-
 #include "ignition/rviz/plugins/message_display_base.hpp"
+#include "ignition/rviz/plugins/CovarianceVisual.hpp"
 
 namespace ignition
 {
@@ -36,19 +38,14 @@ namespace rviz
 namespace plugins
 {
 /**
- * @brief Helper for visualization PoseStamped data as Arrow
+ * @brief Helper for visualization PoseWithCovarianceStamped data as Arrow
  */
 struct ArrowVisualPrivate
 {
   /**
    * @brief Update the arrow shaft and head visual length and radius
    */
-  void updateVisual()
-  {
-    visual->Shaft()->SetLocalScale(shaftRadius * 2.0, shaftRadius * 2.0, shaftLength);
-    visual->SetOrigin(0, 0, -shaftLength);
-    visual->Head()->SetLocalScale(headRadius * 2.0, headRadius * 2.0, headLength * 2.0);
-  }
+  void updateVisual();
 
   ignition::rendering::ArrowVisualPtr visual;
   ignition::rendering::MaterialPtr mat;
@@ -59,20 +56,14 @@ struct ArrowVisualPrivate
 };
 
 /**
- * @brief Helper for visualization PoseStamped data as Axis
+ * @brief Helper for visualization PoseWithCovarianceStamped data as Axis
  */
 struct AxisVisualPrivate
 {
   /**
    * @brief Update the axis visual length and radius
    */
-  void updateVisual()
-  {
-    for (size_t i = 0; i < visual->ChildCount(); ++i) {
-      auto arrow = std::dynamic_pointer_cast<rendering::ArrowVisual>(visual->ChildByIndex(i));
-      arrow->SetLocalScale(radius * 20, radius * 20, length * 2);
-    }
-  }
+  void updateVisual();
 
   ignition::rendering::AxisVisualPtr visual;
   float length = 1.0f;
@@ -81,14 +72,15 @@ struct AxisVisualPrivate
 };
 
 /**
- * @brief Renders data from geometry_msgs::msg::PoseStamped message as arrows or axes
+ * @brief Renders data from geometry_msgs::msg::PoseWithCovarianceStamped message as arrows or axes
  */
-class PoseDisplay : public MessageDisplay<geometry_msgs::msg::PoseStamped>
+class PoseWithCovarianceDisplay
+  : public MessageDisplay<geometry_msgs::msg::PoseWithCovarianceStamped>
 {
   Q_OBJECT
 
   /**
-   *  @brief Topic List
+   * @brief Topic List
    */
   Q_PROPERTY(
     QStringList topicList
@@ -98,12 +90,12 @@ class PoseDisplay : public MessageDisplay<geometry_msgs::msg::PoseStamped>
 
 public:
   /**
-   * Constructor for PoseStamped visualization plugin
+   * Constructor for PoseWithCovarianceStamped visualization plugin
    */
-  PoseDisplay();
+  PoseWithCovarianceDisplay();
 
   // Destructor
-  ~PoseDisplay();
+  ~PoseWithCovarianceDisplay();
 
   // Documentation Inherited
   void LoadConfig(const tinyxml2::XMLElement * /*_pluginElem*/) override;
@@ -112,7 +104,7 @@ public:
   void initialize(rclcpp::Node::SharedPtr _node) override;
 
   // Documentation Inherited
-  void callback(const geometry_msgs::msg::PoseStamped::SharedPtr _msg) override;
+  void callback(const geometry_msgs::msg::PoseWithCovarianceStamped::SharedPtr _msg) override;
 
   // Documentation inherited
   void setTopic(const std::string & topic_name) override;
@@ -125,9 +117,9 @@ public:
 
   /**
    * @brief Set ROS Subscriber topic through GUI
-   * @param[in] topic_name ROS Topic Name
+   * @param[in] _topic_name ROS Topic Name
    */
-  Q_INVOKABLE void setTopic(const QString & topic_name);
+  Q_INVOKABLE void setTopic(const QString & _topic_name);
 
   /**
    * @brief Update subscription Quality of Service
@@ -163,6 +155,7 @@ public:
 
   /**
    * @brief Set axis arrow head visibility
+   * @param _visible Whether axis head should be visible
    */
   Q_INVOKABLE void setAxisHeadVisibility(const bool & _visible);
 
@@ -190,6 +183,72 @@ public:
    */
   Q_INVOKABLE void setColor(const QColor & _color);
 
+  /**
+   * @brief Set covariance visual visibility
+   * @param _visibility Visibility of covariance visual
+   */
+  Q_INVOKABLE void setCovVisible(const bool & _visible);
+
+  /**
+   * @brief Set position covariance visual visibility
+   * @param _visibility Visibility of covariance position visual
+   */
+  Q_INVOKABLE void setPosCovVisible(const bool & _visible);
+
+  /**
+   * @brief Set orientation covariance visual visible
+   * @param _visibility Visibility of covariance orientation visual
+   */
+  Q_INVOKABLE void setRotCovVisible(const bool & _visible);
+
+  /**
+   * @brief Set position covariance frame of reference
+   * @param _local True if expressed in local frame
+   */
+  Q_INVOKABLE void setPosCovFrame(const bool & _local);
+
+  /**
+   * @brief Set orientation covariance frame of reference
+   * @param _local True if expressed in local frame
+   */
+  Q_INVOKABLE void setRotCovFrame(const bool & _local);
+
+  /**
+   * @brief Set position covariance color
+   * @param _color Position covariance visual color
+   */
+  Q_INVOKABLE void setPosCovColor(const QColor & _color);
+
+  /**
+   * @brief Set orientation covariance color
+   * @param _color Orientation covariance visual color
+   */
+  Q_INVOKABLE void setRotCovColor(const QColor & _color);
+
+  /**
+   * @brief Set orientation covariance color style (Unique/RGB)
+   * @param _color Orientation covariance visual color style
+   */
+  Q_INVOKABLE void setRotCovColorStyle(const bool & _unique);
+
+  /**
+   * @brief Set position covariance scale
+   * @param _scale Position covariance visual scale
+   */
+  Q_INVOKABLE void setPosCovScale(const float & _scale);
+
+  /**
+   * @brief Set orientation covariance scale
+   * @param _scale Orientation covariance visual scale
+   */
+  Q_INVOKABLE void setRotCovScale(const float & _scale);
+
+  /**
+   * @brief Set orientation covariance offset
+   * @param _scale Orientation covariance visual offset
+   */
+  Q_INVOKABLE void setRotCovOffset(const float & _offset);
+
 signals:
   /**
    * @brief Notify that topic list has changed
@@ -211,25 +270,15 @@ public slots:
 
 protected:
   /**
-   * @brief Update PoseStamped data visualization
+   * @brief Update PoseWithCovarianceStamped data visualization
    */
   void update() override;
 
-private:
-  ignition::rendering::RenderEngine * engine;
-  ignition::rendering::ScenePtr scene;
-  ignition::rendering::VisualPtr rootVisual;
-  std::mutex lock;
-  geometry_msgs::msg::PoseStamped::SharedPtr msg;
-  QStringList topicList;
-  AxisVisualPrivate axis;
-  ArrowVisualPrivate arrow;
-  bool visualShape;  // True: Arrow; False: Axis
-  bool dirty;
+  IGN_UTILS_IMPL_PTR(dataPtr)
 };
 
 }  // namespace plugins
 }  // namespace rviz
 }  // namespace ignition
 
-#endif  // IGNITION__RVIZ__PLUGINS__POSEDISPLAY_HPP_
+#endif  // IGNITION__RVIZ__PLUGINS__POSEWITHCOVARIANCEDISPLAY_HPP_

@@ -47,6 +47,10 @@
     <file alias="PoseArrayDisplay.qml">qml/PoseArrayDisplay.qml</file>
   </qresource>
 
+  <qresource prefix="PoseWithCovarianceDisplay/">
+    <file alias="PoseWithCovarianceDisplay.qml">qml/PoseWithCovarianceDisplay.qml</file>
+  </qresource>
+
   <qresource prefix="QoSConfig/">
     <file alias="QoSConfig.qml">qml/QoSConfig.qml</file>
   </qresource>

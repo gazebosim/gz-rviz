@@ -166,6 +166,12 @@ public:
   Q_INVOKABLE void addPoseArrayDisplay(const QString & _topic = "/pose_array") const;
 
   /**
+   * @brief Loads PoseWithCovariance Visualization Plugin
+   * @param[in] _topic Topic name
+   */
+  Q_INVOKABLE void addPoseWithCovarianceDisplay(const QString & _topic = "/posewithcov") const;
+
+  /**
    * @brief Loads Path Visualization Plugin
    * @param[in] _topic Topic name
    */

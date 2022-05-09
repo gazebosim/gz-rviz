@@ -26,6 +26,9 @@ find_package(visualization_msgs REQUIRED)
 # Ignition libraries
 find_package(ignition-math6 REQUIRED)
 
+# System libraries
+find_package(Eigen3 REQUIRED)
+
 find_package(ignition-gui6 REQUIRED)
 set(IGN_GUI_VER ${ignition-gui6_VERSION_MAJOR})
 
@@ -46,6 +49,7 @@ include_directories(include)
 include_directories(SYSTEM
   ${IGNITION-COMMON_INCLUDE_DIRS}
   ${IGNITION-GUI_INCLUDE_DIRS}
+  ${IGNITION-RENDERING_INCLUDE_DIRS}
   ${IGNITION-MATH_INCLUDE_DIRS}
 )
 
@@ -70,9 +74,9 @@ macro(add_ign_rviz_plugin)
     ${IGN_RVIZ_PLUGIN_DEPENDENCIES}
   )
 
-  target_link_libraries(
-    ${IGN_RVIZ_PLUGIN_NAME}
+  target_link_libraries(${IGN_RVIZ_PLUGIN_NAME}
     Qt5::Core Qt5::Qml Qt5::Quick Qt5::QuickControls2
+    Eigen3::Eigen
   )
 
   target_include_directories(${IGN_RVIZ_PLUGIN_NAME}
@@ -80,6 +84,7 @@ macro(add_ign_rviz_plugin)
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:include>
     ${Qt5Widgets_INCLUDE_DIRS}
+    ${IGNITION-RENDERING_INCLUDE_DIRS}
     ${IGNITION-GUI_INCLUDE_DIRS}
   )
 endmacro()
@@ -234,6 +239,20 @@ add_ign_rviz_plugin(
 
 ########################################################################
 add_ign_rviz_plugin(
+  NAME PoseWithCovarianceDisplay
+  EXTRA_FILES
+    src/rviz/plugins/CovarianceVisual.cpp
+  DEPENDENCIES
+    geometry_msgs
+    ign_rviz_common
+    ignition-gui${IGN_GUI_VER}
+    ignition-math6
+    ignition-rendering${IGN_RENDERING_VER}
+    tf2_ros
+)
+
+########################################################################
+add_ign_rviz_plugin(
   NAME RobotModelDisplay
   DEPENDENCIES
     ign_rviz_common
@@ -263,6 +282,7 @@ add_library(ign_rviz_plugins SHARED
 
 ament_target_dependencies(ign_rviz_plugins
   ign_rviz_common
+  ignition-rendering${IGN_RENDERING_VER}
   ignition-gui${IGN_GUI_VER}
   rclcpp
   tf2_ros
@@ -274,6 +294,7 @@ target_include_directories(ign_rviz_plugins
   $<INSTALL_INTERFACE:include>
   ${Qt5Widgets_INCLUDE_DIRS}
   ${IGNITION-GUI_INCLUDE_DIRS}
+  ${IGNITION-RENDERING_INCLUDE_DIRS}
 )
 
 install(
@@ -307,6 +328,7 @@ ament_export_libraries(
   PolygonDisplay
   PoseDisplay
   PoseArrayDisplay
+  PoseWithCovarianceDisplay
   RobotModelDisplay
   TFDisplay
 )
@@ -325,6 +347,7 @@ install(
     PolygonDisplay
     PoseDisplay
     PoseArrayDisplay
+    PoseWithCovarianceDisplay
     RobotModelDisplay
     TFDisplay
   ARCHIVE DESTINATION lib
