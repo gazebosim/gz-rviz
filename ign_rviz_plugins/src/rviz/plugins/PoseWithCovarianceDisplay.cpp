@@ -53,7 +53,7 @@ class PoseWithCovarianceDisplay::Implementation
     ignition::rendering::RenderEngine * engine;
     ignition::rendering::ScenePtr scene;
     ignition::rendering::VisualPtr rootVisual;
-    std::mutex lock;
+    std::shared_ptr<std::mutex> lock;
     geometry_msgs::msg::PoseWithCovarianceStamped::SharedPtr msg;
     QStringList topicList;
     ArrowVisualPrivate arrow;
@@ -78,12 +78,14 @@ PoseWithCovarianceDisplay::PoseWithCovarianceDisplay()
   this->dataPtr->arrow.mat->SetAmbient(1.0, 0.098, 0.0);
   this->dataPtr->arrow.mat->SetDiffuse(1.0, 0.098, 0.0);
   this->dataPtr->arrow.mat->SetEmissive(1.0, 0.098, 0.0);
+
+  this->dataPtr->lock = std::make_shared<std::mutex>();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 PoseWithCovarianceDisplay::~PoseWithCovarianceDisplay()
 {
-  std::lock_guard<std::mutex>(this->dataPtr->lock);
+  std::lock_guard<std::mutex>(*this->dataPtr->lock);
   // Delete visual
   ignition::gui::App()->findChild<ignition::gui::MainWindow *>()->removeEventFilter(this);
   this->dataPtr->scene->DestroyVisual(this->dataPtr->rootVisual, true);
@@ -92,14 +94,14 @@ PoseWithCovarianceDisplay::~PoseWithCovarianceDisplay()
 ////////////////////////////////////////////////////////////////////////////////
 void PoseWithCovarianceDisplay::initialize(rclcpp::Node::SharedPtr _node)
 {
-  std::lock_guard<std::mutex>(this->dataPtr->lock);
+  std::lock_guard<std::mutex>(*this->dataPtr->lock);
   this->node = std::move(_node);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void PoseWithCovarianceDisplay::subscribe()
 {
-  std::lock_guard<std::mutex>(this->dataPtr->lock);
+  std::lock_guard<std::mutex>(*this->dataPtr->lock);
 
   this->subscriber = this->node->create_subscription<geometry_msgs::msg::PoseWithCovarianceStamped>(
     this->topic_name,
@@ -110,7 +112,7 @@ void PoseWithCovarianceDisplay::subscribe()
 ////////////////////////////////////////////////////////////////////////////////
 void PoseWithCovarianceDisplay::setTopic(const std::string & topic_name)
 {
-  std::lock_guard<std::mutex>(this->dataPtr->lock);
+  std::lock_guard<std::mutex>(*this->dataPtr->lock);
   this->topic_name = topic_name;
 
   this->subscribe();
@@ -122,7 +124,7 @@ void PoseWithCovarianceDisplay::setTopic(const std::string & topic_name)
 ////////////////////////////////////////////////////////////////////////////////
 void PoseWithCovarianceDisplay::setTopic(const QString & topic_name)
 {
-  std::lock_guard<std::mutex>(this->dataPtr->lock);
+  std::lock_guard<std::mutex>(*this->dataPtr->lock);
   this->topic_name = topic_name.toStdString();
 
   // Destroy previous subscription
@@ -136,7 +138,7 @@ void PoseWithCovarianceDisplay::setTopic(const QString & topic_name)
 ////////////////////////////////////////////////////////////////////////////////
 void PoseWithCovarianceDisplay::callback(const geometry_msgs::msg::PoseWithCovarianceStamped::SharedPtr _msg)
 {
-  std::lock_guard<std::mutex>(this->dataPtr->lock);
+  std::lock_guard<std::mutex>(*this->dataPtr->lock);
   this->dataPtr->msg = std::move(_msg);
 }
 
@@ -163,7 +165,7 @@ void PoseWithCovarianceDisplay::reset()
 ////////////////////////////////////////////////////////////////////////////////
 void PoseWithCovarianceDisplay::update()
 {
-  std::lock_guard<std::mutex>(this->dataPtr->lock);
+  std::lock_guard<std::mutex>(*this->dataPtr->lock);
   // Create axis
   if (this->dataPtr->axis.visual == nullptr) {
     this->dataPtr->axis.visual = this->dataPtr->scene->CreateAxisVisual();
@@ -257,7 +259,7 @@ void PoseWithCovarianceDisplay::update()
 ////////////////////////////////////////////////////////////////////////////////
 void PoseWithCovarianceDisplay::setShape(const bool & _shape)
 {
-  std::lock_guard<std::mutex>(this->dataPtr->lock);
+  std::lock_guard<std::mutex>(*this->dataPtr->lock);
   this->dataPtr->visualShape = _shape;
   this->dataPtr->dirty = true;
 }
@@ -265,7 +267,7 @@ void PoseWithCovarianceDisplay::setShape(const bool & _shape)
 ////////////////////////////////////////////////////////////////////////////////
 void PoseWithCovarianceDisplay::setAxisHeadVisibility(const bool & _visible)
 {
-  std::lock_guard<std::mutex>(this->dataPtr->lock);
+  std::lock_guard<std::mutex>(*this->dataPtr->lock);
   this->dataPtr->axis.headVisible = _visible;
   this->dataPtr->dirty = true;
 }
@@ -273,7 +275,7 @@ void PoseWithCovarianceDisplay::setAxisHeadVisibility(const bool & _visible)
 ////////////////////////////////////////////////////////////////////////////////
 void PoseWithCovarianceDisplay::setAxisDimensions(const float & _length, const float & _radius)
 {
-  std::lock_guard<std::mutex>(this->dataPtr->lock);
+  std::lock_guard<std::mutex>(*this->dataPtr->lock);
   this->dataPtr->axis.length = _length;
   this->dataPtr->axis.radius = _radius;
   this->dataPtr->dirty = true;
@@ -284,7 +286,7 @@ void PoseWithCovarianceDisplay::setArrowDimensions(
   const float & _shaftLength, const float & _shaftRadius,
   const float & _headLength, const float & _headRadius)
 {
-  std::lock_guard<std::mutex>(this->dataPtr->lock);
+  std::lock_guard<std::mutex>(*this->dataPtr->lock);
   this->dataPtr->arrow.shaftLength = _shaftLength;
   this->dataPtr->arrow.shaftRadius = _shaftRadius;
   this->dataPtr->arrow.headLength = _headLength;
@@ -295,7 +297,7 @@ void PoseWithCovarianceDisplay::setArrowDimensions(
 ////////////////////////////////////////////////////////////////////////////////
 void PoseWithCovarianceDisplay::setColor(const QColor & _color)
 {
-  std::lock_guard<std::mutex>(this->dataPtr->lock);
+  std::lock_guard<std::mutex>(*this->dataPtr->lock);
   this->dataPtr->arrow.mat->SetAmbient(_color.redF(), _color.greenF(), _color.blueF(), _color.alphaF());
   this->dataPtr->arrow.mat->SetDiffuse(_color.redF(), _color.greenF(), _color.blueF(), _color.alphaF());
   this->dataPtr->arrow.mat->SetEmissive(_color.redF(), _color.greenF(), _color.blueF(), _color.alphaF());
@@ -306,69 +308,69 @@ void PoseWithCovarianceDisplay::setColor(const QColor & _color)
   
 void PoseWithCovarianceDisplay::setCovVisible(const bool& _visible)
 {
-  std::lock_guard<std::mutex>(dataPtr->lock);
+  std::lock_guard<std::mutex>(*dataPtr->lock);
   dataPtr->covVisual->setCovVisible(_visible);
 }
   
 void PoseWithCovarianceDisplay::setPosCovVisible(const bool& _visible)
 {
-  std::lock_guard<std::mutex>(dataPtr->lock);
+  std::lock_guard<std::mutex>(*dataPtr->lock);
   dataPtr->covVisual->setPosCovVisible(_visible);
 }
 
 void PoseWithCovarianceDisplay::setRotCovVisible(const bool& _visible)
 {
-  std::lock_guard<std::mutex>(dataPtr->lock);
+  std::lock_guard<std::mutex>(*dataPtr->lock);
   dataPtr->covVisual->setRotCovVisible(_visible);
 }
 
 void PoseWithCovarianceDisplay::setPosCovFrame(const bool& _local)
 {
-  std::lock_guard<std::mutex>(dataPtr->lock);
+  std::lock_guard<std::mutex>(*dataPtr->lock);
   dataPtr->covVisual->setPosCovFrame(_local);
 }
 
 void PoseWithCovarianceDisplay::setRotCovFrame(const bool& _local)
 {
-  std::lock_guard<std::mutex>(dataPtr->lock);
+  std::lock_guard<std::mutex>(*dataPtr->lock);
   dataPtr->covVisual->setRotCovFrame(_local);
 }
 
 void PoseWithCovarianceDisplay::setPosCovColor(const QColor& _color)
 { 
-  std::lock_guard<std::mutex>(dataPtr->lock); 
+  std::lock_guard<std::mutex>(*dataPtr->lock); 
   dataPtr->covVisual->setPosCovColor(ignition::math::Color(_color.redF(), _color.greenF(),
     _color.blueF(), _color.alphaF()));
 }
 
 void PoseWithCovarianceDisplay::setRotCovColor(const QColor& _color)
 { 
-  std::lock_guard<std::mutex>(dataPtr->lock); 
+  std::lock_guard<std::mutex>(*dataPtr->lock); 
   dataPtr->covVisual->setRotCovColor(ignition::math::Color(_color.redF(), _color.greenF(),
     _color.blueF(), _color.alphaF()));
 }
 
 void PoseWithCovarianceDisplay::setRotCovColorStyle(const bool& _unique)
 {
-  std::lock_guard<std::mutex>(dataPtr->lock);
+  std::lock_guard<std::mutex>(*dataPtr->lock);
   dataPtr->covVisual->setRotCovColorStyle(_unique);
 }
 
 void PoseWithCovarianceDisplay::setPosCovScale(const float& _scale)
 {
-  std::lock_guard<std::mutex>(dataPtr->lock);
+  std::lock_guard<std::mutex>(*dataPtr->lock);
   dataPtr->covVisual->setPosCovScale(_scale);
 }
 
 void PoseWithCovarianceDisplay::setRotCovScale(const float& _scale)
 {
-  std::lock_guard<std::mutex>(dataPtr->lock);
+  std::lock_guard<std::mutex>(*dataPtr->lock);
   dataPtr->covVisual->setRotCovScale(_scale);
 }
 
 void PoseWithCovarianceDisplay::setRotCovOffset(const float& _offset)
 {
-  std::lock_guard<std::mutex>(dataPtr->lock);
+  std::lock_guard<std::mutex>(*dataPtr->lock);
   dataPtr->covVisual->setRotCovOffset(_offset);
 }
 
@@ -376,7 +378,7 @@ void PoseWithCovarianceDisplay::setRotCovOffset(const float& _offset)
 ////////////////////////////////////////////////////////////////////////////////
 void PoseWithCovarianceDisplay::setFrameManager(std::shared_ptr<common::FrameManager> _frameManager)
 {
-  std::lock_guard<std::mutex>(this->dataPtr->lock);
+  std::lock_guard<std::mutex>(*this->dataPtr->lock);
   this->frameManager = std::move(_frameManager);
 }
 
@@ -389,7 +391,7 @@ QStringList PoseWithCovarianceDisplay::getTopicList() const
 ////////////////////////////////////////////////////////////////////////////////
 void PoseWithCovarianceDisplay::onRefresh()
 {
-  std::lock_guard<std::mutex>(this->dataPtr->lock);
+  std::lock_guard<std::mutex>(*this->dataPtr->lock);
 
   // Clear
   this->dataPtr->topicList.clear();
@@ -419,7 +421,7 @@ void PoseWithCovarianceDisplay::updateQoS(
   const int & _depth, const int & _history, const int & _reliability,
   const int & _durability)
 {
-  std::lock_guard<std::mutex>(this->dataPtr->lock);
+  std::lock_guard<std::mutex>(*this->dataPtr->lock);
   this->setHistoryDepth(_depth);
   this->setHistoryPolicy(_history);
   this->setReliabilityPolicy(_reliability);
