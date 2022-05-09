@@ -32,7 +32,7 @@ jobs:
       run: |
         cd ..
         mkdir -p /home/colcon_ws/src
-        cp -r ign-rviz /home/colcon_ws/src/
+        cp -r gz-rviz /home/colcon_ws/src/
     - name: Build project
       id: build
       run: |
