@@ -14,10 +14,13 @@
 
 #include "ignition/rviz/plugins/CovarianceVisual.hpp"
 
+#include <tuple>
+#include <string>
+
 // diagonalization utilities
 namespace
 {
-  // Local function to force the axis to be right handed for 3D. Taken from ecl_statistics
+// Local function to force the axis to be right handed for 3D. Taken from ecl_statistics
 void makeRightHanded(Eigen::Matrix3d & eigenvectors, Eigen::Vector3d & eigenvalues)
 {
   // Note that sorting of eigenvalues may end up with left-hand coordinate system.
@@ -68,7 +71,8 @@ struct Cov3DSolverParams
 template<typename SolverParams>
 std::tuple<typename SolverParams::EigenvaluesType, typename SolverParams::EigenvectorsType>
 diagonalizeCovariance(
-  const Eigen::Matrix<double, SolverParams::dimension, SolverParams::dimension>& covariance, rclcpp::Logger logger)
+  const Eigen::Matrix<double, SolverParams::dimension, SolverParams::dimension> & covariance,
+  rclcpp::Logger logger)
 {
   Eigen::Matrix<double, SolverParams::dimension, 1> eigenvalues =
     Eigen::Matrix<double, SolverParams::dimension, 1>::Identity();
@@ -87,14 +91,14 @@ diagonalizeCovariance(
     eigenvectors = eigensolver.eigenvectors();
 
     if (eigenvalues.minCoeff() < 0) {
-      RCLCPP_WARN(logger,
-        "Negative eigenvalue found for position. Is the "
+      RCLCPP_WARN(
+        logger, "Negative eigenvalue found for position. Is the "
         "covariance matrix correct (positive semidefinite)?");
       covariance_valid = false;
     }
   } else {
-    RCLCPP_WARN(logger,
-      "failed to compute eigen vectors/values for position. Is the "
+    RCLCPP_WARN(
+      logger, "failed to compute eigen vectors/values for position. Is the "
       "covariance matrix correct?");
     covariance_valid = false;
   }
@@ -112,7 +116,7 @@ diagonalizeCovariance(
 }
 
 std::tuple<ignition::math::Vector3d, ignition::math::Quaterniond>
-computeShapeScaleAndOrientation3D(const Eigen::Matrix3d& covariance, rclcpp::Logger logger)
+computeShapeScaleAndOrientation3D(const Eigen::Matrix3d & covariance, rclcpp::Logger logger)
 {
   Cov3DSolverParams::EigenvaluesType eigenvalues;
   Cov3DSolverParams::EigenvectorsType eigenvectors;
@@ -120,8 +124,9 @@ computeShapeScaleAndOrientation3D(const Eigen::Matrix3d& covariance, rclcpp::Log
     diagonalizeCovariance<Cov3DSolverParams>(covariance, logger);
 
   // Define the rotation
-  Eigen::Quaterniond ori_eigen(eigenvectors); // implicitly converts rotation mat -> quaternion
-  ignition::math::Quaterniond orientation(ori_eigen.w(), ori_eigen.x(), ori_eigen.y(), ori_eigen.z());
+  Eigen::Quaterniond ori_eigen(eigenvectors);  // implicitly converts rotation mat -> quaternion
+  ignition::math::Quaterniond orientation(ori_eigen.w(), ori_eigen.x(), ori_eigen.y(),
+    ori_eigen.z());
 
   // Define the scale. eigenvalues are the variances,
   // so we take the sqrt to draw the standard deviation
@@ -149,9 +154,10 @@ computeShapeScaleAndOrientation2D(const Eigen::Matrix2d & covariance, rclcpp::Lo
   scale.Z(0);
 
   Eigen::Matrix3d ori_mat = Eigen::Matrix3d::Identity();
-  ori_mat.topLeftCorner<2,2>() = eigenvectors;
-  Eigen::Quaterniond ori_eigen(ori_mat); // implicitly converts rotation mat -> quaternion
-  ignition::math::Quaterniond orientation(ori_eigen.w(), ori_eigen.x(), ori_eigen.y(), ori_eigen.z());
+  ori_mat.topLeftCorner<2, 2>() = eigenvectors;
+  Eigen::Quaterniond ori_eigen(ori_mat);  // implicitly converts rotation mat -> quaternion
+  ignition::math::Quaterniond orientation(ori_eigen.w(), ori_eigen.x(), ori_eigen.y(),
+    ori_eigen.z());
 
   return std::make_tuple(scale, orientation);
 }
@@ -164,7 +170,7 @@ double radianScaleToMetricScaleBounded(double radian_scale, double max_degrees)
     return 2.0 * tanf(radian_scale * 0.5);
   }
 }
-} // namespace
+}  // namespace
 
 namespace ignition
 {
@@ -172,8 +178,10 @@ namespace rviz
 {
 namespace plugins
 {
-CovarianceVisual::CovarianceVisual(ignition::rendering::VisualPtr parent_node, CovarianceUserData user_data, std::string logger_name) 
-  : user_data_(user_data), logger_(rclcpp::get_logger(logger_name))
+CovarianceVisual::CovarianceVisual(
+  ignition::rendering::VisualPtr parent_node,
+  CovarianceUserData user_data, std::string logger_name)
+: user_data_(user_data), logger_(rclcpp::get_logger(logger_name))
 {
   this->scene_ = parent_node->Scene();
   this->root_visual_ = this->scene_->CreateVisual();
@@ -183,22 +191,24 @@ CovarianceVisual::CovarianceVisual(ignition::rendering::VisualPtr parent_node, C
   this->root_visual_->AddChild(this->fixed_orientation_visual_);
 
   this->position_root_visual_ = this->scene_->CreateVisual();
-  if (this->user_data_.position_frame == Frame::Local)
+  if (this->user_data_.position_frame == Frame::Local) {
     this->root_visual_->AddChild(this->position_root_visual_);
-  else
+  } else {
     this->fixed_orientation_visual_->AddChild(this->position_root_visual_);
+  }
 
   this->orientation_root_visual_ = this->scene_->CreateVisual();
-  if (this->user_data_.orientation_frame == Frame::Local)
+  if (this->user_data_.orientation_frame == Frame::Local) {
     this->root_visual_->AddChild(this->orientation_root_visual_);
-  else
+  } else {
     this->fixed_orientation_visual_->AddChild(this->orientation_root_visual_);
+  }
 
   this->createMaterials();
 
   this->position_visual_ = this->scene_->CreateVisual();
   this->position_visual_->SetInheritScale(false);
-  this->position_ellipse_ = this->scene_->CreateSphere(); 
+  this->position_ellipse_ = this->scene_->CreateSphere();
   this->position_visual_->AddGeometry(this->position_ellipse_);
   this->position_visual_->SetMaterial(this->materials_[kPos]);
   this->position_root_visual_->AddChild(this->position_visual_);
@@ -210,7 +220,7 @@ CovarianceVisual::CovarianceVisual(ignition::rendering::VisualPtr parent_node, C
     // Does not inherit scale from the parent.
     // This is needed to keep the cylinders with the same height.
     // The scale is set by setOrientationScale()
-    //this->orientation_visuals_[i]->SetInheritScale(false);
+    // this->orientation_visuals_[i]->SetInheritScale(false);
 
     if (i != kYaw2D) {
       this->orientation_shapes_[i] = this->scene_->CreateCylinder();
@@ -218,21 +228,23 @@ CovarianceVisual::CovarianceVisual(ignition::rendering::VisualPtr parent_node, C
       this->orientation_shapes_[i] = this->scene_->CreateCone();
     }
     this->orientation_visuals_[i]->AddGeometry(this->orientation_shapes_[i]);
-    this->orientation_visuals_[i]->SetMaterial(this->materials_[i+1]);
+    this->orientation_visuals_[i]->SetMaterial(this->materials_[i + 1]);
     this->orientation_root_visual_->AddChild(this->orientation_visuals_[i]);
   }
-  
+
   // Position the cylinders at position 1.0 in the respective axis, and perpendicular to the axis.
   double offset = user_data_.orientation_offset;
   // x-axis (roll)
   orientation_visuals_[kRoll]->SetLocalPosition(offset * math::Vector3d::UnitX);
-  orientation_visuals_[kRoll]->SetLocalRotation(math::Quaterniond(math::Vector3d::UnitY, math::Angle::HalfPi.Radian()));
+  orientation_visuals_[kRoll]->SetLocalRotation(
+    math::Quaterniond(math::Vector3d::UnitY, math::Angle::HalfPi.Radian()));
   // y-axis (pitch)
   orientation_visuals_[kPitch]->SetLocalPosition(offset * math::Vector3d::UnitY);
-  orientation_visuals_[kPitch]->SetLocalRotation(math::Quaterniond(math::Vector3d::UnitX, math::Angle::HalfPi.Radian()));
+  orientation_visuals_[kPitch]->SetLocalRotation(
+    math::Quaterniond(math::Vector3d::UnitX, math::Angle::HalfPi.Radian()));
   // z-axis (yaw)
   orientation_visuals_[kYaw]->SetLocalPosition(offset * math::Vector3d::UnitZ);
-  orientation_visuals_[kYaw]->SetLocalRotation(math::Quaterniond(0, 0, 0)); // no rotation needed
+  orientation_visuals_[kYaw]->SetLocalRotation(math::Quaterniond(0, 0, 0));  // no rotation needed
   // z-axis (yaw 2D)
   // NOTE: cone's origin is not at the top of the cone. Since we want the top to be at the origin of
   //       the pose we need to use an offset here.
@@ -242,7 +254,8 @@ CovarianceVisual::CovarianceVisual(ignition::rendering::VisualPtr parent_node, C
   // TODO(Thodoris): Implement something like a 2D "pie slice" and use it instead of the cone.
   static const float cone_origin_to_top = 0.49115f;
   orientation_visuals_[kYaw2D]->SetLocalPosition(cone_origin_to_top * math::Vector3d::UnitX);
-  orientation_visuals_[kYaw2D]->SetLocalRotation(math::Quaterniond(math::Vector3d::UnitY, -math::Angle::HalfPi.Radian()));
+  orientation_visuals_[kYaw2D]->SetLocalRotation(
+    math::Quaterniond(math::Vector3d::UnitY, -math::Angle::HalfPi.Radian()));
 
   // Initialize all scales to zero
   this->current_position_scale_ = ignition::math::Vector3d::Zero;
@@ -261,36 +274,32 @@ void CovarianceVisual::createMaterials()
   this->materials_[kRotZ2D] = this->scene_->CreateMaterial();
 }
 
-void CovarianceVisual::setPose(const ignition::math::Pose3d& pose)
-{ 
+void CovarianceVisual::setPose(const ignition::math::Pose3d & pose)
+{
   this->root_visual_->SetLocalPose(pose);
   // Set the orientation of the fixed node. Since this node is attached to the root node,
   // it's orientation will be the inverse of pose's orientation.
   this->fixed_orientation_visual_->SetLocalRotation(pose.Rot().Inverse());
 }
 
-
-void CovarianceVisual::setCovariance(const Eigen::Matrix6d& cov)
+void CovarianceVisual::setCovariance(const Eigen::Matrix6d & cov)
 {
   // The 3rd, 4th, and 5th diagonal entries are empty for 2D case
-  this->cov_2d_ = (cov(2,2) <= 0 && cov(3,3) <= 0 && cov(4,4) <= 0);
+  this->cov_2d_ = (cov(2, 2) <= 0 && cov(3, 3) <= 0 && cov(4, 4) <= 0);
 
   this->updateOrientationVisibility();
 
   this->updatePosVisual(cov);
-  if (this->cov_2d_)
-  {
+  if (this->cov_2d_) {
     this->updateRotVisual(cov, kYaw2D);
-  }
-  else
-  {
+  } else {
     this->updateRotVisual(cov, kRoll);
     this->updateRotVisual(cov, kPitch);
     this->updateRotVisual(cov, kYaw);
   }
 }
-  
-void CovarianceVisual::updatePosVisual(const Eigen::Matrix6d& cov)
+
+void CovarianceVisual::updatePosVisual(const Eigen::Matrix6d & cov)
 {
   math::Vector3d shape_scale;
   math::Quaterniond shape_orientation;
@@ -305,24 +314,22 @@ void CovarianceVisual::updatePosVisual(const Eigen::Matrix6d& cov)
   }
 
   position_visual_->SetLocalRotation(shape_orientation);
-  if (shape_scale.IsFinite())
-  {
+  if (shape_scale.IsFinite()) {
     this->current_position_scale_ = shape_scale;
     this->updatePosVisualScale();
-  }
-  else
-  {
-    RCLCPP_WARN(this->logger_, "Covariance Visual: computed infinite eigenvalues (is covariance matrix finite?)");
+  } else {
+    RCLCPP_WARN(
+      this->logger_,
+      "Covariance Visual: computed infinite eigenvalues (is covariance matrix finite?)");
   }
 }
 
-void CovarianceVisual::updateRotVisual(const Eigen::Matrix6d& cov, ShapeIndex shapeIdx)
+void CovarianceVisual::updateRotVisual(const Eigen::Matrix6d & cov, ShapeIndex shapeIdx)
 {
   math::Vector3d shape_scale;
   math::Quaterniond shape_orientation;
 
-  if (this->cov_2d_)
-  {
+  if (this->cov_2d_) {
     // We should only enter on this scope if the index is kYaw2D
     assert(shapeIdx == kYaw2D);
 
@@ -331,46 +338,39 @@ void CovarianceVisual::updateRotVisual(const Eigen::Matrix6d& cov, ShapeIndex sh
     // The computed scale is equivalent to twice the standard deviation _in radians_.
     // So we need to convert it to the linear scale of the shape using tan().
     // Also, we bound the maximum std. TODO: Use pie slice without metric conversion
-    shape_scale.Y(2 * std::sqrt(cov(5,5)));
+    shape_scale.Y(2 * std::sqrt(cov(5, 5)));
     shape_scale.Z(1.0);
-    shape_orientation = math::Quaterniond(math::Vector3d::UnitY, -math::Angle::HalfPi.Radian()); 
+    shape_orientation = math::Quaterniond(math::Vector3d::UnitY, -math::Angle::HalfPi.Radian());
     shape_scale.Y(radianScaleToMetricScaleBounded(shape_scale.Y(), kMaxDegrees));
-  }
-  else
-  {
+  } else {
     // We should only enter on this scope if the index is kYaw2D
     assert(shapeIdx != kYaw2D);
 
-    // Cylinder geometry is aligned on its Z-axis. 
-    // I will twist each orientaiton visual frame s.t. its Z axis is parallel to its corresponding axis,
-    // and that its other two axis are alligned with the parent's other axis. Then I will scale the ellipse such that
-    // it represents the region that the tip of the parent's axis would stay inside given the covariance of the other two axis.
+    // Cylinder geometry is aligned on its Z-axis.
+    // I will twist each orientaiton visual frame s.t. its Z axis is parallel to its
+    // corresponding axis, and that its other two axis are alligned with the parent's other axis.
+    // Then I will scale the ellipse such that it represents the region that the tip of the parent's
+    // axis would stay inside given the covariance of the other two axis.
     // Order of variables entered in the matrix to be diagonalized matters!
     Eigen::Matrix2d covariancePlane;
-    if (shapeIdx == kRoll)
-    {
-      covariancePlane = cov.bottomRightCorner<2,2>();
+    if (shapeIdx == kRoll) {
+      covariancePlane = cov.bottomRightCorner<2, 2>();
+    } else if (shapeIdx == kPitch) {
+      covariancePlane << cov(5, 5), cov(3, 5), cov(5, 3), cov(3, 3);
+    } else if (shapeIdx == kYaw) {
+      covariancePlane = cov.block<2, 2>(3, 3);
     }
-    else if (shapeIdx == kPitch)
-    {
-      covariancePlane << cov(5,5), cov(3,5), cov(5,3), cov(3,3);
-    }
-    else if (shapeIdx == kYaw)
-    {
-      covariancePlane = cov.block<2,2>(3,3);
-    }
-    std::tie(shape_scale, shape_orientation) = computeShapeScaleAndOrientation2D(covariancePlane, this->logger_);
-    if (shapeIdx == kRoll)
-    {
-      shape_orientation = math::Quaterniond(math::Vector3d::UnitY, math::Angle::HalfPi.Radian()) * shape_orientation;
-    }
-    else if (shapeIdx == kPitch)
-    {
-      shape_orientation = math::Quaterniond(math::Vector3d::UnitX, -math::Angle::HalfPi.Radian()) * shape_orientation;
-    }
-    else if (shapeIdx == kYaw)
-    {
-      shape_orientation = math::Quaterniond(math::Vector3d::UnitZ, -math::Angle::HalfPi.Radian()) * shape_orientation;
+    std::tie(shape_scale, shape_orientation) = computeShapeScaleAndOrientation2D(
+      covariancePlane, this->logger_);
+    if (shapeIdx == kRoll) {
+      shape_orientation =
+        math::Quaterniond(math::Vector3d::UnitY, math::Angle::HalfPi.Radian()) * shape_orientation;
+    } else if (shapeIdx == kPitch) {
+      shape_orientation =
+        math::Quaterniond(math::Vector3d::UnitX, -math::Angle::HalfPi.Radian()) * shape_orientation;
+    } else if (shapeIdx == kYaw) {
+      shape_orientation =
+        math::Quaterniond(math::Vector3d::UnitZ, -math::Angle::HalfPi.Radian()) * shape_orientation;
     }
 
     // The computed scale is equivalent to twice the standard deviation _in radians_.
@@ -381,8 +381,7 @@ void CovarianceVisual::updateRotVisual(const Eigen::Matrix6d& cov, ShapeIndex sh
   }
 
   orientation_visuals_[shapeIdx]->SetLocalRotation(shape_orientation);
-  if (shape_scale.IsFinite())
-  {
+  if (shape_scale.IsFinite()) {
     current_orientation_scales_[shapeIdx] = shape_scale;
     this->updateRotVisualScale(shapeIdx);
   }
@@ -390,26 +389,31 @@ void CovarianceVisual::updateRotVisual(const Eigen::Matrix6d& cov, ShapeIndex sh
 
 void CovarianceVisual::updatePosVisualScale()
 {
-  if (this->cov_2d_)
-    this->position_visual_->SetLocalScale(ignition::math::Vector3d(user_data_.position_scale * this->current_position_scale_.X(),
-                                                                    user_data_.position_scale * this->current_position_scale_.Y(),
-                                                                    0.001));
-  else
-    this->position_visual_->SetLocalScale(user_data_.position_scale * this->current_position_scale_);
+  if (this->cov_2d_) {
+    this->position_visual_->SetLocalScale(
+      ignition::math::Vector3d(
+        user_data_.position_scale * this->current_position_scale_.X(),
+        user_data_.position_scale * this->current_position_scale_.Y(), 0.001));
+  } else {
+    this->position_visual_->SetLocalScale(
+      user_data_.position_scale * this->current_position_scale_);
+  }
 }
 
 void CovarianceVisual::updateRotVisualScale(ShapeIndex shapeIdx)
 {
-  if (this->cov_2d_)
+  if (this->cov_2d_) {
     this->orientation_visuals_[shapeIdx]->SetLocalScale(
-    ignition::math::Vector3d(0.001,
-                              user_data_.orientation_scale * this->current_orientation_scales_[shapeIdx].Y(),
-                              user_data_.orientation_scale * this->current_orientation_scales_[shapeIdx].Z()));
-  else
+      ignition::math::Vector3d(
+        0.001,
+        user_data_.orientation_scale * this->current_orientation_scales_[shapeIdx].Y(),
+        user_data_.orientation_scale * this->current_orientation_scales_[shapeIdx].Z()));
+  } else {
     this->orientation_visuals_[shapeIdx]->SetLocalScale(
-    ignition::math::Vector3d(user_data_.orientation_scale * this->current_orientation_scales_[shapeIdx].X(),
-                              user_data_.orientation_scale * this->current_orientation_scales_[shapeIdx].Y(),
-                              0.001));
+      ignition::math::Vector3d(
+        user_data_.orientation_scale * this->current_orientation_scales_[shapeIdx].X(),
+        user_data_.orientation_scale * this->current_orientation_scales_[shapeIdx].Y(), 0.001));
+  }
 }
 
 void CovarianceVisual::updateRotVisualOffsets()
@@ -437,24 +441,23 @@ void CovarianceVisual::updateOrientationVisibility()
   orientation_visuals_[kYaw2D]->SetVisible(orientation_visible_ && cov_2d_);
 }
 
-void CovarianceVisual::updateUserData() {
+void CovarianceVisual::updateUserData()
+{
   position_root_visual_->SetVisible(user_data_.position_visible && user_data_.visible);
   this->updateOrientationVisibility();
 
-  if (user_data_.position_frame == Frame::Local && fixed_orientation_visual_->HasChild(position_root_visual_))
-  {
+  if (user_data_.position_frame == Frame::Local &&
+    fixed_orientation_visual_->HasChild(position_root_visual_)) {
     this->root_visual_->AddChild(fixed_orientation_visual_->RemoveChild(position_root_visual_));
-  }
-  else if (user_data_.position_frame == Frame::Fixed && root_visual_->HasChild(position_root_visual_))
-  {
+  } else if (user_data_.position_frame == Frame::Fixed &&
+    root_visual_->HasChild(position_root_visual_)) {
     fixed_orientation_visual_->AddChild(this->root_visual_->RemoveChild(position_root_visual_));
   }
-  if (user_data_.orientation_frame == Frame::Local && fixed_orientation_visual_->HasChild(orientation_root_visual_))
-  {
+  if (user_data_.orientation_frame == Frame::Local &&
+    fixed_orientation_visual_->HasChild(orientation_root_visual_)) {
     this->root_visual_->AddChild(fixed_orientation_visual_->RemoveChild(orientation_root_visual_));
-  }
-  else if (user_data_.orientation_frame == Frame::Fixed && root_visual_->HasChild(orientation_root_visual_))
-  {
+  } else if (user_data_.orientation_frame == Frame::Fixed &&
+    root_visual_->HasChild(orientation_root_visual_)) {
     fixed_orientation_visual_->AddChild(this->root_visual_->RemoveChild(orientation_root_visual_));
   }
 
@@ -466,7 +469,7 @@ void CovarianceVisual::updateUserData() {
   this->updateRotVisualOffsets();
 }
 
-void CovarianceVisual::updateMaterialColor(int idx, const ignition::math::Color& color)
+void CovarianceVisual::updateMaterialColor(int idx, const ignition::math::Color & color)
 {
   this->materials_[idx]->SetAmbient(color);
   this->materials_[idx]->SetDiffuse(color);
@@ -474,23 +477,20 @@ void CovarianceVisual::updateMaterialColor(int idx, const ignition::math::Color&
 }
 
 void CovarianceVisual::updatePosCovColor()
-{ 
+{
   updateMaterialColor(kPos, user_data_.position_color);
   this->position_visual_->SetMaterial(this->materials_[kPos]);
 }
 
 void CovarianceVisual::updateRotCovColor()
 {
-  if (user_data_.orientation_color_style == Unique)
-  {
-    const ignition::math::Color& color = user_data_.orientation_color;
+  if (user_data_.orientation_color_style == Unique) {
+    const ignition::math::Color & color = user_data_.orientation_color;
     updateMaterialColor(kRotX, color);
     updateMaterialColor(kRotY, color);
     updateMaterialColor(kRotZ, color);
     updateMaterialColor(kRotZ2D, color);
-  }
-  else
-  {
+  } else {
     double alpha = user_data_.orientation_color.A();
     updateMaterialColor(kRotX, ignition::math::Color(1.0, 0.0, 0.0, alpha));
     updateMaterialColor(kRotY, ignition::math::Color(0.0, 1.0, 0.0, alpha));

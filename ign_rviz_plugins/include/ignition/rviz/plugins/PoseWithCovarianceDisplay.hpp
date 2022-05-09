@@ -74,12 +74,13 @@ struct AxisVisualPrivate
 /**
  * @brief Renders data from geometry_msgs::msg::PoseWithCovarianceStamped message as arrows or axes
  */
-class PoseWithCovarianceDisplay : public MessageDisplay<geometry_msgs::msg::PoseWithCovarianceStamped>
+class PoseWithCovarianceDisplay
+  : public MessageDisplay<geometry_msgs::msg::PoseWithCovarianceStamped>
 {
   Q_OBJECT
 
   /**
-   *  @brief Topic List
+   * @brief Topic List
    */
   Q_PROPERTY(
     QStringList topicList
@@ -186,67 +187,67 @@ public:
    * @brief Set covariance visual visibility
    * @param _visibility Visibility of covariance visual
    */
-  Q_INVOKABLE void setCovVisible(const bool& _visible);
-  
+  Q_INVOKABLE void setCovVisible(const bool & _visible);
+
   /**
    * @brief Set position covariance visual visibility
    * @param _visibility Visibility of covariance position visual
    */
-  Q_INVOKABLE void setPosCovVisible(const bool& _visible);
-  
+  Q_INVOKABLE void setPosCovVisible(const bool & _visible);
+
   /**
    * @brief Set orientation covariance visual visible
    * @param _visibility Visibility of covariance orientation visual
    */
-  Q_INVOKABLE void setRotCovVisible(const bool& _visible);
-  
+  Q_INVOKABLE void setRotCovVisible(const bool & _visible);
+
   /**
    * @brief Set position covariance frame of reference
    * @param _local True if expressed in local frame
    */
-  Q_INVOKABLE void setPosCovFrame(const bool& _local);
-  
+  Q_INVOKABLE void setPosCovFrame(const bool & _local);
+
   /**
    * @brief Set orientation covariance frame of reference
    * @param _local True if expressed in local frame
    */
-  Q_INVOKABLE void setRotCovFrame(const bool& _local);
-  
+  Q_INVOKABLE void setRotCovFrame(const bool & _local);
+
   /**
    * @brief Set position covariance color
    * @param _color Position covariance visual color
    */
-  Q_INVOKABLE void setPosCovColor(const QColor& _color);
-  
+  Q_INVOKABLE void setPosCovColor(const QColor & _color);
+
   /**
    * @brief Set orientation covariance color
    * @param _color Orientation covariance visual color
    */
-  Q_INVOKABLE void setRotCovColor(const QColor& _color);
-  
+  Q_INVOKABLE void setRotCovColor(const QColor & _color);
+
   /**
    * @brief Set orientation covariance color style (Unique/RGB)
    * @param _color Orientation covariance visual color style
    */
-  Q_INVOKABLE void setRotCovColorStyle(const bool& _unique);
-  
+  Q_INVOKABLE void setRotCovColorStyle(const bool & _unique);
+
   /**
    * @brief Set position covariance scale
    * @param _scale Position covariance visual scale
    */
-  Q_INVOKABLE void setPosCovScale(const float& _scale);
-  
+  Q_INVOKABLE void setPosCovScale(const float & _scale);
+
   /**
    * @brief Set orientation covariance scale
    * @param _scale Orientation covariance visual scale
    */
-  Q_INVOKABLE void setRotCovScale(const float& _scale);
-  
+  Q_INVOKABLE void setRotCovScale(const float & _scale);
+
   /**
    * @brief Set orientation covariance offset
    * @param _scale Orientation covariance visual offset
    */
-  Q_INVOKABLE void setRotCovOffset(const float& _offset);
+  Q_INVOKABLE void setRotCovOffset(const float & _offset);
 
 signals:
   /**
