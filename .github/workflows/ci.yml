@@ -16,8 +16,6 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Install Dependencies
-      id: configure
-      shell: bash
       run: |
         export DEBIAN_FRONTEND=noninteractive
         apt update -qq
