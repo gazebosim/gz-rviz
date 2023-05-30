@@ -17,10 +17,13 @@ jobs:
     - uses: actions/checkout@v2
     - name: Install Dependencies
       run: |
-        apt update -y
-        apt install -y wget
-        sh -c 'echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-stable `lsb_release -cs` main" > /etc/apt/sources.list.d/gazebo-stable.list'
-        wget http://packages.osrfoundation.org/gazebo.key -O - | sudo apt-key add -
+        export DEBIAN_FRONTEND=noninteractive
+        apt update -qq
+        apt install -qq -y lsb-release wget curl gnupg2 git
+        curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -o /usr/share/keyrings/ros-archive-keyring.gpg
+        echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu $(. /etc/os-release && echo $UBUNTU_CODENAME) main" | tee /etc/apt/sources.list.d/ros2.list > /dev/null
+        wget https://packages.osrfoundation.org/gazebo.gpg -O /usr/share/keyrings/pkgs-osrf-archive-keyring.gpg
+        echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/pkgs-osrf-archive-keyring.gpg] http://packages.osrfoundation.org/gazebo/ubuntu-stable $(lsb_release -cs) main" | tee /etc/apt/sources.list.d/gazebo-stable.list > /dev/null
         apt update -y
         if [ "$GZ_VERSION" == "garden" ]; then
           apt install -y libgz-common5-dev \
