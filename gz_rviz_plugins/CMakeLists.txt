@@ -96,6 +96,7 @@ macro(add_gz_rviz_plugin)
     ${GZ_RVIZ_PLUGIN_NAME}
     Qt5::Core Qt5::Qml Qt5::Quick Qt5::QuickControls2
     ${GZ_GUI}
+    ${GZ_CMAKE}::utilities
   )
 
   target_include_directories(${GZ_RVIZ_PLUGIN_NAME}
