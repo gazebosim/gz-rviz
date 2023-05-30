@@ -25,6 +25,9 @@ find_package(visualization_msgs REQUIRED)
 
 # Gazebo Libraries
 if("$ENV{GZ_VERSION}" STREQUAL "fortress")
+  find_package(ignition-cmake2 REQUIRED COMPONENTS utilities)
+  set(GZ_CMAKE ignition-cmake2)
+
   find_package(ignition-math6 REQUIRED)
   set(GZ_MATH ignition-math6)
 
@@ -41,6 +44,9 @@ if("$ENV{GZ_VERSION}" STREQUAL "fortress")
   set(GZ_RENDERING ignition-rendering6)
   message(STATUS "Compiling against Gazebo Fortress")
 else()
+  find_package(gz-cmake3 REQUIRED COMPONENTS utilities)
+  set(GZ_CMAKE gz-cmake3)
+
   find_package(gz-math7 REQUIRED)
   set(GZ_MATH gz-math7)
 
@@ -105,6 +111,7 @@ add_gz_rviz_plugin(
   NAME AxesDisplay
   DEPENDENCIES
     gz_rviz_common
+    ${GZ_CMAKE}
     ${GZ_GUI}
     ${GZ_MATH}
     ${GZ_PLUGIN}
@@ -117,6 +124,7 @@ add_gz_rviz_plugin(
   NAME GlobalOptions
   DEPENDENCIES
     gz_rviz_common
+    ${GZ_CMAKE}
     ${GZ_GUI}
     ${GZ_MATH}
     ${GZ_PLUGIN}
@@ -129,6 +137,7 @@ add_gz_rviz_plugin(
   NAME GPSDisplay
   DEPENDENCIES
     gz_rviz_common
+    ${GZ_CMAKE}
     ${GZ_GUI}
     ${GZ_PLUGIN}
     ${GZ_MATH}
@@ -141,6 +150,7 @@ add_gz_rviz_plugin(
   NAME ImageDisplay
   DEPENDENCIES
     gz_rviz_common
+    ${GZ_CMAKE}
     ${GZ_GUI}
     ${GZ_MATH}
     ${GZ_PLUGIN}
@@ -155,6 +165,7 @@ add_gz_rviz_plugin(
   DEPENDENCIES
     tf2_ros
     sensor_msgs
+    ${GZ_CMAKE}
     ${GZ_GUI}
     ${GZ_MATH}
     ${GZ_PLUGIN}
@@ -170,6 +181,7 @@ add_gz_rviz_plugin(
   DEPENDENCIES
     geometry_msgs
     gz_rviz_common
+    ${GZ_CMAKE}
     ${GZ_GUI}
     ${GZ_MATH}
     ${GZ_PLUGIN}
@@ -186,6 +198,7 @@ add_gz_rviz_plugin(
   DEPENDENCIES
     geometry_msgs
     gz_rviz_common
+    ${GZ_CMAKE}
     ${GZ_GUI}
     ${GZ_MATH}
     ${GZ_PLUGIN}
@@ -200,6 +213,7 @@ add_gz_rviz_plugin(
   DEPENDENCIES
     geometry_msgs
     gz_rviz_common
+    ${GZ_CMAKE}
     ${GZ_GUI}
     ${GZ_MATH}
     ${GZ_PLUGIN}
@@ -214,6 +228,7 @@ add_gz_rviz_plugin(
   DEPENDENCIES
     geometry_msgs
     gz_rviz_common
+    ${GZ_CMAKE}
     ${GZ_GUI}
     ${GZ_MATH}
     ${GZ_PLUGIN}
@@ -227,6 +242,7 @@ add_gz_rviz_plugin(
   DEPENDENCIES
     geometry_msgs
     gz_rviz_common
+    ${GZ_CMAKE}
     ${GZ_GUI}
     ${GZ_MATH}
     ${GZ_PLUGIN}
@@ -240,6 +256,7 @@ add_gz_rviz_plugin(
   DEPENDENCIES
     geometry_msgs
     gz_rviz_common
+    ${GZ_CMAKE}
     ${GZ_GUI}
     ${GZ_MATH}
     ${GZ_PLUGIN}
@@ -253,6 +270,7 @@ add_gz_rviz_plugin(
   DEPENDENCIES
     geometry_msgs
     gz_rviz_common
+    ${GZ_CMAKE}
     ${GZ_GUI}
     ${GZ_MATH}
     ${GZ_PLUGIN}
@@ -265,6 +283,7 @@ add_gz_rviz_plugin(
   NAME RobotModelDisplay
   DEPENDENCIES
     gz_rviz_common
+    ${GZ_CMAKE}
     ${GZ_GUI}
     ${GZ_MATH}
     ${GZ_PLUGIN}
@@ -279,6 +298,7 @@ add_gz_rviz_plugin(
   NAME TFDisplay
   DEPENDENCIES
     tf2_ros
+    ${GZ_CMAKE}
     ${GZ_GUI}
     ${GZ_MATH}
     ${GZ_PLUGIN}
