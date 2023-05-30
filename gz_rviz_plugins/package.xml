@@ -22,18 +22,18 @@
 
   <!-- Fortress (default) -->
   <depend>ignition-math6</depend>
-  <depend condition="$IGNITION_VERSION == 'garden'">>gz-math7</depend>
-  <depend condition="$IGNITION_VERSION == 'garden'">gz-gui7</depend>
-  <depend condition="$IGNITION_VERSION == 'garden'">gz-rendering7</depend>
-  <depend condition="$IGNITION_VERSION == 'garden'">gz-common5</depend>
-  <depend condition="$IGNITION_VERSION == 'fortress'">ignition-gui6</depend>
-  <depend condition="$IGNITION_VERSION == 'fortress'">ignition-rendering6</depend>
-  <depend condition="$IGNITION_VERSION == 'fortress'">ignition-math6</depend>
-  <depend condition="$IGNITION_VERSION == 'fortress'">ignition-common4</depend>
-  <depend condition="$IGNITION_VERSION == ''">ignition-math6</depend>
-  <depend condition="$IGNITION_VERSION == ''">ignition-common4</depend>
-  <depend condition="$IGNITION_VERSION == ''">ignition-gui6</depend>
-  <depend condition="$IGNITION_VERSION == ''">ignition-rendering6</depend>
+  <depend condition="$GZ_VERSION == 'garden'">>gz-math7</depend>
+  <depend condition="$GZ_VERSION == 'garden'">gz-gui7</depend>
+  <depend condition="$GZ_VERSION == 'garden'">gz-rendering7</depend>
+  <depend condition="$GZ_VERSION == 'garden'">gz-common5</depend>
+  <depend condition="$GZ_VERSION == 'fortress'">ignition-gui6</depend>
+  <depend condition="$GZ_VERSION == 'fortress'">ignition-rendering6</depend>
+  <depend condition="$GZ_VERSION == 'fortress'">ignition-math6</depend>
+  <depend condition="$GZ_VERSION == 'fortress'">ignition-common4</depend>
+  <depend condition="$GZ_VERSION == ''">ignition-math6</depend>
+  <depend condition="$GZ_VERSION == ''">ignition-common4</depend>
+  <depend condition="$GZ_VERSION == ''">ignition-gui6</depend>
+  <depend condition="$GZ_VERSION == ''">ignition-rendering6</depend>
 
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>
