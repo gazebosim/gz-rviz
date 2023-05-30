@@ -32,7 +32,7 @@ jobs:
                          libgz-gui7-dev
         fi
 
-        if [ "$GZ_VERSION" == "garden" ]; then
+        if [ "$GZ_VERSION" == "fortress" ]; then
           apt install -y libignition-common4-dev \
                          libignition-math6-dev \
                          libignition-rendering6-dev \
