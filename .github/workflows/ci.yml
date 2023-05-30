@@ -12,7 +12,7 @@ jobs:
     container:
       image: osrf/ros:${{ matrix.ros }}-desktop
     env:
-      IGNITION_VERSION: ${{ matrix.gazebo }}
+      GZ_VERSION: ${{ matrix.gazebo }}
     steps:
     - uses: actions/checkout@v2
     - name: Install Dependencies
