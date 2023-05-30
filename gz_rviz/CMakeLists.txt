@@ -31,7 +31,7 @@ find_package(tf2_msgs REQUIRED)
 find_package(tf2_ros REQUIRED)
 find_package(visualization_msgs REQUIRED)
 
-# ition libraries
+# Gazebo libraries
 find_package(gz_rviz_common REQUIRED)
 find_package(gz_rviz_plugins REQUIRED)
 
