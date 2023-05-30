@@ -8,7 +8,7 @@ jobs:
     strategy:
       matrix:
         gazebo: ['fortress', 'garden']
-        ros: ['humble', 'iron', 'rolling']
+        ros: ['humble', 'rolling']
     container:
       image: osrf/ros:${{ matrix.ros }}-desktop
     env:
