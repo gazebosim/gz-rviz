@@ -7,12 +7,12 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        ignition: ['fortress']
-        ros: ['rolling']
+        gazebo: ['fortress', 'garden']
+        ros: ['humble', 'iron', 'rolling']
     container:
       image: osrf/ros:${{ matrix.ros }}-desktop
     env:
-      IGNITION_VERSION: ${{ matrix.ignition }}
+      IGNITION_VERSION: ${{ matrix.gazebo }}
     steps:
     - uses: actions/checkout@v2
     - name: Install Dependencies
@@ -22,11 +22,19 @@ jobs:
         sh -c 'echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-stable `lsb_release -cs` main" > /etc/apt/sources.list.d/gazebo-stable.list'
         wget http://packages.osrfoundation.org/gazebo.key -O - | sudo apt-key add -
         apt update -y
-        apt install -y libignition-common4-dev \
-                       libignition-math6-dev \
-                       libignition-rendering6-dev \
-                       libignition-gui6-dev
+        if [ "$GZ_VERSION" == "garden" ]; then
+          apt install -y libgz-common5-dev \
+                         libgz-math7-dev \
+                         libgz-rendering7-dev \
+                         libgz-gui7-dev
+        fi
 
+        if [ "$GZ_VERSION" == "garden" ]; then
+          apt install -y libignition-common4-dev \
+                         libignition-math6-dev \
+                         libignition-rendering6-dev \
+                         libignition-gui6-dev
+        fi
     - name: Setup colcon workspace
       id: configure
       run: |

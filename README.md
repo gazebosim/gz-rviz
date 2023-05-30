@@ -1,27 +1,27 @@
-# Ignition RViz
+# Gazebo RViz
 
 [RViz](http://wiki.ros.org/rviz) is a 3D visualization tool for robots using ROS.
 
-Ignition RViz offers functionality similar to RViz, and is developed using
-[Ignition](https://ignitionrobotics.org/) libraries.
+Gazebo RViz offers functionality similar to RViz, and is developed using
+[Gazebo](https://gazebosim.org/) libraries.
 
 ### Build Status
 
 * ROS versions: Rolling (Humble)
-* Ignition versions: Fortress
+* Gazebo versions: Fortress or Garden
 
-[![Ignition RViz CI](https://github.com/ignitionrobotics/ign-rviz/actions/workflows/ci.yml/badge.svg)](https://github.com/ignitionrobotics/ign-rviz/actions/workflows/ci.yml)
+[![Gazebo RViz CI](https://github.com/gazebosim/gz-rviz/actions/workflows/ci.yml/badge.svg)](https://github.com/gazebosim/gz-rviz/actions/workflows/ci.yml)
 
-Head over to the [wiki](https://github.com/ignitionrobotics/ign-rviz/wiki) to get detailed description of the project.
+Head over to the [wiki](https://github.com/gazebosim/gz-rviz/wiki) to get detailed description of the project.
 
 ### Requirements
 
-- [ROS 2 Foxy or Rolling](https://docs.ros.org/en/rolling/Releases.html)
-- [Ignition Fortress](https://ignitionrobotics.org/docs/)
-	- [Ignition Common](https://ignitionrobotics.org/libs/common)
-	- [Ignition GUI](https://ignitionrobotics.org/libs/gui)
-	- [Ignition Math](https://ignitionrobotics.org/libs/math)
-	- [Ignition Rendering](https://ignitionrobotics.org/libs/rendering)
+- [ROS 2](https://docs.ros.org/en/rolling/Releases.html)
+- [Gazebo](https://gazebosim.org/docs/)
+	- [Gazebo Common](https://gazebosim.org/libs/common)
+	- [Gazebo GUI](https://gazebosim.org/libs/gui)
+	- [Gazebo Math](https://gazebosim.org/libs/math)
+	- [Gazebo Rendering](https://gazebosim.org/libs/rendering)
 - [Qt5](https://www.qt.io/)
 - Additional QML modules required for GPS Plugin
   - [QtPositioning](https://doc.qt.io/qt-5/qtpositioning-index.html) (`qml-module-qtpositioning`)
@@ -39,20 +39,20 @@ cd ~/colcon_ws/src
 **Clone the repository**
 
 ```bash
-git clone https://github.com/ignitionrobotics/ign-rviz.git
+git clone https://github.com/gazebosim/gz-rviz.git
 ```
 
-**Choose an Ignition version**
+**Choose an Gazebo version**
 
 ```bash
-export IGNITION_VERSION=<ignition>
+export GZ_VERSION=<gazebo version>
 ```
 
-Where `<ignition>` should be `fortress`.
+Where `<gazebo>` should be `fortress` or `garden`.
 
 > You only need to set this variable when compiling, not when running.
 
-**Build ign-rviz**
+**Build gz-rviz**
 
 Go to the root of your colcon workspace
 
@@ -67,22 +67,22 @@ source /opt/ros/<distro>/setup.bash  # If using bash
 source /opt/ros/<distro>/setup.zsh   # If using zsh
 ```
 
-Build ign-rviz
+Build gz-rviz
 
 ```bash
 colcon build
 ```
 
-### Launch ign-rviz
+### Launch fz-rviz
 
-Ignition Rviz can be launched using the following command
+Gazebo Rviz can be launched using the following command
 
 ```bash
 # Source the workspace
 source install/setup.zsh
 
-# Launch ign-rviz
-ros2 launch ign_rviz rviz.launch.py
+# Launch gz-rviz
+ros2 launch gz_rviz rviz.launch.py
 ```
 
 ### Instruction to generate documentation
@@ -90,7 +90,7 @@ ros2 launch ign_rviz rviz.launch.py
 Project documentation can be generated with the help of doxygen using the following commands.
 
 ```bash
-cd ~/colcon_ws/src/ign-rviz/docs/
+cd ~/colcon_ws/src/gz-rviz/docs/
 
 # Generate documentation
 doxygen rviz.doxyfile
@@ -106,5 +106,5 @@ firefox ./html/index.html
        # Source ROS2
        ros2 run image_tools cam2image
        ```
-    2. Launch ign-rviz as mentioned above
+    2. Launch gz-rviz as mentioned above
     3. Load an `ImageDisplay` plugin and select the published topic.
