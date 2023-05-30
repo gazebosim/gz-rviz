@@ -24,14 +24,14 @@
   #include <gz/gui/Plugin.hh>
 #endif
 #include <gz/gui/MainWindow.hh>
-using namespace gz;
+using namespace gz;  // NOLINT
 #else
 #ifndef Q_MOC_RUN
   #include <ignition/gui/qt.h>
   #include <ignition/gui/Plugin.hh>
 #endif
 #include <ignition/gui/MainWindow.hh>
-using namespace gz;
+using namespace gz;  // NOLINT
 #endif
 
 #include <rclcpp/rclcpp.hpp>

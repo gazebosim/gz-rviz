@@ -16,10 +16,10 @@
 
 #ifdef GZ_HEADERS
 #include <gz/plugin/Register.hh>
-using namespace gz;
+using namespace gz;  // NOLINT
 #else
 #include <ignition/plugin/Register.hh>
-using namespace gz;
+using namespace gz;  // NOLINT
 #endif
 #include <algorithm>
 #include <memory>

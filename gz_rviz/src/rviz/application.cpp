@@ -14,31 +14,33 @@
 
 #include <string>
 
-#include <ament_index_cpp/get_package_share_directory.hpp>
-#include <ament_index_cpp/get_package_prefix.hpp>
 
 #ifdef GZ_HEADERS
 #ifndef Q_MOC_RUN
+  #include <gz/gui/qt.h>
+
   #include <gz/gui/Application.hh>
   #include <gz/gui/MainWindow.hh>
-  #include <gz/gui/qt.h>
 
   #include "gz/rviz/rviz.hpp"
 #endif
 #include <gz/common/Console.hh>
-using namespace gz;
+using namespace gz;  // NOLINT
 #else
 #ifndef Q_MOC_RUN
+  #include <ignition/gui/qt.h>
   #include <ignition/gui/Application.hh>
   #include <ignition/gui/MainWindow.hh>
-  #include <ignition/gui/qt.h>
 
   #include "gz/rviz/rviz.hpp"
 #endif
 
 #include <ignition/common/Console.hh>
-using namespace gz;
+using namespace gz;  // NOLINT
 #endif
+
+#include <ament_index_cpp/get_package_share_directory.hpp>
+#include <ament_index_cpp/get_package_prefix.hpp>
 
 int main(int argc, char ** argv)
 {

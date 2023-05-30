@@ -17,7 +17,7 @@
 
 #ifdef GZ_HEADERS
 #include <gz/rendering.hh>
-using namespace gz;
+using namespace gz;  // NOLINT
 #else
 #include <ignition/rendering.hh>
 #endif

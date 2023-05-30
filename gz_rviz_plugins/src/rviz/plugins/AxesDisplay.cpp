@@ -17,12 +17,12 @@
 #include <gz/plugin/Register.hh>
 #include <gz/gui/Application.hh>
 #include <gz/gui/GuiEvents.hh>
-using namespace gz;
+using namespace gz;  // NOLINT
 #else
 #include <ignition/plugin/Register.hh>
 #include <ignition/gui/Application.hh>
 #include <ignition/gui/GuiEvents.hh>
-using namespace gz;
+using namespace gz;  // NOLINT
 #endif
 
 #include <algorithm>

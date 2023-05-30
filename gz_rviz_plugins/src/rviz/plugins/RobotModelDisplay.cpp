@@ -21,7 +21,7 @@
 #include <gz/math/Color.hh>
 #include <gz/math/Pose3.hh>
 #include <gz/plugin/Register.hh>
-using namespace gz;
+using namespace gz;  // NOLINT
 #else
 #include <ignition/common/MeshManager.hh>
 #include <ignition/gui/Application.hh>
@@ -29,7 +29,7 @@ using namespace gz;
 #include <ignition/math/Color.hh>
 #include <ignition/math/Pose3.hh>
 #include <ignition/plugin/Register.hh>
-using namespace gz;
+using namespace gz;  // NOLINT
 #endif
 
 #include <memory>
@@ -457,9 +457,10 @@ rendering::VisualPtr RobotModelDisplay::createLinkGeometry(
             rendering::MeshDescriptor descriptor;
             descriptor.meshName = filepath;
 #ifdef GZ_HEADERS
-              gz::common::MeshManager * meshManager = gz::common::MeshManager::Instance();
+            gz::common::MeshManager * meshManager = gz::common::MeshManager::Instance();
 #else
-              ignition::common::MeshManager * meshManager = ignition::common::MeshManager::Instance();
+            ignition::common::MeshManager * meshManager =
+              ignition::common::MeshManager::Instance();
 #endif
             descriptor.mesh = meshManager->Load(descriptor.meshName);
             rendering::MeshPtr mesh = this->scene->CreateMesh(descriptor);
@@ -476,9 +477,9 @@ rendering::VisualPtr RobotModelDisplay::createLinkGeometry(
           rendering::MeshDescriptor descriptor;
           descriptor.meshName = meshInfo->filename.substr(7);
 #ifdef GZ_HEADERS
-            gz::common::MeshManager * meshManager = gz::common::MeshManager::Instance();
+          gz::common::MeshManager * meshManager = gz::common::MeshManager::Instance();
 #else
-            ignition::common::MeshManager * meshManager = ignition::common::MeshManager::Instance();
+          ignition::common::MeshManager * meshManager = ignition::common::MeshManager::Instance();
 #endif
           descriptor.mesh = meshManager->Load(descriptor.meshName);
           rendering::MeshPtr mesh = this->scene->CreateMesh(descriptor);

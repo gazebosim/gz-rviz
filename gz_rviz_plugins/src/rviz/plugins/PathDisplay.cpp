@@ -21,7 +21,7 @@
 #include <gz/math/Quaternion.hh>
 #include <gz/math/Vector3.hh>
 #include <gz/plugin/Register.hh>
-using namespace gz;
+using namespace gz;  // NOLINT
 #else
 #include <ignition/gui/Application.hh>
 #include <ignition/gui/GuiEvents.hh>
@@ -29,7 +29,7 @@ using namespace gz;
 #include <ignition/math/Quaternion.hh>
 #include <ignition/math/Vector3.hh>
 #include <ignition/plugin/Register.hh>
-using namespace gz;
+using namespace gz;  // NOLINT
 #endif
 #include <string>
 #include <utility>

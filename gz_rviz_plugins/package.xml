@@ -6,9 +6,9 @@
   <description>This package contains visualization plugins for gz-rviz</description>
 
   <maintainer email="alejandro@openrobotics.com">Alejandro Hernández</maintainer>
-  <author email="sarathkrishnan99@gmail.com">Sarathkrishnan Ramesh</author>
 
   <license>Apache License, Version 2.0</license>
+  <author>Sarathkrishnan Ramesh</author>
 
   <depend>geometry_msgs</depend>
   <depend>gz_rviz_common</depend>

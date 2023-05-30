@@ -25,13 +25,13 @@
   #include <gz/gui/qt.h>
   #include <gz/gui/Application.hh>
 #endif
-using namespace gz;
+using namespace gz;  // NOLINT
 #else
 #ifndef Q_MOC_RUN
   #include <ignition/gui/qt.h>
   #include <ignition/gui/Application.hh>
 #endif
-using namespace ignition;
+using namespace ignition;  // NOLINT
 #endif
 #include <rclcpp/rclcpp.hpp>
 
@@ -218,6 +218,6 @@ private:
 };
 
 }  // namespace rviz
-}  // namespace ignition
+}  // namespace gz
 
 #endif  // GZ__RVIZ__RVIZ_HPP_

@@ -23,14 +23,14 @@
   #include <gz/gui/Plugin.hh>
 #endif
 #include <gz/rendering.hh>
-using namespace gz;
+using namespace gz;  // NOLINT
 #else
 #ifndef Q_MOC_RUN
   #include <ignition/gui/qt.h>
   #include <ignition/gui/Plugin.hh>
 #endif
 #include <ignition/rendering.hh>
-using namespace gz;
+using namespace gz;  // NOLINT
 #endif
 
 #include <memory>

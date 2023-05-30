@@ -22,7 +22,7 @@
 #endif
 #include <gz/rendering.hh>
 #include <gz/math/Color.hh>
-using namespace gz;
+using namespace gz;  // NOLINT
 #else
 #ifndef Q_MOC_RUN
   #include <ignition/gui/qt.h>
@@ -30,7 +30,7 @@ using namespace gz;
 #endif
 #include <ignition/rendering.hh>
 #include <ignition/math/Color.hh>
-using namespace gz;
+using namespace gz;  // NOLINT
 #endif
 
 #include <QColor>

@@ -20,10 +20,10 @@
 #include <tf2_ros/transform_listener.h>
 #ifdef GZ_HEADERS
 #include <gz/math/Pose3.hh>
-using namespace gz;
+using namespace gz;  // NOLINT
 #else
 #include <ignition/math/Pose3.hh>
-using namespace ignition;
+using namespace ignition;  // NOLINT
 #endif
 
 #include <memory>

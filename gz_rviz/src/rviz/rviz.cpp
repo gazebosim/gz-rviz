@@ -373,4 +373,4 @@ rclcpp::Node::SharedPtr RViz::get_node()
 }
 
 }  // namespace rviz
-}  // namespace ignition
+}  // namespace gz

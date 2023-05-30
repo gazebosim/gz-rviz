@@ -17,11 +17,11 @@
 #ifdef GZ_HEADERS
 #include <gz/gui/Application.hh>
 #include <gz/plugin/Register.hh>
-using namespace gz;
+using namespace gz;  // NOLINT
 #else
 #include <ignition/gui/Application.hh>
 #include <ignition/plugin/Register.hh>
-using namespace gz;
+using namespace gz;  // NOLINT
 #endif
 
 #include <limits>

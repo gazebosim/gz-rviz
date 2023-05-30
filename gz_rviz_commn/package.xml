@@ -6,9 +6,9 @@
   <description>Common libraries for gz_rviz and gz_rviz_plugins</description>
 
   <maintainer email="alejandro@openrobotics.com">Alejandro Hernández</maintainer>
-  <author email="sarathkrishnan99@gmail.com">Sarathkrishnan Ramesh</author>
-
   <license>Apache License, Version 2.0</license>
+
+  <author>Sarathkrishnan Ramesh</author>
 
   <depend>rclcpp</depend>
   <depend>geometry_msgs</depend>

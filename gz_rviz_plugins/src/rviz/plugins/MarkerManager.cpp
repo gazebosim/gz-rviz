@@ -16,10 +16,10 @@
 
 #ifdef GZ_HEADERS
 #include <gz/math/Pose3.hh>
-using namespace gz;
+using namespace gz;  // NOLINT
 #else
 #include <ignition/math/Pose3.hh>
-using namespace gz;
+using namespace gz;  // NOLINT
 #endif
 #include <string>
 
