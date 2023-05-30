@@ -73,7 +73,7 @@ Build gz-rviz
 colcon build
 ```
 
-### Launch fz-rviz
+### Launch gz-rviz
 
 Gazebo Rviz can be launched using the following command
 
