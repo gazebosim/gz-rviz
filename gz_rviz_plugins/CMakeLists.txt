@@ -34,6 +34,9 @@ if("$ENV{GZ_VERSION}" STREQUAL "fortress")
   find_package(ignition-common4 REQUIRED)
   set(GZ_COMMON ignition-common4)
 
+  find_package(ignition-plugin1 REQUIRED)
+  set(GZ_PLUGIN ignition-plugin1)
+
   find_package(ignition-rendering6 REQUIRED)
   set(GZ_RENDERING ignition-rendering6)
   message(STATUS "Compiling against Gazebo Fortress")
@@ -46,6 +49,9 @@ else()
 
   find_package(gz-common5 REQUIRED)
   set(GZ_COMMON gz-common5)
+
+  find_package(gz-plugin2 REQUIRED)
+  set(GZ_PLUGIN gz-plugin2)
 
   find_package(gz-rendering7 REQUIRED)
   set(GZ_RENDERING gz-rendering7)
@@ -101,6 +107,7 @@ add_gz_rviz_plugin(
     gz_rviz_common
     ${GZ_GUI}
     ${GZ_MATH}
+    ${GZ_PLUGIN}
     ${GZ_RENDERING}
     tf2_ros
 )
@@ -112,6 +119,7 @@ add_gz_rviz_plugin(
     gz_rviz_common
     ${GZ_GUI}
     ${GZ_MATH}
+    ${GZ_PLUGIN}
     ${GZ_RENDERING}
     tf2_ros
 )
@@ -122,6 +130,7 @@ add_gz_rviz_plugin(
   DEPENDENCIES
     gz_rviz_common
     ${GZ_GUI}
+    ${GZ_PLUGIN}
     ${GZ_MATH}
     sensor_msgs
     tf2_ros
@@ -134,6 +143,7 @@ add_gz_rviz_plugin(
     gz_rviz_common
     ${GZ_GUI}
     ${GZ_MATH}
+    ${GZ_PLUGIN}
     ${GZ_RENDERING}
     sensor_msgs
     tf2_ros
@@ -147,6 +157,7 @@ add_gz_rviz_plugin(
     sensor_msgs
     ${GZ_GUI}
     ${GZ_MATH}
+    ${GZ_PLUGIN}
     ${GZ_RENDERING}
     gz_rviz_common
 )
@@ -161,6 +172,7 @@ add_gz_rviz_plugin(
     gz_rviz_common
     ${GZ_GUI}
     ${GZ_MATH}
+    ${GZ_PLUGIN}
     ${GZ_RENDERING}
     tf2_ros
     visualization_msgs
@@ -176,6 +188,7 @@ add_gz_rviz_plugin(
     gz_rviz_common
     ${GZ_GUI}
     ${GZ_MATH}
+    ${GZ_PLUGIN}
     ${GZ_RENDERING}
     tf2_ros
     visualization_msgs
@@ -189,6 +202,7 @@ add_gz_rviz_plugin(
     gz_rviz_common
     ${GZ_GUI}
     ${GZ_MATH}
+    ${GZ_PLUGIN}
     ${GZ_RENDERING}
     nav_msgs
     tf2_ros
@@ -202,6 +216,7 @@ add_gz_rviz_plugin(
     gz_rviz_common
     ${GZ_GUI}
     ${GZ_MATH}
+    ${GZ_PLUGIN}
     ${GZ_RENDERING}
     tf2_ros
 )
@@ -214,6 +229,7 @@ add_gz_rviz_plugin(
     gz_rviz_common
     ${GZ_GUI}
     ${GZ_MATH}
+    ${GZ_PLUGIN}
     ${GZ_RENDERING}
     tf2_ros
 )
@@ -226,6 +242,7 @@ add_gz_rviz_plugin(
     gz_rviz_common
     ${GZ_GUI}
     ${GZ_MATH}
+    ${GZ_PLUGIN}
     ${GZ_RENDERING}
     tf2_ros
 )
@@ -238,6 +255,7 @@ add_gz_rviz_plugin(
     gz_rviz_common
     ${GZ_GUI}
     ${GZ_MATH}
+    ${GZ_PLUGIN}
     ${GZ_RENDERING}
     tf2_ros
 )
@@ -249,6 +267,7 @@ add_gz_rviz_plugin(
     gz_rviz_common
     ${GZ_GUI}
     ${GZ_MATH}
+    ${GZ_PLUGIN}
     ${GZ_RENDERING}
     std_msgs
     tf2_ros
@@ -262,6 +281,7 @@ add_gz_rviz_plugin(
     tf2_ros
     ${GZ_GUI}
     ${GZ_MATH}
+    ${GZ_PLUGIN}
     ${GZ_RENDERING}
     gz_rviz_common
 )
