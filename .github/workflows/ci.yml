@@ -1,6 +1,9 @@
-name: Ignition RViz CI
+name: Gazebo RViz CI
 
-on: [push, pull_request]
+on:
+  pull_request:
+  push:
+    branches: [ master ]
 
 jobs:
   build:
@@ -14,8 +17,10 @@ jobs:
     env:
       GZ_VERSION: ${{ matrix.gazebo }}
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Install Dependencies
+      id: configure
+      shell: bash
       run: |
         export DEBIAN_FRONTEND=noninteractive
         apt update -qq
