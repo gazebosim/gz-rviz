@@ -178,7 +178,7 @@ void AxesDisplay::onRefresh()
 
   this->frameList.push_back(QString::fromStdString("<Fixed Frame>"));
 
-  for (const auto frame : allFrames) {
+  for (const auto & frame : allFrames) {
     this->frameList.push_back(QString::fromStdString(frame));
   }
 

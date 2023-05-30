@@ -118,22 +118,22 @@ void RViz::refreshTopicList() const
 ////////////////////////////////////////////////////////////////////////////////
 void RViz::addGrid3D() const
 {
-  ignition::gui::App()->LoadPlugin("Grid3D");
+  gui::App()->LoadPlugin("Grid3D");
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void RViz::addTFDisplay() const
 {
   // Load plugin
-  if (ignition::gui::App()->LoadPlugin("TFDisplay")) {
+  if (gui::App()->LoadPlugin("TFDisplay")) {
     auto tfDisplayPlugins =
-      ignition::gui::App()->findChildren<DisplayPlugin<tf2_msgs::msg::TFMessage> *>();
+      gui::App()->findChildren<DisplayPlugin<tf2_msgs::msg::TFMessage> *>();
     int tfDisplayCount = tfDisplayPlugins.size() - 1;
 
     // Set frame manager and install event filter for recently added plugin
     tfDisplayPlugins[tfDisplayCount]->initialize(this->node);
     tfDisplayPlugins[tfDisplayCount]->setFrameManager(this->frameManager);
-    ignition::gui::App()->findChild<ignition::gui::MainWindow *>()->installEventFilter(
+    gui::App()->findChild<gui::MainWindow *>()->installEventFilter(
       tfDisplayPlugins[tfDisplayCount]);
   }
 }
@@ -142,16 +142,16 @@ void RViz::addTFDisplay() const
 void RViz::addLaserScanDisplay(const QString & _topic) const
 {
   // Load plugin
-  if (ignition::gui::App()->LoadPlugin("LaserScanDisplay")) {
+  if (gui::App()->LoadPlugin("LaserScanDisplay")) {
     auto laserScanPlugin =
-      ignition::gui::App()->findChildren<DisplayPlugin<sensor_msgs::msg::LaserScan> *>();
+      gui::App()->findChildren<DisplayPlugin<sensor_msgs::msg::LaserScan> *>();
     int pluginCount = laserScanPlugin.size() - 1;
 
     // Set frame manager and install event filter for recently added plugin
     laserScanPlugin[pluginCount]->initialize(this->node);
     laserScanPlugin[pluginCount]->setTopic(_topic.toStdString());
     laserScanPlugin[pluginCount]->setFrameManager(this->frameManager);
-    ignition::gui::App()->findChild<ignition::gui::MainWindow *>()->installEventFilter(
+    gui::App()->findChild<gui::MainWindow *>()->installEventFilter(
       laserScanPlugin[pluginCount]);
   }
 }
@@ -159,9 +159,9 @@ void RViz::addLaserScanDisplay(const QString & _topic) const
 void RViz::addGPSDisplay(const QString & _topic) const
 {
   // Load plugin
-  if (ignition::gui::App()->LoadPlugin("GPSDisplay")) {
+  if (gui::App()->LoadPlugin("GPSDisplay")) {
     auto gpsDisplay =
-      ignition::gui::App()->findChildren<DisplayPlugin<sensor_msgs::msg::NavSatFix> *>();
+      gui::App()->findChildren<DisplayPlugin<sensor_msgs::msg::NavSatFix> *>();
     int pluginCount = gpsDisplay.size() - 1;
 
     // Set frame manager and install event filter for recently added plugin
@@ -174,16 +174,16 @@ void RViz::addGPSDisplay(const QString & _topic) const
 void RViz::addMarkerDisplay(const QString & _topic) const
 {
   // Load plugin
-  if (ignition::gui::App()->LoadPlugin("MarkerDisplay")) {
+  if (gui::App()->LoadPlugin("MarkerDisplay")) {
     auto markerDisplay =
-      ignition::gui::App()->findChildren<DisplayPlugin<visualization_msgs::msg::Marker> *>();
+      gui::App()->findChildren<DisplayPlugin<visualization_msgs::msg::Marker> *>();
     int pluginCount = markerDisplay.size() - 1;
 
     // Set frame manager and install event filter for recently added plugin
     markerDisplay[pluginCount]->initialize(this->node);
     markerDisplay[pluginCount]->setTopic(_topic.toStdString());
     markerDisplay[pluginCount]->setFrameManager(this->frameManager);
-    ignition::gui::App()->findChild<ignition::gui::MainWindow *>()->installEventFilter(
+    gui::App()->findChild<gui::MainWindow *>()->installEventFilter(
       markerDisplay[pluginCount]);
   }
 }
@@ -192,16 +192,16 @@ void RViz::addMarkerDisplay(const QString & _topic) const
 void RViz::addMarkerArrayDisplay(const QString & _topic) const
 {
   // Load plugin
-  if (ignition::gui::App()->LoadPlugin("MarkerArrayDisplay")) {
+  if (gui::App()->LoadPlugin("MarkerArrayDisplay")) {
     auto markerArrayDisplay =
-      ignition::gui::App()->findChildren<DisplayPlugin<visualization_msgs::msg::MarkerArray> *>();
+      gui::App()->findChildren<DisplayPlugin<visualization_msgs::msg::MarkerArray> *>();
     int pluginCount = markerArrayDisplay.size() - 1;
 
     // Set frame manager and install event filter for recently added plugin
     markerArrayDisplay[pluginCount]->initialize(this->node);
     markerArrayDisplay[pluginCount]->setTopic(_topic.toStdString());
     markerArrayDisplay[pluginCount]->setFrameManager(this->frameManager);
-    ignition::gui::App()->findChild<ignition::gui::MainWindow *>()->installEventFilter(
+    gui::App()->findChild<gui::MainWindow *>()->installEventFilter(
       markerArrayDisplay[pluginCount]);
   }
 }
@@ -210,16 +210,16 @@ void RViz::addMarkerArrayDisplay(const QString & _topic) const
 void RViz::addPointStampedDisplay(const QString & _topic) const
 {
   // Load plugin
-  if (ignition::gui::App()->LoadPlugin("PointStampedDisplay")) {
+  if (gui::App()->LoadPlugin("PointStampedDisplay")) {
     auto pointStampedPlugin =
-      ignition::gui::App()->findChildren<DisplayPlugin<geometry_msgs::msg::PointStamped> *>();
+      gui::App()->findChildren<DisplayPlugin<geometry_msgs::msg::PointStamped> *>();
     int pluginCount = pointStampedPlugin.size() - 1;
 
     // Set frame manager and install event filter for recently added plugin
     pointStampedPlugin[pluginCount]->initialize(this->node);
     pointStampedPlugin[pluginCount]->setTopic(_topic.toStdString());
     pointStampedPlugin[pluginCount]->setFrameManager(this->frameManager);
-    ignition::gui::App()->findChild<ignition::gui::MainWindow *>()->installEventFilter(
+    gui::App()->findChild<gui::MainWindow *>()->installEventFilter(
       pointStampedPlugin[pluginCount]);
   }
 }
@@ -228,16 +228,16 @@ void RViz::addPointStampedDisplay(const QString & _topic) const
 void RViz::addPolygonDisplay(const QString & _topic) const
 {
   // Load plugin
-  if (ignition::gui::App()->LoadPlugin("PolygonDisplay")) {
+  if (gui::App()->LoadPlugin("PolygonDisplay")) {
     auto polygonPlugin =
-      ignition::gui::App()->findChildren<DisplayPlugin<geometry_msgs::msg::PolygonStamped> *>();
+      gui::App()->findChildren<DisplayPlugin<geometry_msgs::msg::PolygonStamped> *>();
     int pluginCount = polygonPlugin.size() - 1;
 
     // Set frame manager and install event filter for recently added plugin
     polygonPlugin[pluginCount]->initialize(this->node);
     polygonPlugin[pluginCount]->setTopic(_topic.toStdString());
     polygonPlugin[pluginCount]->setFrameManager(this->frameManager);
-    ignition::gui::App()->findChild<ignition::gui::MainWindow *>()->installEventFilter(
+    gui::App()->findChild<gui::MainWindow *>()->installEventFilter(
       polygonPlugin[pluginCount]);
   }
 }
@@ -246,16 +246,16 @@ void RViz::addPolygonDisplay(const QString & _topic) const
 void RViz::addPoseDisplay(const QString & _topic) const
 {
   // Load plugin
-  if (ignition::gui::App()->LoadPlugin("PoseDisplay")) {
+  if (gui::App()->LoadPlugin("PoseDisplay")) {
     auto posePlugin =
-      ignition::gui::App()->findChildren<DisplayPlugin<geometry_msgs::msg::PoseStamped> *>();
+      gui::App()->findChildren<DisplayPlugin<geometry_msgs::msg::PoseStamped> *>();
     int pluginCount = posePlugin.size() - 1;
 
     // Set frame manager and install event filter for recently added plugin
     posePlugin[pluginCount]->initialize(this->node);
     posePlugin[pluginCount]->setTopic(_topic.toStdString());
     posePlugin[pluginCount]->setFrameManager(this->frameManager);
-    ignition::gui::App()->findChild<ignition::gui::MainWindow *>()->installEventFilter(
+    gui::App()->findChild<gui::MainWindow *>()->installEventFilter(
       posePlugin[pluginCount]);
   }
 }
@@ -264,16 +264,16 @@ void RViz::addPoseDisplay(const QString & _topic) const
 void RViz::addPoseArrayDisplay(const QString & _topic) const
 {
   // Load plugin
-  if (ignition::gui::App()->LoadPlugin("PoseArrayDisplay")) {
+  if (gui::App()->LoadPlugin("PoseArrayDisplay")) {
     auto poseArrayPlugin =
-      ignition::gui::App()->findChildren<DisplayPlugin<geometry_msgs::msg::PoseArray> *>();
+      gui::App()->findChildren<DisplayPlugin<geometry_msgs::msg::PoseArray> *>();
     int pluginCount = poseArrayPlugin.size() - 1;
 
     // Set frame manager and install event filter for recently added plugin
     poseArrayPlugin[pluginCount]->initialize(this->node);
     poseArrayPlugin[pluginCount]->setTopic(_topic.toStdString());
     poseArrayPlugin[pluginCount]->setFrameManager(this->frameManager);
-    ignition::gui::App()->findChild<ignition::gui::MainWindow *>()->installEventFilter(
+    gui::App()->findChild<gui::MainWindow *>()->installEventFilter(
       poseArrayPlugin[pluginCount]);
   }
 }
@@ -282,16 +282,16 @@ void RViz::addPoseArrayDisplay(const QString & _topic) const
 void RViz::addPathDisplay(const QString & _topic) const
 {
   // Load plugin
-  if (ignition::gui::App()->LoadPlugin("PathDisplay")) {
+  if (gui::App()->LoadPlugin("PathDisplay")) {
     auto pathPlugin =
-      ignition::gui::App()->findChildren<DisplayPlugin<nav_msgs::msg::Path> *>();
+      gui::App()->findChildren<DisplayPlugin<nav_msgs::msg::Path> *>();
     int pluginCount = pathPlugin.size() - 1;
 
     // Set frame manager and install event filter for recently added plugin
     pathPlugin[pluginCount]->initialize(this->node);
     pathPlugin[pluginCount]->setTopic(_topic.toStdString());
     pathPlugin[pluginCount]->setFrameManager(this->frameManager);
-    ignition::gui::App()->findChild<ignition::gui::MainWindow *>()->installEventFilter(
+    gui::App()->findChild<gui::MainWindow *>()->installEventFilter(
       pathPlugin[pluginCount]);
   }
 }
@@ -300,16 +300,16 @@ void RViz::addPathDisplay(const QString & _topic) const
 void RViz::addRobotModelDisplay() const
 {
   // Load plugin
-  if (ignition::gui::App()->LoadPlugin("RobotModelDisplay")) {
+  if (gui::App()->LoadPlugin("RobotModelDisplay")) {
     auto robotModelPlugin =
-      ignition::gui::App()->findChildren<DisplayPlugin<std_msgs::msg::String> *>();
+      gui::App()->findChildren<DisplayPlugin<std_msgs::msg::String> *>();
     int pluginCount = robotModelPlugin.size() - 1;
 
     // Set frame manager and install event filter for recently added plugin
     robotModelPlugin[pluginCount]->initialize(this->node);
     robotModelPlugin[pluginCount]->setFrameManager(this->frameManager);
     robotModelPlugin[pluginCount]->setTopic("/robot_description");
-    ignition::gui::App()->findChild<ignition::gui::MainWindow *>()->installEventFilter(
+    gui::App()->findChild<gui::MainWindow *>()->installEventFilter(
       robotModelPlugin[pluginCount]);
   }
 }
@@ -318,9 +318,9 @@ void RViz::addRobotModelDisplay() const
 void RViz::addImageDisplay(const QString & _topic) const
 {
   // Load plugin
-  if (ignition::gui::App()->LoadPlugin("ImageDisplay")) {
+  if (gui::App()->LoadPlugin("ImageDisplay")) {
     auto imageDisplayPlugin =
-      ignition::gui::App()->findChildren<DisplayPlugin<sensor_msgs::msg::Image> *>();
+      gui::App()->findChildren<DisplayPlugin<sensor_msgs::msg::Image> *>();
     int pluginCount = imageDisplayPlugin.size() - 1;
 
     // Set frame manager and install event filter for recently added plugin
@@ -333,14 +333,14 @@ void RViz::addImageDisplay(const QString & _topic) const
 void RViz::addAxesDisplay() const
 {
   // Load plugin
-  if (ignition::gui::App()->LoadPlugin("AxesDisplay")) {
+  if (gui::App()->LoadPlugin("AxesDisplay")) {
     auto axes_plugins =
-      ignition::gui::App()->findChildren<ignition::rviz::plugins::MessageDisplayBase *>();
+      gui::App()->findChildren<rviz::plugins::MessageDisplayBase *>();
     int axes_plugin_count = axes_plugins.size() - 1;
 
     // Set frame manager and install event filter for recently added plugin
     axes_plugins[axes_plugin_count]->setFrameManager(this->frameManager);
-    ignition::gui::App()->findChild<ignition::gui::MainWindow *>()->installEventFilter(
+    gui::App()->findChild<gui::MainWindow *>()->installEventFilter(
       axes_plugins[axes_plugin_count]);
   }
 }
@@ -353,15 +353,15 @@ void RViz::init_ros()
   this->frameManager->setFixedFrame("world");
 
   // Load Global Options plugin
-  if (ignition::gui::App()->LoadPlugin("GlobalOptions")) {
+  if (gui::App()->LoadPlugin("GlobalOptions")) {
     auto globalOptionsPlugin =
-      ignition::gui::App()->findChild<ignition::rviz::plugins::MessageDisplayBase *>();
+      gui::App()->findChild<rviz::plugins::MessageDisplayBase *>();
 
     // Set frame manager and install
     globalOptionsPlugin->setFrameManager(this->frameManager);
 
     // Install event filter
-    ignition::gui::App()->findChild<ignition::gui::MainWindow *>()->installEventFilter(
+    gui::App()->findChild<gui::MainWindow *>()->installEventFilter(
       globalOptionsPlugin);
   }
 }

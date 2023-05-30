@@ -25,15 +25,9 @@
 #include <memory>
 #include <vector>
 
-#ifdef GZ_HEADERS
 #include "gz/rviz/common/rviz_events.hpp"
 #include "gz/rviz/common/frame_manager.hpp"
-using namespace gz;
-#else
-#include "ignition/rviz/common/rviz_events.hpp"
-#include "ignition/rviz/common/frame_manager.hpp"
-using namespace ignition;
-#endif
+
 namespace gz
 {
 namespace rviz
