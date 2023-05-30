@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        gazebo: ['fortress', 'garden']
+        gazebo: ['garden']
         ros: ['humble', 'rolling']
     container:
       image: osrf/ros:${{ matrix.ros }}-desktop
