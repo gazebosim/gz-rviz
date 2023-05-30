@@ -39,6 +39,7 @@ jobs:
                          libignition-rendering6-dev \
                          libignition-gui6-dev
         fi
+      shell: bash
     - name: Setup colcon workspace
       id: configure
       run: |
