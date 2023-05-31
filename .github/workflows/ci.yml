@@ -55,7 +55,7 @@ jobs:
       run: |
         cd /home/colcon_ws/
         . /opt/ros/${{ matrix.ros }}/setup.sh
-        colcon build --merge-install --event-handlers console_direct+
+        colcon build --event-handlers console_direct+
     - name: Run tests
       id: test
       run: |
