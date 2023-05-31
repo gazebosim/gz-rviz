@@ -302,16 +302,11 @@ ament_target_dependencies(gz_rviz_plugins
   tf2_ros
 )
 
-target_link_libraries(gz_rviz_plugins
-  ${GZ_PLUGIN}::register
-)
-
 target_include_directories(gz_rviz_plugins
   PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>
   ${Qt5Widgets_INCLUDE_DIRS}
-  ${${GZ_GUI}_INCLUDE_DIRS}
 )
 
 install(

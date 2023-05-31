@@ -27,15 +27,19 @@ jobs:
         apt update -y
         echo "Gazebo version " $GZ_VERSION
         if [ "$GZ_VERSION" == "garden" ]; then
-          apt install -y libgz-common5-dev \
+          apt install -y libgz-cmake3-dev \
+                         libgz-common5-dev \
                          libgz-math7-dev \
+                         libgz-plugin2-dev \
                          libgz-rendering7-dev \
                          libgz-gui7-dev
         fi
 
         if [ "$GZ_VERSION" == "fortress" ]; then
-          apt install -y libignition-common4-dev \
+          apt install -y libignition-cmake2-dev \
+                         libignition-common4-dev \
                          libignition-math6-dev \
+                         libignition-plugin1-dev \
                          libignition-rendering6-dev \
                          libignition-gui6-dev
         fi
