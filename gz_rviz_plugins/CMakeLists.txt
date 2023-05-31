@@ -25,6 +25,9 @@ find_package(visualization_msgs REQUIRED)
 
 # Gazebo Libraries
 if("$ENV{GZ_VERSION}" STREQUAL "garden")
+  find_package(gz-cmake2 REQUIRED)
+  set(GZ_CMAKE gz-cmake2)
+
   find_package(gz-utils2 REQUIRED)
   set(GZ_UTILS gz-utils2)
 
@@ -107,6 +110,7 @@ macro(add_gz_rviz_plugin)
     $<INSTALL_INTERFACE:include>
     ${Qt5Widgets_INCLUDE_DIRS}
     ${${GZ_UTILS}_INCLUDE_DIRS}
+    ${${GZ_CMAKE}_INCLUDE_DIRS}
   )
 endmacro()
 
