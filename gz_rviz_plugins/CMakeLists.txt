@@ -90,8 +90,6 @@ macro(add_gz_rviz_plugin)
     ${resources_RCC}
   )
 
-  message("Gz-utils " ${${GZ_UTILS}_INCLUDE_DIRS})
-
   ament_target_dependencies(
     ${GZ_RVIZ_PLUGIN_NAME}
     ${GZ_RVIZ_PLUGIN_DEPENDENCIES}
@@ -110,7 +108,7 @@ macro(add_gz_rviz_plugin)
     $<INSTALL_INTERFACE:include>
     ${Qt5Widgets_INCLUDE_DIRS}
     ${${GZ_UTILS}_INCLUDE_DIRS}
-    ${${GZ_CMAKE}_INCLUDE_DIRS}
+    ${${GZ_UTILS}_INCLUDE_DIRS}/../cmake2/
   )
 endmacro()
 
