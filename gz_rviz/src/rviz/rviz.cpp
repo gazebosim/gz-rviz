@@ -348,7 +348,7 @@ void RViz::addAxesDisplay() const
 ////////////////////////////////////////////////////////////////////////////////
 void RViz::init_ros()
 {
-  this->node = std::make_shared<rclcpp::Node>("ignition_rviz");
+  this->node = std::make_shared<rclcpp::Node>("gazebo_rviz");
   this->frameManager = std::make_shared<common::FrameManager>(this->node);
   this->frameManager->setFixedFrame("world");
 

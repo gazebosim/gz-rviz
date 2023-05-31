@@ -63,7 +63,7 @@ int main(int argc, char ** argv)
   QQmlEngine::setObjectOwnership(item, QQmlEngine::CppOwnership);
 
   auto win = app.findChild<gz::gui::MainWindow *>()->QuickWindow();
-  win->setTitle("Ignition RViz");
+  win->setTitle("Gazebo RViz");
 
   auto displayType = win->findChild<QQuickItem *>("sideDrawer");
 

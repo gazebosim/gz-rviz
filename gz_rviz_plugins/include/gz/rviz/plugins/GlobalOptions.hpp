@@ -134,7 +134,7 @@ private:
 };
 
 /**
- * @brief Configure global option of ignition rviz
+ * @brief Configure global option of gazebo rviz
  *
  * Provides methods to change fixed frame and scene background color
  */
