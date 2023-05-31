@@ -87,6 +87,8 @@ macro(add_gz_rviz_plugin)
     ${resources_RCC}
   )
 
+  message("Gz-utils " ${${GZ_UTILS}_INCLUDE_DIRS})
+
   ament_target_dependencies(
     ${GZ_RVIZ_PLUGIN_NAME}
     ${GZ_RVIZ_PLUGIN_DEPENDENCIES}
@@ -96,6 +98,7 @@ macro(add_gz_rviz_plugin)
     ${GZ_RVIZ_PLUGIN_NAME}
     Qt5::Core Qt5::Qml Qt5::Quick Qt5::QuickControls2
     ${GZ_GUI}
+    ${GZ_UTILS}::${GZ_UTILS}
   )
 
   target_include_directories(${GZ_RVIZ_PLUGIN_NAME}
