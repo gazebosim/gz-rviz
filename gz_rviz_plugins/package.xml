@@ -27,19 +27,16 @@
   <depend condition="$GZ_VERSION == 'garden'">>gz-plugin2</depend>
   <depend condition="$GZ_VERSION == 'garden'">gz-gui7</depend>
   <depend condition="$GZ_VERSION == 'garden'">gz-rendering7</depend>
-  <depend condition="$GZ_VERSION == 'garden'">gz-utils2</depend>
   <depend condition="$GZ_VERSION == 'fortress'">ignition-common4</depend>
   <depend condition="$GZ_VERSION == 'fortress'">ignition-gui6</depend>
   <depend condition="$GZ_VERSION == 'fortress'">ignition-math6</depend>
   <depend condition="$GZ_VERSION == 'fortress'">ignition-plugin1</depend>
   <depend condition="$GZ_VERSION == 'fortress'">ignition-rendering6</depend>
-  <depend condition="$GZ_VERSION == 'fortress'">ignition-utils1</depend>
   <depend condition="$GZ_VERSION == ''">ignition-common4</depend>
   <depend condition="$GZ_VERSION == ''">ignition-gui6</depend>
   <depend condition="$GZ_VERSION == ''">ignition-plugin1</depend>
   <depend condition="$GZ_VERSION == ''">ignition-math6</depend>
   <depend condition="$GZ_VERSION == ''">ignition-rendering6</depend>
-  <depend condition="$GZ_VERSION == ''">ignition-utils1</depend>
 
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>
