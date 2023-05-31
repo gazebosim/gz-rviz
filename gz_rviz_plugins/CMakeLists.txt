@@ -25,9 +25,6 @@ find_package(visualization_msgs REQUIRED)
 
 # Gazebo Libraries
 if("$ENV{GZ_VERSION}" STREQUAL "garden")
-  find_package(gz-cmake2 REQUIRED)
-  set(GZ_CMAKE gz-cmake2)
-
   find_package(gz-utils2 REQUIRED)
   set(GZ_UTILS gz-utils2)
 
@@ -48,6 +45,9 @@ if("$ENV{GZ_VERSION}" STREQUAL "garden")
   message(STATUS "Compiling against Gazebo Garden")
   add_definitions(-DGZ_HEADERS)
 else()
+  find_package(gz-cmake2 REQUIRED)
+  set(GZ_CMAKE gz-cmake2)
+
   find_package(ignition-utils1 REQUIRED)
   set(GZ_UTILS ignition-utils1)
 
