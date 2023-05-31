@@ -23,16 +23,7 @@ find_package(tf2_ros REQUIRED)
 find_package(Qt5Widgets CONFIG REQUIRED)
 
 # Gazebo Libraries
-if("$ENV{GZ_VERSION}" STREQUAL "fortress")
-  find_package(ignition-math6)
-
-  # Default to Fortress
-  find_package(ignition-gui6 REQUIRED)
-
-  set(GZ_MATH ignition-math6)
-  set(GZ_GUI ignition-gui6)
-  message(STATUS "Compiling against Gazebo Fortress")
-else()
+if("$ENV{GZ_VERSION}" STREQUAL "garden")
   find_package(gz-math7)
 
   # Default to Fortress
@@ -42,6 +33,15 @@ else()
   set(GZ_GUI gz-gui7)
   message(STATUS "Compiling against Gazebo Garden")
   add_definitions(-DGZ_HEADERS)
+else()
+  find_package(ignition-math6)
+
+  # Default to Fortress
+  find_package(ignition-gui6 REQUIRED)
+
+  set(GZ_MATH ignition-math6)
+  set(GZ_GUI ignition-gui6)
+  message(STATUS "Compiling against Gazebo Fortress")
 endif()
 
 include_directories(include)

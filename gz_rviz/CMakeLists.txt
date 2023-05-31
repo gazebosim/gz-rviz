@@ -36,19 +36,7 @@ find_package(gz_rviz_common REQUIRED)
 find_package(gz_rviz_plugins REQUIRED)
 
 # Gazebo Libraries
-if("$ENV{GZ_VERSION}" STREQUAL "fortress")
-  find_package(ignition-math6 REQUIRED)
-  set(GZ_MATH ignition-math6)
-
-  find_package(ignition-gui6 REQUIRED)
-  set(GZ_GUI ignition-gui6)
-
-  find_package(ignition-common4 REQUIRED)
-  set(GZ_COMMON ignition-common4)
-
-  message(STATUS "Compiling against Gazebo Fortress")
-
-else()
+if("$ENV{GZ_VERSION}" STREQUAL "garden")
   find_package(gz-math7 REQUIRED)
   set(GZ_MATH gz-math7)
 
@@ -59,6 +47,17 @@ else()
   set(GZ_COMMON gz-common5)
 
   message(STATUS "Compiling against Gazebo Garden")
+else()
+  find_package(ignition-math6 REQUIRED)
+  set(GZ_MATH ignition-math6)
+
+  find_package(ignition-gui6 REQUIRED)
+  set(GZ_GUI ignition-gui6)
+
+  find_package(ignition-common4 REQUIRED)
+  set(GZ_COMMON ignition-common4)
+
+  message(STATUS "Compiling against Gazebo Fortress")
 endif()
 
 qt5_add_resources(resources_RCC include/gz/rviz/rviz.qrc)
