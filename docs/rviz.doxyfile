@@ -1,15 +1,15 @@
 # Doxyfile 1.8.13
 
-PROJECT_NAME           = "Ignition RViz"
+PROJECT_NAME           = "Gazebo RViz"
 
 PROJECT_NUMBER         = 0.1
 
 PROJECT_BRIEF          = "RViz developed using ignition rendering"
 
 INPUT                  = ../README.md \
-                         ../ign_rviz_common/ \
-                         ../ign_rviz_plugins/ \
-                         ../ign_rviz/
+                         ../gz_rviz_common/ \
+                         ../gz_rviz_plugins/ \
+                         ../gz_rviz/
 
 RECURSIVE              = YES
 
