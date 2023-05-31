@@ -18,21 +18,11 @@
 #include <string>
 #include <memory>
 
-#ifdef GZ_HEADERS
 #ifndef Q_MOC_RUN
   #include <gz/gui/qt.h>
   #include <gz/gui/Plugin.hh>
 #endif
 #include <gz/gui/MainWindow.hh>
-using namespace gz;  // NOLINT
-#else
-#ifndef Q_MOC_RUN
-  #include <ignition/gui/qt.h>
-  #include <ignition/gui/Plugin.hh>
-#endif
-#include <ignition/gui/MainWindow.hh>
-using namespace gz;  // NOLINT
-#endif
 
 #include <rclcpp/rclcpp.hpp>
 #include <rclcpp/qos.hpp>

@@ -15,23 +15,12 @@
 #ifndef GZ__RVIZ__PLUGINS__GLOBALOPTIONS_HPP_
 #define GZ__RVIZ__PLUGINS__GLOBALOPTIONS_HPP_
 
-#ifdef GZ_HEADERS
 #ifndef Q_MOC_RUN
   #include <gz/gui/qt.h>
   #include <gz/gui/Plugin.hh>
 #endif
 #include <gz/rendering.hh>
 #include <gz/math/Color.hh>
-using namespace gz;  // NOLINT
-#else
-#ifndef Q_MOC_RUN
-  #include <ignition/gui/qt.h>
-  #include <ignition/gui/Plugin.hh>
-#endif
-#include <ignition/rendering.hh>
-#include <ignition/math/Color.hh>
-using namespace gz;  // NOLINT
-#endif
 
 #include <QColor>
 #include <string>

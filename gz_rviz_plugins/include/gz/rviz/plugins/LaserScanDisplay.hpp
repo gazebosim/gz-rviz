@@ -15,13 +15,7 @@
 #ifndef GZ__RVIZ__PLUGINS__LASERSCANDISPLAY_HPP_
 #define GZ__RVIZ__PLUGINS__LASERSCANDISPLAY_HPP_
 
-#ifdef GZ_HEADERS
 #include <gz/rendering.hh>
-using namespace gz;  // NOLINT
-#else
-#include <ignition/rendering.hh>
-using namespace ignition;  // NOLINT
-#endif
 
 #include <memory>
 #include <mutex>

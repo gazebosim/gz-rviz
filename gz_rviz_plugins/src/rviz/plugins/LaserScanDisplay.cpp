@@ -14,23 +14,15 @@
 
 #include "gz/rviz/plugins/LaserScanDisplay.hpp"
 
-#ifdef GZ_HEADERS
-#include <gz/gui/Application.hh>
-#include <gz/gui/GuiEvents.hh>
-#include <gz/math/Pose3.hh>
-#include <gz/plugin/Register.hh>
-using namespace gz;  // NOLINT
-#else
-#include <ignition/gui/Application.hh>
-#include <ignition/gui/GuiEvents.hh>
-#include <ignition/math/Pose3.hh>
-#include <ignition/plugin/Register.hh>
-using namespace gz;  // NOLINT
-#endif
 #include <memory>
 #include <string>
 #include <utility>
 #include <vector>
+
+#include <gz/gui/Application.hh>
+#include <gz/gui/GuiEvents.hh>
+#include <gz/math/Pose3.hh>
+#include <gz/plugin/Register.hh>
 
 namespace gz
 {
@@ -257,10 +249,10 @@ void LaserScanDisplay::LoadConfig(const tinyxml2::XMLElement * /*_pluginElem*/)
 
 #ifdef GZ_HEADERS
 GZ_ADD_PLUGIN(
-  rviz::plugins::LaserScanDisplay,
+  gz::rviz::plugins::LaserScanDisplay,
   gui::Plugin)
 #else
 IGNITION_ADD_PLUGIN(
-  rviz::plugins::LaserScanDisplay,
+  gz::rviz::plugins::LaserScanDisplay,
   gui::Plugin)
 #endif

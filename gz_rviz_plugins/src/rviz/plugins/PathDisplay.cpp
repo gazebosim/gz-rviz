@@ -14,23 +14,13 @@
 
 #include "gz/rviz/plugins/PathDisplay.hpp"
 
-#ifdef GZ_HEADERS
 #include <gz/gui/Application.hh>
 #include <gz/gui/GuiEvents.hh>
 #include <gz/math/Pose3.hh>
 #include <gz/math/Quaternion.hh>
 #include <gz/math/Vector3.hh>
 #include <gz/plugin/Register.hh>
-using namespace gz;  // NOLINT
-#else
-#include <ignition/gui/Application.hh>
-#include <ignition/gui/GuiEvents.hh>
-#include <ignition/math/Pose3.hh>
-#include <ignition/math/Quaternion.hh>
-#include <ignition/math/Vector3.hh>
-#include <ignition/plugin/Register.hh>
-using namespace gz;  // NOLINT
-#endif
+
 #include <string>
 #include <utility>
 #include <memory>
@@ -398,10 +388,10 @@ void PathDisplay::LoadConfig(const tinyxml2::XMLElement * /*_pluginElem*/)
 
 #ifdef GZ_HEADERS
 GZ_ADD_PLUGIN(
-  rviz::plugins::PathDisplay,
+  gz::rviz::plugins::PathDisplay,
   gui::Plugin)
 #else
 IGNITION_ADD_PLUGIN(
-  rviz::plugins::PathDisplay,
+  gz::rviz::plugins::PathDisplay,
   gui::Plugin)
 #endif

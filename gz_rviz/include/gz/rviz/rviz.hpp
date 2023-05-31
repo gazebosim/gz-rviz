@@ -20,19 +20,11 @@
 #include <string>
 #include <vector>
 
-#ifdef GZ_HEADERS
 #ifndef Q_MOC_RUN
   #include <gz/gui/qt.h>
   #include <gz/gui/Application.hh>
 #endif
-using namespace gz;  // NOLINT
-#else
-#ifndef Q_MOC_RUN
-  #include <ignition/gui/qt.h>
-  #include <ignition/gui/Application.hh>
-#endif
-using namespace ignition;  // NOLINT
-#endif
+
 #include <rclcpp/rclcpp.hpp>
 
 #include <gz/rviz/plugins/message_display_base.hpp>

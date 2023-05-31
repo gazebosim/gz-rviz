@@ -13,17 +13,11 @@
 // limitations under the License.
 
 #include "gz/rviz/plugins/MarkerDisplay.hpp"
-#ifdef GZ_HEADERS
+
 #include <gz/gui/Application.hh>
 #include <gz/gui/GuiEvents.hh>
 #include <gz/plugin/Register.hh>
-using namespace gz;  // NOLINT
-#else
-#include <ignition/gui/Application.hh>
-#include <ignition/gui/GuiEvents.hh>
-#include <ignition/plugin/Register.hh>
-using namespace gz;  // NOLINT
-#endif
+
 #include <memory>
 #include <string>
 #include <utility>
@@ -200,10 +194,10 @@ void MarkerDisplay::LoadConfig(const tinyxml2::XMLElement * /*_pluginElem*/)
 
 #ifdef GZ_HEADERS
 GZ_ADD_PLUGIN(
-  rviz::plugins::MarkerDisplay,
+  gz::rviz::plugins::MarkerDisplay,
   gui::Plugin)
 #else
 IGNITION_ADD_PLUGIN(
-  rviz::plugins::MarkerDisplay,
+  gz::rviz::plugins::MarkerDisplay,
   gui::Plugin)
 #endif

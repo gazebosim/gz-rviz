@@ -14,13 +14,8 @@
 
 #include "gz/rviz/plugins/GPSDisplay.hpp"
 
-#ifdef GZ_HEADERS
 #include <gz/plugin/Register.hh>
-using namespace gz;  // NOLINT
-#else
-#include <ignition/plugin/Register.hh>
-using namespace gz;  // NOLINT
-#endif
+
 #include <algorithm>
 #include <memory>
 #include <string>
@@ -156,10 +151,10 @@ void GPSDisplay::LoadConfig(const tinyxml2::XMLElement * /*_pluginElem*/)
 
 #ifdef GZ_HEADERS
 GZ_ADD_PLUGIN(
-  rviz::plugins::GPSDisplay,
+  gz::rviz::plugins::GPSDisplay,
   gui::Plugin)
 #else
 IGNITION_ADD_PLUGIN(
-  rviz::plugins::GPSDisplay,
+  gz::rviz::plugins::GPSDisplay,
   gui::Plugin)
 #endif

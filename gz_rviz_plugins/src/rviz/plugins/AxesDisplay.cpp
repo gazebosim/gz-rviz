@@ -13,17 +13,9 @@
 // limitations under the License.
 
 #include "gz/rviz/plugins/AxesDisplay.hpp"
-#ifdef GZ_HEADERS
 #include <gz/plugin/Register.hh>
 #include <gz/gui/Application.hh>
 #include <gz/gui/GuiEvents.hh>
-using namespace gz;  // NOLINT
-#else
-#include <ignition/plugin/Register.hh>
-#include <ignition/gui/Application.hh>
-#include <ignition/gui/GuiEvents.hh>
-using namespace gz;  // NOLINT
-#endif
 
 #include <algorithm>
 #include <memory>
@@ -199,10 +191,10 @@ void AxesDisplay::LoadConfig(const tinyxml2::XMLElement * /*_pluginElem*/)
 
 #ifdef GZ_HEADERS
 GZ_ADD_PLUGIN(
-  rviz::plugins::AxesDisplay,
+  gz::rviz::plugins::AxesDisplay,
   gui::Plugin)
 #else
 IGNITION_ADD_PLUGIN(
-  rviz::plugins::AxesDisplay,
+  gz::rviz::plugins::AxesDisplay,
   gui::Plugin)
 #endif

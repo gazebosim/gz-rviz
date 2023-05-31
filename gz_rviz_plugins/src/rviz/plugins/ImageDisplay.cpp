@@ -14,15 +14,8 @@
 
 #include "gz/rviz/plugins/ImageDisplay.hpp"
 
-#ifdef GZ_HEADERS
 #include <gz/gui/Application.hh>
 #include <gz/plugin/Register.hh>
-using namespace gz;  // NOLINT
-#else
-#include <ignition/gui/Application.hh>
-#include <ignition/plugin/Register.hh>
-using namespace gz;  // NOLINT
-#endif
 
 #include <limits>
 #include <string>
@@ -298,10 +291,10 @@ void ImageDisplay::LoadConfig(const tinyxml2::XMLElement * /*_pluginElem*/)
 
 #ifdef GZ_HEADERS
 GZ_ADD_PLUGIN(
-  rviz::plugins::ImageDisplay,
+  gz::rviz::plugins::ImageDisplay,
   gui::Plugin)
 #else
 IGNITION_ADD_PLUGIN(
-  rviz::plugins::ImageDisplay,
+  gz::rviz::plugins::ImageDisplay,
   gui::Plugin)
 #endif

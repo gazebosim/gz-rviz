@@ -12,13 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifdef GZ_HEADERS
 #include <gz/gui/Application.hh>
 #include <gz/gui/MainWindow.hh>
-#else
-#include <ignition/gui/Application.hh>
-#include <ignition/gui/MainWindow.hh>
-#endif
 
 #include <string>
 #include <utility>

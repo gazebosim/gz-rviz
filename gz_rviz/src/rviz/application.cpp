@@ -14,8 +14,6 @@
 
 #include <string>
 
-
-#ifdef GZ_HEADERS
 #ifndef Q_MOC_RUN
   #include <gz/gui/qt.h>
 
@@ -25,19 +23,6 @@
   #include "gz/rviz/rviz.hpp"
 #endif
 #include <gz/common/Console.hh>
-using namespace gz;  // NOLINT
-#else
-#ifndef Q_MOC_RUN
-  #include <ignition/gui/qt.h>
-  #include <ignition/gui/Application.hh>
-  #include <ignition/gui/MainWindow.hh>
-
-  #include "gz/rviz/rviz.hpp"
-#endif
-
-#include <ignition/common/Console.hh>
-using namespace gz;  // NOLINT
-#endif
 
 #include <ament_index_cpp/get_package_share_directory.hpp>
 #include <ament_index_cpp/get_package_prefix.hpp>
@@ -46,17 +31,17 @@ int main(int argc, char ** argv)
 {
   rclcpp::init(argc, argv);
 
-  common::Console::SetVerbosity(4);
+  gz::common::Console::SetVerbosity(4);
 
-  gui::Application app(argc, argv);
+  gz::gui::Application app(argc, argv);
 
   std::string package_share_directory = ament_index_cpp::get_package_share_directory("gz_rviz");
   app.LoadConfig(package_share_directory + "/config/rviz.config");
 
   std::string plugin_directory = ament_index_cpp::get_package_prefix("gz_rviz_plugins");
-  gui::App()->AddPluginPath(plugin_directory + "/lib");
+  gz::gui::App()->AddPluginPath(plugin_directory + "/lib");
 
-  rviz::RViz rviz;
+  gz::rviz::RViz rviz;
 
   rviz.init_ros();
   rclcpp::executors::MultiThreadedExecutor executor;
@@ -77,7 +62,7 @@ int main(int argc, char ** argv)
 
   QQmlEngine::setObjectOwnership(item, QQmlEngine::CppOwnership);
 
-  auto win = app.findChild<gui::MainWindow *>()->QuickWindow();
+  auto win = app.findChild<gz::gui::MainWindow *>()->QuickWindow();
   win->setTitle("Ignition RViz");
 
   auto displayType = win->findChild<QQuickItem *>("sideDrawer");

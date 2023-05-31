@@ -14,23 +14,12 @@
 
 #include "gz/rviz/plugins/TFDisplay.hpp"
 
-#ifdef GZ_HEADERS
 #include <gz/gui/Application.hh>
 #include <gz/gui/GuiEvents.hh>
 #include <gz/math/Pose3.hh>
 #include <gz/math/Quaternion.hh>
 #include <gz/math/Vector3.hh>
 #include <gz/plugin/Register.hh>
-using namespace gz;  // NOLINT
-#else
-#include <ignition/gui/Application.hh>
-#include <ignition/gui/GuiEvents.hh>
-#include <ignition/math/Pose3.hh>
-#include <ignition/math/Quaternion.hh>
-#include <ignition/math/Vector3.hh>
-#include <ignition/plugin/Register.hh>
-using namespace gz;  // NOLINT
-#endif
 
 #include <algorithm>
 #include <memory>
@@ -422,10 +411,10 @@ void TFDisplay::setFrameVisibility(const QString & _frame, const bool & _visible
 
 #ifdef GZ_HEADERS
 GZ_ADD_PLUGIN(
-  rviz::plugins::TFDisplay,
+  gz::rviz::plugins::TFDisplay,
   gui::Plugin)
 #else
 IGNITION_ADD_PLUGIN(
-  rviz::plugins::TFDisplay,
+  gz::rviz::plugins::TFDisplay,
   gui::Plugin)
 #endif

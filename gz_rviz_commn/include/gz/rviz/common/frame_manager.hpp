@@ -18,13 +18,7 @@
 #include <QObject>
 #include <tf2_ros/buffer.h>
 #include <tf2_ros/transform_listener.h>
-#ifdef GZ_HEADERS
 #include <gz/math/Pose3.hh>
-using namespace gz;  // NOLINT
-#else
-#include <ignition/math/Pose3.hh>
-using namespace ignition;  // NOLINT
-#endif
 
 #include <memory>
 #include <mutex>

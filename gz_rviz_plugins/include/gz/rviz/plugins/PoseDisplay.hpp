@@ -15,12 +15,7 @@
 #ifndef GZ__RVIZ__PLUGINS__POSEDISPLAY_HPP_
 #define GZ__RVIZ__PLUGINS__POSEDISPLAY_HPP_
 
-#ifdef GZ_HEADERS
 #include <gz/rendering.hh>
-using namespace gz;  // NOLINT
-#else
-#include <ignition/rendering.hh>
-#endif
 
 #include <QColor>
 

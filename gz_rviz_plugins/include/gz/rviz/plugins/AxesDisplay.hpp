@@ -17,21 +17,11 @@
 
 #include "gz/rviz/plugins/message_display_base.hpp"
 
-#ifdef GZ_HEADERS
 #ifndef Q_MOC_RUN
   #include <gz/gui/qt.h>
   #include <gz/gui/Plugin.hh>
 #endif
 #include <gz/rendering.hh>
-using namespace gz;  // NOLINT
-#else
-#ifndef Q_MOC_RUN
-  #include <ignition/gui/qt.h>
-  #include <ignition/gui/Plugin.hh>
-#endif
-#include <ignition/rendering.hh>
-using namespace gz;  // NOLINT
-#endif
 
 #include <memory>
 #include <string>
