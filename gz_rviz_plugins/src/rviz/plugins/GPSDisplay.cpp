@@ -12,14 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "gz/rviz/plugins/GPSDisplay.hpp"
-
-#include <gz/plugin/Register.hh>
 
 #include <algorithm>
 #include <memory>
 #include <string>
 #include <utility>
+
+#include <gz/plugin/Register.hh>
+
+#include "gz/rviz/plugins/GPSDisplay.hpp"
 
 namespace gz
 {

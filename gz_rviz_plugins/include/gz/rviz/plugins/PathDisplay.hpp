@@ -15,12 +15,6 @@
 #ifndef GZ__RVIZ__PLUGINS__PATHDISPLAY_HPP_
 #define GZ__RVIZ__PLUGINS__PATHDISPLAY_HPP_
 
-#ifdef GZ_HEADERS
-#include <gz/rendering.hh>
-using namespace gz;  // NOLINT
-#else
-#include <ignition/rendering.hh>
-#endif
 
 #include <QColor>
 
@@ -29,6 +23,7 @@ using namespace gz;  // NOLINT
 #include <string>
 #include <vector>
 
+#include <gz/rendering.hh>
 #include <nav_msgs/msg/path.hpp>
 
 #include "gz/rviz/plugins/message_display_base.hpp"

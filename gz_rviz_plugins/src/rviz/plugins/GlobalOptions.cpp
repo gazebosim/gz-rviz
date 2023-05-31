@@ -12,15 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <gz/plugin/Register.hh>
-#include <gz/gui/Application.hh>
-#include <gz/gui/GuiEvents.hh>
-
 #include <algorithm>
 #include <memory>
 #include <string>
 #include <utility>
 #include <vector>
+
+#include <gz/plugin/Register.hh>
+#include <gz/gui/Application.hh>
+#include <gz/gui/GuiEvents.hh>
 
 #include "gz/rviz/common/rviz_events.hpp"
 #include "gz/rviz/plugins/GlobalOptions.hpp"

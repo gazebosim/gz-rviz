@@ -15,14 +15,13 @@
 #ifndef GZ__RVIZ__PLUGINS__LASERSCANDISPLAY_HPP_
 #define GZ__RVIZ__PLUGINS__LASERSCANDISPLAY_HPP_
 
-#include <gz/rendering.hh>
-
 #include <memory>
 #include <mutex>
 #include <string>
 #include <vector>
 
 #include <sensor_msgs/msg/laser_scan.hpp>
+#include <gz/rendering.hh>
 
 #include "gz/rviz/plugins/message_display_base.hpp"
 

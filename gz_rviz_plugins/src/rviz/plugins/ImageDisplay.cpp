@@ -14,12 +14,12 @@
 
 #include "gz/rviz/plugins/ImageDisplay.hpp"
 
-#include <gz/gui/Application.hh>
-#include <gz/plugin/Register.hh>
-
 #include <limits>
 #include <string>
 #include <utility>
+
+#include <gz/gui/Application.hh>
+#include <gz/plugin/Register.hh>
 
 namespace gz
 {

@@ -15,7 +15,6 @@
 #ifndef GZ__RVIZ__PLUGINS__TFDISPLAY_HPP_
 #define GZ__RVIZ__PLUGINS__TFDISPLAY_HPP_
 
-#include <gz/rendering.hh>
 
 #include <QStandardItem>
 
@@ -26,6 +25,7 @@
 #include <vector>
 
 #include <tf2_msgs/msg/tf_message.hpp>
+#include <gz/rendering.hh>
 
 #include "gz/rviz/plugins/message_display_base.hpp"
 

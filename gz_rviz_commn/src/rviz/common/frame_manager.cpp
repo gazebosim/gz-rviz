@@ -12,14 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <gz/gui/Application.hh>
-#include <gz/gui/MainWindow.hh>
-
 #include <string>
 #include <utility>
 #include <memory>
 #include <vector>
 
+#include <gz/gui/Application.hh>
+#include <gz/gui/MainWindow.hh>
 #include "gz/rviz/common/rviz_events.hpp"
 #include "gz/rviz/common/frame_manager.hpp"
 

@@ -17,16 +17,19 @@
 
 #ifndef Q_MOC_RUN
   #include <gz/gui/qt.h>
-  #include <gz/gui/Plugin.hh>
 #endif
-#include <gz/rendering.hh>
-#include <gz/math/Color.hh>
 
 #include <QColor>
 #include <string>
 #include <memory>
 #include <utility>
 #include <vector>
+
+#ifndef Q_MOC_RUN
+  #include <gz/gui/Plugin.hh>
+#endif
+#include <gz/rendering.hh>
+#include <gz/math/Color.hh>
 
 #include "gz/rviz/plugins/message_display_base.hpp"
 

@@ -15,7 +15,6 @@
 #ifndef GZ__RVIZ__PLUGINS__POSEDISPLAY_HPP_
 #define GZ__RVIZ__PLUGINS__POSEDISPLAY_HPP_
 
-#include <gz/rendering.hh>
 
 #include <QColor>
 
@@ -26,6 +25,7 @@
 #include <vector>
 
 #include <geometry_msgs/msg/pose_stamped.hpp>
+#include <gz/rendering.hh>
 
 #include "gz/rviz/plugins/message_display_base.hpp"
 

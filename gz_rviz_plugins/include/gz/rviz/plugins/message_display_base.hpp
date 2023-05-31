@@ -15,11 +15,14 @@
 #ifndef GZ__RVIZ__PLUGINS__MESSAGE_DISPLAY_BASE_HPP_
 #define GZ__RVIZ__PLUGINS__MESSAGE_DISPLAY_BASE_HPP_
 
+#ifndef Q_MOC_RUN
+  #include <gz/gui/qt.h>
+#endif
+
 #include <string>
 #include <memory>
 
 #ifndef Q_MOC_RUN
-  #include <gz/gui/qt.h>
   #include <gz/gui/Plugin.hh>
 #endif
 #include <gz/gui/MainWindow.hh>

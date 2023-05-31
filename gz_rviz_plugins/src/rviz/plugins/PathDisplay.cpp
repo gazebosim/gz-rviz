@@ -14,17 +14,17 @@
 
 #include "gz/rviz/plugins/PathDisplay.hpp"
 
+#include <string>
+#include <utility>
+#include <memory>
+#include <vector>
+
 #include <gz/gui/Application.hh>
 #include <gz/gui/GuiEvents.hh>
 #include <gz/math/Pose3.hh>
 #include <gz/math/Quaternion.hh>
 #include <gz/math/Vector3.hh>
 #include <gz/plugin/Register.hh>
-
-#include <string>
-#include <utility>
-#include <memory>
-#include <vector>
 
 namespace gz
 {

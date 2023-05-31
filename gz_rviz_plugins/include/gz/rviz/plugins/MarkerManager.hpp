@@ -15,20 +15,14 @@
 #ifndef GZ__RVIZ__PLUGINS__MARKERMANAGER_HPP_
 #define GZ__RVIZ__PLUGINS__MARKERMANAGER_HPP_
 
-#ifdef GZ_HEADERS
-#include <gz/rendering.hh>
-using namespace gz;  // NOLINT
-#else
-#include <ignition/rendering.hh>
-#endif
 
 #include <unordered_map>
 
 #include <geometry_msgs/msg/pose.hpp>
+#include <gz/rendering.hh>
 #include <std_msgs/msg/color_rgba.hpp>
 #include <visualization_msgs/msg/marker.hpp>
 #include <visualization_msgs/msg/marker_array.hpp>
-
 
 namespace gz
 {

@@ -14,14 +14,14 @@
 
 #include "gz/rviz/plugins/MarkerDisplay.hpp"
 
-#include <gz/gui/Application.hh>
-#include <gz/gui/GuiEvents.hh>
-#include <gz/plugin/Register.hh>
-
 #include <memory>
 #include <string>
 #include <utility>
 #include <vector>
+
+#include <gz/gui/Application.hh>
+#include <gz/gui/GuiEvents.hh>
+#include <gz/plugin/Register.hh>
 
 namespace gz
 {

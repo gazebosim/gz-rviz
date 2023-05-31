@@ -15,10 +15,10 @@
 #ifndef GZ__RVIZ__COMMON__FRAME_MANAGER_HPP_
 #define GZ__RVIZ__COMMON__FRAME_MANAGER_HPP_
 
-#include <QObject>
 #include <tf2_ros/buffer.h>
 #include <tf2_ros/transform_listener.h>
-#include <gz/math/Pose3.hh>
+
+#include <QObject>
 
 #include <memory>
 #include <mutex>
@@ -26,6 +26,7 @@
 #include <unordered_map>
 #include <vector>
 
+#include <gz/math/Pose3.hh>
 #include <tf2_msgs/msg/tf_message.hpp>
 #include <rclcpp/rclcpp.hpp>
 

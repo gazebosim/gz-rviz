@@ -15,7 +15,6 @@
 #ifndef GZ__RVIZ__PLUGINS__ROBOTMODELDISPLAY_HPP_
 #define GZ__RVIZ__PLUGINS__ROBOTMODELDISPLAY_HPP_
 
-#include <gz/rendering.hh>
 
 #include <urdf/model.h>
 
@@ -30,6 +29,7 @@
 #include <vector>
 
 #include <std_msgs/msg/string.hpp>
+#include <gz/rendering.hh>
 
 #include "gz/rviz/plugins/message_display_base.hpp"
 

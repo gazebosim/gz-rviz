@@ -14,12 +14,12 @@
 
 #include "gz/rviz/plugins/MarkerManager.hpp"
 
-#include <gz/math/Pose3.hh>
 
 #include <string>
 
 #include <ament_index_cpp/get_package_prefix.hpp>
 #include <ament_index_cpp/get_package_share_directory.hpp>
+#include <gz/math/Pose3.hh>
 #include <rclcpp/logger.hpp>
 #include <rclcpp/logging.hpp>
 

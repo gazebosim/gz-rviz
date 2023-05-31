@@ -14,16 +14,16 @@
 
 #include "gz/rviz/plugins/PoseDisplay.hpp"
 
+#include <memory>
+#include <string>
+#include <utility>
+#include <vector>
+
 #include <gz/gui/Application.hh>
 #include <gz/gui/GuiEvents.hh>
 #include <gz/math/Pose3.hh>
 #include <gz/math/Quaternion.hh>
 #include <gz/plugin/Register.hh>
-
-#include <memory>
-#include <string>
-#include <utility>
-#include <vector>
 
 namespace gz
 {

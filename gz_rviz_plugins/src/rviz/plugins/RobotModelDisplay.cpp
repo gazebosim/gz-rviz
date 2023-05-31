@@ -14,19 +14,19 @@
 
 #include "gz/rviz/plugins/RobotModelDisplay.hpp"
 
-#include <gz/common/MeshManager.hh>
-#include <gz/gui/Application.hh>
-#include <gz/gui/GuiEvents.hh>
-#include <gz/math/Color.hh>
-#include <gz/math/Pose3.hh>
-#include <gz/plugin/Register.hh>
-
 #include <memory>
 #include <string>
 #include <utility>
 
 #include <ament_index_cpp/get_package_prefix.hpp>
 #include <ament_index_cpp/get_package_share_directory.hpp>
+
+#include <gz/common/MeshManager.hh>
+#include <gz/gui/Application.hh>
+#include <gz/gui/GuiEvents.hh>
+#include <gz/math/Color.hh>
+#include <gz/math/Pose3.hh>
+#include <gz/plugin/Register.hh>
 
 namespace gz
 {

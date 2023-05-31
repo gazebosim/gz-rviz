@@ -15,17 +15,21 @@
 #ifndef GZ__RVIZ__PLUGINS__AXESDISPLAY_HPP_
 #define GZ__RVIZ__PLUGINS__AXESDISPLAY_HPP_
 
-#include "gz/rviz/plugins/message_display_base.hpp"
-
 #ifndef Q_MOC_RUN
   #include <gz/gui/qt.h>
-  #include <gz/gui/Plugin.hh>
 #endif
-#include <gz/rendering.hh>
 
 #include <memory>
 #include <string>
 #include <utility>
+
+#ifndef Q_MOC_RUN
+  #include <gz/gui/Plugin.hh>
+#endif
+#include <gz/rendering.hh>
+
+
+#include "gz/rviz/plugins/message_display_base.hpp"
 
 namespace gz
 {

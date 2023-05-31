@@ -15,13 +15,13 @@
 #ifndef GZ__RVIZ__PLUGINS__MARKERARRAYDISPLAY_HPP_
 #define GZ__RVIZ__PLUGINS__MARKERARRAYDISPLAY_HPP_
 
-#include <gz/rendering.hh>
 
 #include <memory>
 #include <mutex>
 #include <string>
 #include <vector>
 
+#include <gz/rendering.hh>
 #include <visualization_msgs/msg/marker_array.hpp>
 
 #include "gz/rviz/plugins/MarkerManager.hpp"
