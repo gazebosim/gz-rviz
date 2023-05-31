@@ -37,7 +37,7 @@ if("$ENV{GZ_VERSION}" STREQUAL "garden")
   find_package(gz-common5 REQUIRED)
   set(GZ_COMMON gz-common5)
 
-  find_package(gz-plugin2 REQUIRED)
+  find_package(gz-plugin2 REQUIRED COMPONENTS register)
   set(GZ_PLUGIN gz-plugin2)
 
   find_package(gz-rendering7 REQUIRED)
@@ -60,7 +60,7 @@ else()
   find_package(ignition-common4 REQUIRED)
   set(GZ_COMMON ignition-common4)
 
-  find_package(ignition-plugin1 REQUIRED)
+  find_package(ignition-plugin1 REQUIRED COMPONENTS register)
   set(GZ_PLUGIN ignition-plugin1)
 
   find_package(ignition-rendering6 REQUIRED)
@@ -100,6 +100,7 @@ macro(add_gz_rviz_plugin)
     Qt5::Core Qt5::Qml Qt5::Quick Qt5::QuickControls2
     ${GZ_GUI}
     ${GZ_UTILS}::${GZ_UTILS}
+    ${GZ_PLUGIN}::register
   )
 
   target_include_directories(${GZ_RVIZ_PLUGIN_NAME}
