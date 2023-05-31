@@ -103,6 +103,7 @@ macro(add_gz_rviz_plugin)
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:include>
     ${Qt5Widgets_INCLUDE_DIRS}
+    ${${GZ_UTILS}_INCLUDE_DIRS}
   )
 endmacro()
 
